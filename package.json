@@ -33,6 +33,7 @@
     "@babel/core": "^7.24.9",
     "@babel/preset-env": "^7.25.0",
     "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
     "@types/multer": "^1.4.11",
     "@types/node": "^20",
     "@types/react": "^18",
