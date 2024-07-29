@@ -1,16 +1,16 @@
-import { NextConfig } from "next";
-import path from "path";
+const path = require("path");
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   webpack: (config) => {
     config.module.rules.push({
       test: /\.(ts|tsx)$/,
       exclude: [path.resolve(__dirname, "src/pages")],
       use: "babel-loader",
     });
-
     return config;
   },
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
 };
 
-export default nextConfig;
+module.exports = nextConfig;
