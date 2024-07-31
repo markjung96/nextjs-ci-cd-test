@@ -33,3 +33,6 @@ export {
 export { Label } from "./label";
 export { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./collapsible";
 export { useFormField, Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField } from "./form";
+export { Separator } from "./separator";
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
+export { Textarea } from "./textarea";
