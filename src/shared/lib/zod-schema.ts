@@ -16,8 +16,6 @@ const neutronAddressSchema = z.string().refine(
     message: "Invalid Neutron address",
   }
 );
-const addressSchema = z.union([aptosAddressSchema, suiAddressSchema, neutronAddressSchema]);
-
 const multerFileSchema = z.object({
   fieldname: z.string(),
   originalname: z.string(),
@@ -27,4 +25,4 @@ const multerFileSchema = z.object({
   buffer: z.instanceof(Buffer),
 });
 
-export { addressSchema, multerFileSchema };
+export { aptosAddressSchema, suiAddressSchema, neutronAddressSchema, multerFileSchema };

@@ -1,4 +1,3 @@
-import { InputFile } from "./input-file";
 import VerificationStepper from "./verification-stepper";
 
 export const VerificationPage = () => {

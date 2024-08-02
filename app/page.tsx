@@ -20,9 +20,10 @@ const protocols = ["SUI", "Aptos", "Neutron"];
 export default function Home() {
   const [protocol, setProtocol] = useState(protocols[0]);
   const [animation, setAnimation] = useState(false);
-  const [value, setValue] = useState<{ transaction: string; protocol: string | null }>({
+  const [value, setValue] = useState<{ transaction: string; protocol: string | null; network: string | null }>({
     transaction: "",
     protocol: null,
+    network: null,
   });
 
   const selectRef = useRef<HTMLButtonElement>(null);
@@ -30,19 +31,19 @@ export default function Home() {
   const router = useRouter();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>) => {
-    if (event.key === "Enter") {
-      if (!value.protocol && selectRef.current) {
-        const keyboardEvent = new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true });
-        selectRef.current.focus();
-        selectRef.current.dispatchEvent(keyboardEvent);
-      } else if (value.transaction === "" && value.protocol && inputRef.current) {
-        inputRef.current.focus();
-        event.stopPropagation();
-        event.preventDefault();
-      } else {
-        router.push(`/verification?protocol=${value.protocol}&transaction=${value.transaction}`);
-      }
-    }
+    // if (event.key === "Enter") {
+    //   if (!value.protocol && selectRef.current) {
+    //     const keyboardEvent = new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true });
+    //     selectRef.current.focus();
+    //     selectRef.current.dispatchEvent(keyboardEvent);
+    //   } else if (value.transaction === "" && value.protocol && inputRef.current) {
+    //     inputRef.current.focus();
+    //     event.stopPropagation();
+    //     event.preventDefault();
+    //   } else {
+    //     router.push(`/verification?protocol=${value.protocol}&transaction=${value.transaction}`);
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function Home() {
         <Select>
           <SelectTrigger
             ref={selectRef}
-            className="w-[180px] rounded-tl-none rounded-bl-none border-l-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="w-[180px] rounded-none border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onKeyDown={handleKeyDown}
           >
             <SelectValue placeholder="Select a Protocol" />
@@ -95,6 +96,31 @@ export default function Home() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Protocols</SelectLabel>
+              {protocols.map((item) => (
+                <SelectItem
+                  key={item}
+                  value={item.toLowerCase()}
+                  onClick={() => setValue((prevValue) => ({ ...prevValue, protocol: item.toLowerCase() }))}
+                  onKeyDown={() => setValue((prevValue) => ({ ...prevValue, protocol: item.toLowerCase() }))}
+                >
+                  {item}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Select>
+          <SelectTrigger
+            ref={selectRef}
+            className="w-[180px] rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
+            disabled={true}
+            onKeyDown={handleKeyDown}
+          >
+            <SelectValue placeholder="Select a Network" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Networks</SelectLabel>
               {protocols.map((item) => (
                 <SelectItem
                   key={item}

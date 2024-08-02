@@ -3,9 +3,16 @@ export type VerificationStatus = "VERIFIED_SAME" | "VERIFIED_DIFFERENT" | "NOT_V
 
 // Aptos Type
 export type AptosNetwork = "mainnet" | "testnet" | "devnet";
+export const isAptosNetwork = (network: string): network is AptosNetwork => {
+  return ["mainnet", "testnet", "devnet"].includes(network);
+};
 
 // Sui Type
 export type SuiNetwork = "mainnet" | "testnet" | "devnet";
+export const isSuiNetwork = (network: string): network is SuiNetwork => {
+  return ["mainnet", "testnet", "devnet"].includes(network);
+};
+
 export type SuiVerificationModule = {
   modueName: string; // clock
   isVerified: boolean; // true

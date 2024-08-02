@@ -11,7 +11,7 @@ export function Header(props: Props) {
         <Logo />
         <Separator orientation="vertical" className="mx-8" />
       </div>
-      <div className="flex flex-grow items-center justify-start">
+      <div className="flex flex-grow gap-8 items-center justify-start">
         <Link href="/verification" className="font-bold">
           Verification
         </Link>
