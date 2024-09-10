@@ -1,7 +1,7 @@
 export interface ArbitrumVerificationSrcUploadReqDto {
   network: string;
   deploymentTxHash: string;
-  srcZipFile: string;
+  srcZipFile: File;
 }
 
 export interface ArbitrumVerificationSrcUploadResultDto {
@@ -13,12 +13,17 @@ const baseUrl = "https://verify.welldonestudio.io";
 export const postArbitrumStylusSourceCode = async (
   request: ArbitrumVerificationSrcUploadReqDto
 ): Promise<ArbitrumVerificationSrcUploadResultDto> => {
+  const formData = new FormData();
+  formData.append("network", request.network);
+  formData.append("deploymentTxHash", request.deploymentTxHash);
+  formData.append("srcZipFile", request.srcZipFile);
   const response = await fetch(`${baseUrl}/arbitrum/verifications/sources`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      accept: "application/json",
+      "Content-Type": "multipart/form-data",
     },
-    body: JSON.stringify(request),
+    body: formData,
   });
   return (await response.json()).data;
 };

@@ -1,16 +1,4 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/shared/ui";
+import { Button, Label } from "@/src/shared/ui";
 import { useStepper } from "@/src/widgets/Stpper";
 import { Dispatch, FC, SetStateAction } from "react";
 import { ContractInfo } from "./page";
@@ -55,7 +43,7 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
         <Label htmlFor="compiler-type" className="block text-sm font-medium ">
           Enter the contract Stylus Source Zip file
         </Label>
-        <InputFile />
+        <InputFile contractInfo={contractInfo} setContractInfo={setContractInfo} />
       </div>
 
       <div className="flex justify-end space-x-4">
@@ -69,8 +57,9 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
           type="submit"
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
           onClick={() => nextStep()}
+          disabled={!contractInfo.sourceFile}
         >
-          Continue
+          Verify
         </Button>
       </div>
     </form>
