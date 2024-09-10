@@ -6,6 +6,7 @@ import { SearchIcon } from "lucide-react";
 
 import { Input } from "@/src/shared/ui/input";
 import {
+  Button,
   Select,
   SelectContent,
   SelectGroup,
@@ -15,12 +16,16 @@ import {
   SelectValue,
 } from "@/src/shared/ui";
 
-const protocols = ["SUI", "Aptos", "Neutron"];
+const protocols = ["Arbitrum", "SUI", "Aptos", "Neutron"];
 
 export default function Home() {
   const [protocol, setProtocol] = useState(protocols[0]);
   const [animation, setAnimation] = useState(false);
-  const [value, setValue] = useState<{ transaction: string; protocol: string | null; network: string | null }>({
+  const [value, setValue] = useState<{
+    transaction: string;
+    protocol: string | null;
+    network: string | null;
+  }>({
     transaction: "",
     protocol: null,
     network: null,
@@ -30,7 +35,9 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>) => {
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>
+  ) => {
     // if (event.key === "Enter") {
     //   if (!value.protocol && selectRef.current) {
     //     const keyboardEvent = new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true });
@@ -69,7 +76,11 @@ export default function Home() {
     <div className="h-full flex flex-col items-center justify-center flex-1 px-4 text-center">
       <h1 className="w-[660px] flex gap-4 text-4xl font-bold">
         Multichain Verificator for{" "}
-        <div className={`text-blue-500 transition-all duration-500 ${animation ? "fade-out-up" : "fade-in-down"}`}>
+        <div
+          className={`text-blue-500 transition-all duration-500 ${
+            animation ? "fade-out-up" : "fade-in-down"
+          }`}
+        >
           {protocol}
         </div>
       </h1>
@@ -81,7 +92,10 @@ export default function Home() {
           placeholder="Search by Address, Transaction, Token"
           className="pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md rounded-tr-none rounded-br-none focus-visible:ring-0 focus-visible:ring-offset-0"
           onChange={(event) => {
-            setValue((prevValue) => ({ ...prevValue, transaction: event.target.value }));
+            setValue((prevValue) => ({
+              ...prevValue,
+              transaction: event.target.value,
+            }));
           }}
           onKeyDown={handleKeyDown}
         />
@@ -100,8 +114,18 @@ export default function Home() {
                 <SelectItem
                   key={item}
                   value={item.toLowerCase()}
-                  onClick={() => setValue((prevValue) => ({ ...prevValue, protocol: item.toLowerCase() }))}
-                  onKeyDown={() => setValue((prevValue) => ({ ...prevValue, protocol: item.toLowerCase() }))}
+                  onClick={() =>
+                    setValue((prevValue) => ({
+                      ...prevValue,
+                      protocol: item.toLowerCase(),
+                    }))
+                  }
+                  onKeyDown={() =>
+                    setValue((prevValue) => ({
+                      ...prevValue,
+                      protocol: item.toLowerCase(),
+                    }))
+                  }
                 >
                   {item}
                 </SelectItem>
@@ -112,7 +136,7 @@ export default function Home() {
         <Select>
           <SelectTrigger
             ref={selectRef}
-            className="w-[180px] rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
+            className="w-[180px] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
             disabled={true}
             onKeyDown={handleKeyDown}
           >
@@ -125,14 +149,34 @@ export default function Home() {
                 <SelectItem
                   key={item}
                   value={item.toLowerCase()}
-                  onClick={() => setValue((prevValue) => ({ ...prevValue, protocol: item.toLowerCase() }))}
-                  onKeyDown={() => setValue((prevValue) => ({ ...prevValue, protocol: item.toLowerCase() }))}
+                  onClick={() =>
+                    setValue((prevValue) => ({
+                      ...prevValue,
+                      protocol: item.toLowerCase(),
+                    }))
+                  }
+                  onKeyDown={() =>
+                    setValue((prevValue) => ({
+                      ...prevValue,
+                      protocol: item.toLowerCase(),
+                    }))
+                  }
                 >
                   {item}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
+          <Button
+          className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
+            onClick={() =>
+              router.push(
+                `/verification?protocol=${value.protocol}&transaction=${value.transaction}`
+              )
+            }
+          >
+            verify
+          </Button>
         </Select>
       </div>
     </div>
