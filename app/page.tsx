@@ -16,18 +16,19 @@ import {
   SelectValue,
 } from "@/src/shared/ui";
 
-const protocols = ["Arbitrum", "SUI", "Aptos", "Neutron"];
+const chains = ["Arbitrum", "SUI", "Aptos", "Neutron"];
+const networks = [{ chain: "arbitrum", networks: ["sepolia"] }];
 
 export default function Home() {
-  const [protocol, setProtocol] = useState(protocols[0]);
+  const [chain, setProtocol] = useState(chains[0]);
   const [animation, setAnimation] = useState(false);
   const [value, setValue] = useState<{
     transaction: string;
-    protocol: string | null;
+    chain: string | null;
     network: string | null;
   }>({
     transaction: "",
-    protocol: null,
+    chain: null,
     network: null,
   });
 
@@ -39,18 +40,28 @@ export default function Home() {
     event: React.KeyboardEvent<HTMLInputElement | HTMLButtonElement>
   ) => {
     // if (event.key === "Enter") {
-    //   if (!value.protocol && selectRef.current) {
+    //   if (!value.chain && selectRef.current) {
     //     const keyboardEvent = new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true });
     //     selectRef.current.focus();
     //     selectRef.current.dispatchEvent(keyboardEvent);
-    //   } else if (value.transaction === "" && value.protocol && inputRef.current) {
+    //   } else if (value.transaction === "" && value.chain && inputRef.current) {
     //     inputRef.current.focus();
     //     event.stopPropagation();
     //     event.preventDefault();
     //   } else {
-    //     router.push(`/verification?protocol=${value.protocol}&transaction=${value.transaction}`);
+    //     router.push(`/verification?chain=${value.chain}&transaction=${value.transaction}`);
     //   }
     // }
+  };
+
+  const handleClickSearch = () => {
+    if (value.chain === "arbitrum") {
+      router.push(`/verify?contractAddress=${value.transaction}`);
+    } else {
+      router.push(
+        `/verification?chain=${value.chain}&transaction=${value.transaction}`
+      );
+    }
   };
 
   useEffect(() => {
@@ -58,15 +69,15 @@ export default function Home() {
       setAnimation(true);
       setTimeout(() => {
         setProtocol((prevProtocol) => {
-          const index = protocols.indexOf(prevProtocol);
-          return protocols[(index + 1) % protocols.length];
+          const index = chains.indexOf(prevProtocol);
+          return chains[(index + 1) % chains.length];
         });
         setAnimation(false);
       }, 500);
     }, 1500);
 
     return () => clearInterval(intervalId);
-  }, [protocol]);
+  }, [chain]);
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -81,7 +92,7 @@ export default function Home() {
             animation ? "fade-out-up" : "fade-in-down"
           }`}
         >
-          {protocol}
+          {chain}
         </div>
       </h1>
       <div className="relative mx-auto mt-12 flex rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-opacity-50">
@@ -99,31 +110,32 @@ export default function Home() {
           }}
           onKeyDown={handleKeyDown}
         />
-        <Select>
+        <Select
+          onValueChange={(value) =>
+            setValue((prevValue) => ({
+              ...prevValue,
+              chain: value,
+            }))
+          }
+        >
           <SelectTrigger
             ref={selectRef}
             className="w-[180px] rounded-none border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             onKeyDown={handleKeyDown}
           >
-            <SelectValue placeholder="Select a Protocol" />
+            <SelectValue placeholder="Select a Chain" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Protocols</SelectLabel>
-              {protocols.map((item) => (
+              <SelectLabel>chains</SelectLabel>
+              {chains.map((item) => (
                 <SelectItem
                   key={item}
                   value={item.toLowerCase()}
-                  onClick={() =>
-                    setValue((prevValue) => ({
-                      ...prevValue,
-                      protocol: item.toLowerCase(),
-                    }))
-                  }
                   onKeyDown={() =>
                     setValue((prevValue) => ({
                       ...prevValue,
-                      protocol: item.toLowerCase(),
+                      chain: item.toLowerCase(),
                     }))
                   }
                 >
@@ -133,49 +145,53 @@ export default function Home() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Select>
+        <Select
+          onValueChange={(value) =>
+            setValue((prevValue) => ({
+              ...prevValue,
+              network: value,
+            }))
+          }
+        >
           <SelectTrigger
             ref={selectRef}
             className="w-[180px] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
-            disabled={true}
             onKeyDown={handleKeyDown}
+            disabled={
+              networks.filter((chainInfo) => chainInfo.chain === value.chain)
+                .length === 0
+            }
           >
             <SelectValue placeholder="Select a Network" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Networks</SelectLabel>
-              {protocols.map((item) => (
-                <SelectItem
-                  key={item}
-                  value={item.toLowerCase()}
-                  onClick={() =>
-                    setValue((prevValue) => ({
-                      ...prevValue,
-                      protocol: item.toLowerCase(),
-                    }))
-                  }
-                  onKeyDown={() =>
-                    setValue((prevValue) => ({
-                      ...prevValue,
-                      protocol: item.toLowerCase(),
-                    }))
-                  }
-                >
-                  {item}
-                </SelectItem>
-              ))}
+              {networks.filter((chainInfo) => chainInfo.chain === value.chain)
+                .length !== 0 &&
+                networks
+                  .filter((chainInfo) => chainInfo.chain === value.chain)[0]
+                  .networks.map((item) => (
+                    <SelectItem
+                      key={item}
+                      value={item.toLowerCase()}
+                      onKeyDown={() =>
+                        setValue((prevValue) => ({
+                          ...prevValue,
+                          chain: item.toLowerCase(),
+                        }))
+                      }
+                    >
+                      {item}
+                    </SelectItem>
+                  ))}
             </SelectGroup>
           </SelectContent>
           <Button
-          className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
-            onClick={() =>
-              router.push(
-                `/verification?protocol=${value.protocol}&transaction=${value.transaction}`
-              )
-            }
+            className="rounded-l-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-100 disabled:text-muted"
+            onClick={handleClickSearch}
           >
-            verify
+            Search
           </Button>
         </Select>
       </div>
