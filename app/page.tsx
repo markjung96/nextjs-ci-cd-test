@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/shared/ui";
+import { LatestVerification } from "@/src/widgets/Landing";
 
 const chains = ["Arbitrum", "SUI", "Aptos", "Neutron"];
 const networks = [{ chain: "arbitrum", networks: ["sepolia"] }];
@@ -194,6 +195,9 @@ export default function Home() {
             Search
           </Button>
         </Select>
+      </div>
+      <div className="mt-12">
+        <LatestVerification />
       </div>
     </div>
   );
