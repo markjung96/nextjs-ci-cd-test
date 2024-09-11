@@ -14,7 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button, Input } from "@/src/shared/ui";
+import { Input } from "@/src/shared/ui";
 import { getBytecode } from "@wagmi/core";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,35 +25,40 @@ const getSuggestionsList = async (address: string) => {
   // TODO: Add other chains here
   const chainIds = [arbitrumSepolia.id];
 
-  const suggestions = await Promise.all(
-    chainIds.map((chainId) => {
-      return getBytecode(config, {
-        chainId,
-        address: address as `0x${string}`,
-      });
-    })
-  );
+  try {
+    const suggestions = await Promise.all(
+      chainIds.map((chainId) => {
+        return getBytecode(config, {
+          chainId,
+          address: address as `0x${string}`,
+        });
+      })
+    );
 
-  return suggestions
-    .map((suggestion, index) => {
-      let chainName = "";
-      let networkName = "";
-      // TODO: Add other chains here
-      switch (chainIds[index]) {
-        case arbitrumSepolia.id:
-          chainName = "Arbitrum";
-          networkName = "Sepolia";
-          break;
-      }
-      return {
-        chainName,
-        networkName,
-        isContract: suggestion !== "0x",
-        address,
-        // suggestion,
-      };
-    })
-    .filter((suggestion) => suggestion.isContract);
+    return suggestions
+      .map((suggestion, index) => {
+        let chainName = "";
+        let networkName = "";
+        // TODO: Add other chains here
+        switch (chainIds[index]) {
+          case arbitrumSepolia.id:
+            chainName = "Arbitrum";
+            networkName = "Sepolia";
+            break;
+        }
+        return {
+          chainName,
+          networkName,
+          isContract: suggestion !== undefined && suggestion !== "0x",
+          address,
+          // suggestion,
+        };
+      })
+      .filter((suggestion) => suggestion.isContract);
+  } catch (error) {
+    console.error("Error getting suggestions", error);
+    return [];
+  }
 };
 
 export function SearchContract() {
