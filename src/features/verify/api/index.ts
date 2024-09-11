@@ -17,15 +17,22 @@ export const postArbitrumStylusSourceCode = async (
   formData.append("network", request.network);
   formData.append("deploymentTxHash", request.deploymentTxHash);
   formData.append("srcZipFile", request.srcZipFile);
-  const response = await fetch(`${baseUrl}/arbitrum/verifications/sources`, {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "Content-Type": "multipart/form-data",
-    },
-    body: formData,
-  });
-  return (await response.json()).data;
+  try {
+    const response = await fetch(`${baseUrl}/arbitrum/verifications/sources`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "multipart/form-data",
+      },
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return (await response.json()).data;
+  } catch (error) {
+    throw new Error("Failed to upload source code");
+  }
 };
 
 export interface ArbitrumVerificationReqDto {
@@ -47,12 +54,19 @@ export interface ArbitrumVerificationResultDto {
 export const verifyArbitrumStylus = async (
   request: ArbitrumVerificationReqDto
 ): Promise<ArbitrumVerificationResultDto> => {
-  const response = await fetch(`${baseUrl}/arbitrum/verifications`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
-  return (await response.json()).data;
+  try {
+    const response = await fetch(`${baseUrl}/arbitrum/verifications`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return (await response.json()).data;
+  } catch (error) {
+    throw new Error("Failed to verify contract");
+  }
 };

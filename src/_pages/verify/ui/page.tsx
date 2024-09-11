@@ -50,7 +50,7 @@ export const VerifiyPage = () => {
   });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="h-full flex flex-col items-center justify-center p-4">
       <div className="max-w-2xl w-full p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">
           Verify & Publish Contract Source Code
