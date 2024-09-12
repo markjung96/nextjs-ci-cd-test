@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ContractVerifyForm } from "./contract-verify-form";
 import { useSearchParams } from "next/navigation";
 import { ResultVerify } from "./result-verify";
+import { getVerificationResult } from "@/src/features/verify/api";
 
 const steps = [
   { label: "Enter Contract Details" },
@@ -26,15 +27,19 @@ export const VerifiyPage = () => {
   const compilerVersion = searchParams.get("compilerVersion");
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [srcFileUrl, setSrcFileUrl] = useState<string | null>(null);
 
   const getIsVerifiedContract = async () => {
-    setLoading(true);
-    // TODO: Fetch contract info
-    // const isVerified = await fetchContractInfo({contractAddress});
-    // if (isVerified) {
-    //   setIsVerified(true);
-    // }
-    setLoading(false);
+    if (contractAddress) {
+      setLoading(true);
+      // FIXME: network should be dynamic
+      const result = await getVerificationResult("sepolia", contractAddress);
+      if (result.isVerified) {
+        setIsVerified(true);
+        setSrcFileUrl(result.verifiedSrcUrl!);
+      }
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -69,6 +74,15 @@ export const VerifiyPage = () => {
               <p className="block sm:inline">
                 Contract {contractAddress} has been verified
               </p>
+              <br />
+              <p className="block sm:inline">
+                You can download the verified source code{" "}
+                {srcFileUrl && (
+                  <a href={srcFileUrl} className="text-blue-600" download>
+                    here
+                  </a>
+                )}
+              </p>
             </div>
           ) : (
             <Stepper
@@ -95,7 +109,7 @@ export const VerifiyPage = () => {
                   </Step>
                 );
               })}
-              <ResultVerify contractInfo={contractInfo}/>
+              <ResultVerify contractInfo={contractInfo} />
             </Stepper>
           )}
         </div>

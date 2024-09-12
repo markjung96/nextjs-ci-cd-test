@@ -70,3 +70,30 @@ export const verifyArbitrumStylus = async (
     throw new Error("Failed to verify contract");
   }
 };
+
+interface ArbitrumVerificationCheckResultDto {
+  network: string;
+  contractAddress?: string;
+  deploymentTxHash: string;
+  isVerified: boolean;
+  isRemixSrcUploaded: boolean;
+  verifiedSrcUrl?: string;
+  errMsg?: string;
+}
+
+export const getVerificationResult = async (
+  network: string,
+  deploymentTxHash: string
+): Promise<ArbitrumVerificationCheckResultDto> => {
+  try {
+    const response = await fetch(
+      `${baseUrl}/arbitrum/verifications?network=${network}&deploymentTxHash=${deploymentTxHash}`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return (await response.json());
+  } catch (error) {
+    throw new Error("Failed to get verification result");
+  }
+};
