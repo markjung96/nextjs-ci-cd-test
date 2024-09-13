@@ -1,9 +1,10 @@
+type ArbitrumNetwork = "ARBITRUM_ONE" | "ARBITRUM_SEPOLIA";
+
 export interface ArbitrumVerificationSrcUploadReqDto {
-  network: string;
-  deploymentTxHash: string;
+  network: ArbitrumNetwork;
+  contractAddress: string;
   srcZipFile: File;
 }
-
 export interface ArbitrumVerificationSrcUploadResultDto {
   srcFileId: string;
 }
@@ -15,7 +16,7 @@ export const postArbitrumStylusSourceCode = async (
 ): Promise<ArbitrumVerificationSrcUploadResultDto> => {
   const formData = new FormData();
   formData.append("network", request.network);
-  formData.append("deploymentTxHash", request.deploymentTxHash);
+  formData.append("contractAddress", request.contractAddress);
   formData.append("srcZipFile", request.srcZipFile);
   try {
     const response = await fetch(`${baseUrl}/arbitrum/verifications/sources`, {
@@ -36,16 +37,15 @@ export const postArbitrumStylusSourceCode = async (
 };
 
 export interface ArbitrumVerificationReqDto {
-  network: string;
-  deploymentTxHash: string;
+  network: ArbitrumNetwork;
+  contractAddress: string;
   srcFileId?: string;
 }
 
 export interface ArbitrumVerificationResultDto {
-  network: string;
+  network: ArbitrumNetwork;
   contractAddress?: string;
   deploymentTxHash: string;
-  isVerified: boolean;
   verifiedSrcUrl?: string;
   nullable: true;
   errMsg?: string;
@@ -65,29 +65,30 @@ export const verifyArbitrumStylus = async (
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return (await response.json()).data;
+    return (await response.json());
   } catch (error) {
     throw new Error("Failed to verify contract");
   }
 };
 
-interface ArbitrumVerificationCheckResultDto {
-  network: string;
+export interface ArbitrumVerificationCheckResultDto {
+  network: ArbitrumNetwork;
   contractAddress?: string;
   deploymentTxHash: string;
-  isVerified: boolean;
   isRemixSrcUploaded: boolean;
   verifiedSrcUrl?: string;
   errMsg?: string;
+  deployedCliVersion?: string;
+  verifiedCliVersion?: string;
 }
 
 export const getVerificationResult = async (
-  network: string,
-  deploymentTxHash: string
+  network: ArbitrumNetwork,
+  contractAddress: string
 ): Promise<ArbitrumVerificationCheckResultDto> => {
   try {
     const response = await fetch(
-      `${baseUrl}/arbitrum/verifications?network=${network}&deploymentTxHash=${deploymentTxHash}`
+      `${baseUrl}/arbitrum/verifications?network=${network}&contractAddress=${contractAddress}`
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

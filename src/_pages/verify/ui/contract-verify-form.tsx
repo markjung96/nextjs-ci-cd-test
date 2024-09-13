@@ -10,11 +10,13 @@ const compilerVersions = ["0.5.2"];
 interface ContractInfoProps {
   contractInfo: ContractInfo;
   setContractInfo: Dispatch<SetStateAction<ContractInfo>>;
+  isRemixSrcUploaded?: boolean;
 }
 
 export const ContractVerifyForm: FC<ContractInfoProps> = ({
   contractInfo,
   setContractInfo,
+  isRemixSrcUploaded,
 }) => {
   const { prevStep, nextStep } = useStepper();
   return (
@@ -40,10 +42,24 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
         </ol>
       </div>
       <div>
-        <Label htmlFor="compiler-type" className="block text-sm font-medium ">
-          Enter the contract Stylus Source Zip file
-        </Label>
-        <InputFile contractInfo={contractInfo} setContractInfo={setContractInfo} />
+        {isRemixSrcUploaded ? (
+          <Label htmlFor="compiler-type" className="block text-sm font-medium ">
+            File has been uploaded
+          </Label>
+        ) : (
+          <>
+            <Label
+              htmlFor="compiler-type"
+              className="block text-sm font-medium "
+            >
+              Enter the contract Stylus Source Zip file
+            </Label>
+            <InputFile
+              contractInfo={contractInfo}
+              setContractInfo={setContractInfo}
+            />
+          </>
+        )}
       </div>
 
       <div className="flex justify-end space-x-4">
@@ -57,7 +73,7 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
           type="submit"
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
           onClick={() => nextStep()}
-          disabled={!contractInfo.sourceFile}
+          disabled={!isRemixSrcUploaded && !contractInfo.sourceFile}
         >
           Verify
         </Button>
