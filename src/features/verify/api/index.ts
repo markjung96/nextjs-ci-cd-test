@@ -65,7 +65,7 @@ export const verifyArbitrumStylus = async (
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return (await response.json());
+    return await response.json();
   } catch (error) {
     throw new Error("Failed to verify contract");
   }
@@ -88,12 +88,13 @@ export const getVerificationResult = async (
 ): Promise<ArbitrumVerificationCheckResultDto> => {
   try {
     const response = await fetch(
-      `${baseUrl}/arbitrum/verifications?network=${network}&contractAddress=${contractAddress}`
+      `${baseUrl}/arbitrum/verifications?network=${network}&contractAddress=${contractAddress}`,
+      { headers: { "Cache-Control": "no-cache" } }
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return (await response.json());
+    return await response.json();
   } catch (error) {
     throw new Error("Failed to get verification result");
   }
