@@ -1,4 +1,4 @@
-import { config } from "@/app/page";
+"use client";
 import {
   Command,
   CommandEmpty,
@@ -19,7 +19,27 @@ import { getBytecode } from "@wagmi/core";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { arbitrumSepolia } from "viem/chains";
+import { createConfig, http, WagmiProvider } from "wagmi";
+import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
+
+const chains = ["Arbitrum", "SUI", "Aptos", "Neutron"];
+
+export const config = createConfig({
+  chains: [arbitrum, arbitrumSepolia],
+  ssr: true,
+  transports: {
+    [arbitrum.id]: http(),
+    [arbitrumSepolia.id]: http(),
+  },
+});
+
+export function SearchContractWrapper() {
+  return (
+    <WagmiProvider config={config}>
+      <SearchContract />
+    </WagmiProvider>
+  );
+}
 
 const getSuggestionsList = async (address: string) => {
   // TODO: Add other chains here
