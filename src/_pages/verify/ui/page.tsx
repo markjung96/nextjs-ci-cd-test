@@ -1,5 +1,6 @@
 import { getVerificationResult } from "@/src/features/verify/api";
 import { ArbitrumStepper } from "./arbitrum-stepper";
+import { CodeExplorer } from "./code-explorer";
 
 export type ContractInfo = {
   contractAddress: string;
@@ -38,7 +39,7 @@ export const VerifiyPage = async ({
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
-      <div className="max-w-2xl w-full p-6 rounded-lg shadow-md">
+      <div className="max-w-7xl w-full p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">
           Verify & Publish Contract Source Code
         </h1>
@@ -52,20 +53,21 @@ export const VerifiyPage = async ({
         </p>
         <div className="flex w-full flex-col justify-center gap-4">
           {verifiedSrcUrl ? (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-              <p className="block sm:inline">
-                Contract {contractAddress} has been verified
-              </p>
-              <br />
-              <p className="block sm:inline">
-                You can download the verified source code{" "}
-                {verifiedSrcUrl && (
+            <>
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+                <p className="block sm:inline">
+                  Contract {contractAddress} has been verified
+                </p>
+                <br />
+                <p className="block sm:inline">
+                  You can download the verified source code{" "}
                   <a href={verifiedSrcUrl} className="text-blue-600" download>
                     here
                   </a>
-                )}
-              </p>
-            </div>
+                </p>
+              </div>
+              <CodeExplorer url={verifiedSrcUrl} />
+            </>
           ) : (
             <ArbitrumStepper
               initialStep={initialStep}
