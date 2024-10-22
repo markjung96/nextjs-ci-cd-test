@@ -1,6 +1,8 @@
 import { getVerificationResult } from "@/src/features/verify/api";
 import { ArbitrumStepper } from "./arbitrum-stepper";
 import { CodeExplorer } from "./code-explorer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
+import { ContractInteract } from "./contract-interact";
 
 export type ContractInfo = {
   contractAddress: string;
@@ -18,6 +20,7 @@ export const VerifiyPage = async ({
   const compilerType = searchParams?.compilerType;
   const compilerVersion = searchParams?.compilerVersion;
   let verifiedSrcUrl = null;
+  let outFileUrl = null;
   let initialStep = 0;
   let result = null;
 
@@ -29,6 +32,9 @@ export const VerifiyPage = async ({
     // 검증이 완룓되었을 때
     if (result.verifiedSrcUrl) {
       verifiedSrcUrl = result.verifiedSrcUrl;
+    }
+    if (result.outFileUrl) {
+      outFileUrl = result.outFileUrl;
     }
 
     // 리믹스에 소스코드가 업로드 되었을 때
@@ -66,7 +72,23 @@ export const VerifiyPage = async ({
                   </a>
                 </p>
               </div>
-              <CodeExplorer url={verifiedSrcUrl} />
+              <Tabs defaultValue="code">
+                <TabsList>
+                  <TabsTrigger value="code">Code</TabsTrigger>
+                  <TabsTrigger value="interact">Interact</TabsTrigger>
+                </TabsList>
+                <TabsContent value="code">
+                  <CodeExplorer url={verifiedSrcUrl} />
+                </TabsContent>
+                <TabsContent value="interact">
+                  {outFileUrl && (
+                    <ContractInteract
+                      outFileUrl={outFileUrl}
+                      contractAddress={contractAddress!}
+                    />
+                  )}
+                </TabsContent>
+              </Tabs>
             </>
           ) : (
             <ArbitrumStepper

@@ -77,6 +77,7 @@ export interface ArbitrumVerificationCheckResultDto {
   deploymentTxHash: string;
   isRemixSrcUploaded: boolean;
   verifiedSrcUrl?: string;
+  outFileUrl?: string;
   errMsg?: string;
   deployedCliVersion?: string;
   verifiedCliVersion?: string;
