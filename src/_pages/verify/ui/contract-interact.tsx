@@ -23,6 +23,12 @@ import { metaMask } from "wagmi/connectors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { readContract } from "@wagmi/core";
 import { Abi, AbiFunction, AbiParameter } from "viem";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const config = createConfig({
   chains: [arbitrum, arbitrumSepolia],
@@ -54,6 +60,9 @@ export const ContractInteract: FC<ContractInteractProps> = ({
   contractAddress,
 }) => {
   const [abi, setAbi] = useState<Abi[]>([]);
+  const [readAbiFragments, setReadAbiFragments] = useState<AbiFunction[]>([]);
+  const [writeAbiFragments, setWriteAbiFragments] = useState<AbiFunction[]>([]);
+
   const processFiles = async (unzipped: any) => {
     const filePromises: any = [];
 
@@ -79,7 +88,22 @@ export const ContractInteract: FC<ContractInteractProps> = ({
     const files: File[] = await processFiles(unzippedFiles);
     const abiFile = files.find((file) => file.name === "output/abi.json");
     if (abiFile) {
-      setAbi(JSON.parse(abiFile.content));
+      const totalAbi = JSON.parse(abiFile.content);
+      const readAbi = totalAbi.filter(
+        (abiItem: Abi) =>
+          isFunctionFragment(abiItem) &&
+          (abiItem.stateMutability === "view" ||
+            abiItem.stateMutability === "pure")
+      );
+      const writeAbi = totalAbi.filter(
+        (abiItem: Abi) =>
+          isFunctionFragment(abiItem) &&
+          abiItem.stateMutability !== "view" &&
+          abiItem.stateMutability !== "pure"
+      );
+      setAbi(totalAbi);
+      setReadAbiFragments(readAbi);
+      setWriteAbiFragments(writeAbi);
     }
   };
 
@@ -91,22 +115,54 @@ export const ContractInteract: FC<ContractInteractProps> = ({
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectButton />
-        <Accordion type="multiple" className="w-full">
-          {abi.map((abiItem, abiIndex) => {
-            if (isFunctionFragment(abiItem))
-              return (
-                <AccordionCard
-                  abi={abi}
-                  key={`Methods_A_${abiIndex}`}
-                  contractAddress={contractAddress}
-                  abiFragment={abiItem}
-                  index={abiIndex}
-                />
-              );
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Get Functions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="multiple" className="w-full">
+                {readAbiFragments.map((abiItem, abiIndex) => {
+                  if (isFunctionFragment(abiItem))
+                    return (
+                      <AccordionCard
+                        abi={abi}
+                        key={`Methods_A_${abiIndex}`}
+                        contractAddress={contractAddress}
+                        abiFragment={abiItem}
+                        index={abiIndex}
+                      />
+                    );
 
-            return null;
-          })}
-        </Accordion>
+                  return null;
+                })}
+              </Accordion>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Set Functions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="multiple" className="w-full">
+                {writeAbiFragments.map((abiItem, abiIndex) => {
+                  if (isFunctionFragment(abiItem))
+                    return (
+                      <AccordionCard
+                        abi={abi}
+                        key={`Methods_A_${abiIndex}`}
+                        contractAddress={contractAddress}
+                        abiFragment={abiItem}
+                        index={abiIndex}
+                      />
+                    );
+
+                  return null;
+                })}
+              </Accordion>
+            </CardContent>
+          </Card>
+        </div>
       </QueryClientProvider>
     </WagmiProvider>
   );
@@ -232,12 +288,11 @@ const AccordionCard = ({
             <Method abi={abiFragment} setArgs={setArgs} />
             <div className="mb-3">
               {getButtonVariant(abiFragment.stateMutability) === "primary" ? (
-                <Button variant="outline" size="sm" onClick={handleCallOnClick}>
-                  call
+                <Button size="sm" onClick={handleCallOnClick}>
+                  query
                 </Button>
               ) : (
                 <Button
-                  variant="outline"
                   size="sm"
                   disabled={!isConnected}
                   onClick={handleTransactOnClick}
