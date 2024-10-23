@@ -77,7 +77,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({
     const zip = new JSZip();
     const unzippedFiles = await zip.loadAsync(zipBlob);
     const files: File[] = await processFiles(unzippedFiles);
-    const abiFile = files.find((file) => file.name === "abi.json");
+    const abiFile = files.find((file) => file.name === "output/abi.json");
     if (abiFile) {
       setAbi(JSON.parse(abiFile.content));
     }
