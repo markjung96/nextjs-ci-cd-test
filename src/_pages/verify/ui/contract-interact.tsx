@@ -24,6 +24,7 @@ import {
   ConnectButton,
 } from "@rainbow-me/rainbowkit";
 
+console.log('!!!!!!!!!!!!!!!!!!', process.env.NEXT_PUBLIC_WALLET_PROJECT_ID)
 export const config = getDefaultConfig({
   appName: "Arbitrum Sepolia",
   projectId: process.env.NEXT_PUBLIC_WALLET_PROJECT_ID!,
