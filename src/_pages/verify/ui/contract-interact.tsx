@@ -1,4 +1,5 @@
 "use client";
+import "@rainbow-me/rainbowkit/styles.css";
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import JSZip from "jszip";
 import { useEffect } from "react";
@@ -10,34 +11,28 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
-import {
-  http,
-  createConfig,
-  WagmiProvider,
-  useConnect,
-  useAccount,
-  useWriteContract,
-} from "wagmi";
+import { http, WagmiProvider, useAccount, useWriteContract } from "wagmi";
 import { arbitrum, arbitrumSepolia } from "wagmi/chains";
-import { metaMask } from "wagmi/connectors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { readContract } from "@wagmi/core";
 import { Abi, AbiFunction, AbiParameter } from "viem";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { switchChain } from "@wagmi/core";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  getDefaultConfig,
+  RainbowKitProvider,
+  ConnectButton,
+} from "@rainbow-me/rainbowkit";
 
-export const config = createConfig({
-  chains: [arbitrum, arbitrumSepolia],
+export const config = getDefaultConfig({
+  appName: "Arbitrum Sepolia",
+  projectId: process.env.NEXT_PUBLIC_WALLET_PROJECT_ID!,
+  chains: [arbitrumSepolia, arbitrum],
   multiInjectedProviderDiscovery: false,
   transports: {
-    [arbitrum.id]: http(),
     [arbitrumSepolia.id]: http(),
+    [arbitrum.id]: http(),
   },
-  connectors: [metaMask()],
   ssr: true,
 });
 const queryClient = new QueryClient();
@@ -114,79 +109,72 @@ export const ContractInteract: FC<ContractInteractProps> = ({
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectButton />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Get Functions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="multiple" className="w-full">
-                {readAbiFragments.map((abiItem, abiIndex) => {
-                  if (isFunctionFragment(abiItem))
-                    return (
-                      <AccordionCard
-                        abi={abi}
-                        key={`Methods_A_${abiIndex}`}
-                        contractAddress={contractAddress}
-                        abiFragment={abiItem}
-                        index={abiIndex}
-                      />
-                    );
+        <RainbowKitProvider modalSize="compact">
+          <ConnectButtonWrapper />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Get Functions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="multiple" className="w-full">
+                  {readAbiFragments.map((abiItem, abiIndex) => {
+                    if (isFunctionFragment(abiItem))
+                      return (
+                        <AccordionCard
+                          abi={abi}
+                          key={`Methods_A_${abiIndex}`}
+                          contractAddress={contractAddress}
+                          abiFragment={abiItem}
+                          index={abiIndex}
+                        />
+                      );
 
-                  return null;
-                })}
-              </Accordion>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Set Functions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Accordion type="multiple" className="w-full">
-                {writeAbiFragments.map((abiItem, abiIndex) => {
-                  if (isFunctionFragment(abiItem))
-                    return (
-                      <AccordionCard
-                        abi={abi}
-                        key={`Methods_A_${abiIndex}`}
-                        contractAddress={contractAddress}
-                        abiFragment={abiItem}
-                        index={abiIndex}
-                      />
-                    );
+                    return null;
+                  })}
+                </Accordion>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Set Functions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="multiple" className="w-full">
+                  {writeAbiFragments.map((abiItem, abiIndex) => {
+                    if (isFunctionFragment(abiItem))
+                      return (
+                        <AccordionCard
+                          abi={abi}
+                          key={`Methods_A_${abiIndex}`}
+                          contractAddress={contractAddress}
+                          abiFragment={abiItem}
+                          index={abiIndex}
+                        />
+                      );
 
-                  return null;
-                })}
-              </Accordion>
-            </CardContent>
-          </Card>
-        </div>
+                    return null;
+                  })}
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 };
 
-const ConnectButton = () => {
-  const { isConnected, address } = useAccount();
-  const { connectors, connect } = useConnect();
+const ConnectButtonWrapper = () => {
+  const { isConnected, chainId } = useAccount();
+
   if (isConnected) {
-    return <div>connected address : {address}</div>;
+    if (chainId !== arbitrumSepolia.id) {
+      switchChain(config, { chainId: arbitrumSepolia.id });
+    }
   }
-  return (
-    <div>
-      {connectors.map((connector) => (
-        <Button
-          variant="outline"
-          key={connector.uid}
-          onClick={() => connect({ connector })}
-        >
-          {connector.name}
-        </Button>
-      ))}
-    </div>
-  );
+
+  return <ConnectButton showBalance={false} />;
 };
 
 interface AccordionCardProps {
@@ -202,9 +190,10 @@ const AccordionCard = ({
   contractAddress,
 }: AccordionCardProps) => {
   const { data: hash, writeContract } = useWriteContract();
-  const { isConnected } = useAccount();
+  const { isConnected, chainId } = useAccount();
   const [value, setValue] = useState<string>("");
   const [args, setArgs] = useState<{ [key: string]: string }>({});
+  const isArbitrumSepolia = chainId === arbitrumSepolia.id;
 
   const getButtonVariant = (state: string = ""): string => {
     switch (state) {
@@ -294,7 +283,7 @@ const AccordionCard = ({
               ) : (
                 <Button
                   size="sm"
-                  disabled={!isConnected}
+                  disabled={!isConnected || !isArbitrumSepolia}
                   onClick={handleTransactOnClick}
                 >
                   transact
