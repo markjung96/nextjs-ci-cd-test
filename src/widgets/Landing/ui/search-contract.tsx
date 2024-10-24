@@ -18,9 +18,10 @@ import { Input } from "@/src/shared/ui";
 import { getBytecode } from "@wagmi/core";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { ChangeEvent, ChangeEventHandler, useMemo } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
+import _ from "lodash";
 
 export const config = createConfig({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -105,13 +106,24 @@ export function SearchContract() {
     }[]
   >([]);
 
-  const handleEnter = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      setIsOpen(true);
-      const address = event.currentTarget.value;
-      const suggestions = await getSuggestionsList(address);
-      setSuggestions(suggestions);
-    }
+  // debounce 최적화
+  const debouncedSearch = useMemo(
+    () =>
+      _.debounce(async (address) => {
+        const suggestions = await getSuggestionsList(address);
+        setSuggestions(suggestions);
+      }, 300),
+    []
+  );
+
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    // if (event.key === "Enter") {
+    setIsOpen(true);
+    const address = event.currentTarget.value;
+    debouncedSearch(address);
+    // const suggestions = await getSuggestionsList(address);
+    setSuggestions(suggestions);
+    // }
   };
 
   const handleClickSuggestion = (suggestion: {
@@ -137,7 +149,7 @@ export function SearchContract() {
             type="text"
             placeholder="Search by Address, Transaction, Token"
             className="pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0"
-            onKeyDown={handleEnter}
+            onChange={handleChange}
             onClick={() => setIsOpen(true)}
           />
         </div>

@@ -31,7 +31,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
       case "loading":
         return <Loader2 className={cn("animate-spin")} />;
       case "done":
-        return <CircleCheck color="green"/>;
+        return <CircleCheck color="green" />;
       case "error":
         return <CircleX color="red" />;
     }
@@ -44,7 +44,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
       case "loading":
         return <Loader2 className={cn("animate-spin")} />;
       case "done":
-        return <CircleCheck color="green"/>;
+        return <CircleCheck color="green" />;
       case "error":
         return <CircleX color="red" />;
     }
@@ -53,14 +53,21 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
   const uploadSourceFiles = useCallback(async () => {
     setUploadStatus("loading");
     try {
-      const result = await postArbitrumStylusSourceCode({
-        // FIXME: network 하드코딩 제거
-        network: "ARBITRUM_SEPOLIA",
-        contractAddress: contractInfo.contractAddress,
-        srcZipFile: contractInfo.sourceFile!,
-      });
-      setUploadStatus("done");
-      return result;
+      // TODO: 다른 chain 지원
+      if (contractInfo.chain === "arbitrum") {
+        const result = await postArbitrumStylusSourceCode({
+          network:
+            contractInfo.network === "one"
+              ? "ARBITRUM_ONE"
+              : "ARBITRUM_SEPOLIA",
+          contractAddress: contractInfo.contractAddress,
+          srcZipFile: contractInfo.sourceFile!,
+        });
+        setUploadStatus("done");
+        return result;
+      } else {
+        throw new Error("Unsupported chain");
+      }
     } catch (error) {
       setUploadStatus("error");
     }
@@ -70,18 +77,25 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
     async (srcFileId?: string) => {
       setVerifyStatus("loading");
       try {
-        const result = await verifyArbitrumStylus({
-          // FIXME: network 하드코딩 제거
-          network: "ARBITRUM_SEPOLIA",
-          contractAddress: contractInfo.contractAddress,
-          srcFileId,
-        });
-        setVerifyStatus("done");
-        if (result.verifiedSrcUrl) {
-          return result;
+        // TODO: 다른 chain 지원
+        if (contractInfo.chain === "arbitrum") {
+          const result = await verifyArbitrumStylus({
+            network:
+              contractInfo.network === "one"
+                ? "ARBITRUM_ONE"
+                : "ARBITRUM_SEPOLIA",
+            contractAddress: contractInfo.contractAddress,
+            srcFileId,
+          });
+          setVerifyStatus("done");
+          if (result.verifiedSrcUrl) {
+            return result;
+          } else {
+            setVerifyErrorMsg(result.errMsg || "");
+            setVerifyStatus("error");
+          }
         } else {
-          setVerifyErrorMsg(result.errMsg || "");
-          setVerifyStatus("error");
+          throw new Error("Unsupported chain");
         }
       } catch (error) {
         setVerifyStatus("error");

@@ -18,29 +18,30 @@ import { ContractInfo } from "./page";
 type ChainInfo = {
   chainName: string;
   networks: string[];
-  supportedLanguages: string[];
+  compilers: string[];
 };
 
 const chainInfos: ChainInfo[] = [
   {
     chainName: "ethereum",
     networks: ["mainnet", "sepolia"],
-    supportedLanguages: ["solidity"],
+    compilers: ["solidity"],
   },
   {
     chainName: "arbitrum",
     networks: ["one", "sepolia"],
-    supportedLanguages: ["solidity", "stylus"],
+    compilers: ["solidity", "stylus"],
   },
   {
     chainName: "starknet",
     networks: ["mainnet", "sepolia"],
-    supportedLanguages: ["cairo"],
+    compilers: ["cairo"],
   },
 ];
 
 const solidityCompilerVersions = ["0.8.25", "0.8.26", "0.8.27", "0.8.28"];
 const stylusCompilerVersions = ["0.5.2"];
+const cairoCompilerVersions = ["0.0.1"];
 
 interface ContractInfoProps {
   contractInfo: ContractInfo;
@@ -52,24 +53,22 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
   setContractInfo,
 }) => {
   const { nextStep } = useStepper();
-  const [selectedChain, setSelectedChain] = useState<ChainInfo>(chainInfos[0]);
-  const [selectedNetwork, setSelectedNetwork] = useState<string>(
-    chainInfos[0].networks[0]
+  const [selectedChain, setSelectedChain] = useState<ChainInfo>(
+    chainInfos.filter(
+      (chainInfo) => contractInfo.chain === chainInfo.chainName
+    )[0]
   );
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(
-    chainInfos[0].supportedLanguages[0]
-  );
-  const [selectedCompilerVersion, setSelectedCompilerVersion] =
-    useState<string>("");
 
   const compilerVersions = useMemo(() => {
-    if (selectedLanguage === "solidity") {
+    if (contractInfo.compilerType === "solidity") {
       return solidityCompilerVersions;
-    } else if (selectedLanguage === "stylus") {
+    } else if (contractInfo.compilerType === "stylus") {
       return stylusCompilerVersions;
+    } else if (contractInfo.compilerType === "cairo") {
+      return cairoCompilerVersions;
     }
     return [];
-  }, [selectedLanguage]);
+  }, [contractInfo.compilerType]);
 
   return (
     <form className="space-y-4">
@@ -107,11 +106,13 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
                   (chainInfo) => chainInfo.chainName === item
                 )[0]
               );
-              setSelectedNetwork(
-                chainInfos.filter(
+              setContractInfo((prevValue) => ({
+                ...prevValue,
+                chain: item,
+                network: chainInfos.filter(
                   (chainInfo) => chainInfo.chainName === item
-                )[0].networks[0]
-              );
+                )[0].networks[0],
+              }));
             }}
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
@@ -136,8 +137,13 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
             Please Select Network
           </Label>
           <Select
-            value={selectedNetwork}
-            onValueChange={(network) => setSelectedNetwork(network)}
+            value={contractInfo.network}
+            onValueChange={(network) =>
+              setContractInfo((prevValue) => ({
+                ...prevValue,
+                network,
+              }))
+            }
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Select a Protocol" />
@@ -160,15 +166,20 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
             Please Select Compiler Type
           </Label>
           <Select
-            value={selectedLanguage}
-            onValueChange={(language) => setSelectedLanguage(language)}
+            value={contractInfo.compilerType}
+            onValueChange={(compiler) =>
+              setContractInfo((prevValue) => ({
+                ...prevValue,
+                compilerType: compiler,
+              }))
+            }
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Select a Protocol" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {selectedChain.supportedLanguages.map((item) => (
+                {selectedChain.compilers.map((item) => (
                   <SelectItem
                     key={item}
                     value={item.toLowerCase()}
@@ -200,8 +211,13 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
             Please Select Compiler Version
           </Label>
           <Select
-            defaultValue={selectedCompilerVersion}
-            onValueChange={(version) => setSelectedCompilerVersion(version)}
+            defaultValue={contractInfo.compilerVersion}
+            onValueChange={(version) =>
+              setContractInfo((prevValue) => ({
+                ...prevValue,
+                compilerVersion: version,
+              }))
+            }
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Select a compiler version" />
@@ -261,7 +277,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
               <option>[Please Select]</option>
             </Select>
           </div> */}
-      {selectedLanguage === "stylus" && (
+      {contractInfo.compilerType === "stylus" && (
         <div>
           <Label htmlFor="building-env" className="block text-sm font-medium ">
             Please Select Building Environment

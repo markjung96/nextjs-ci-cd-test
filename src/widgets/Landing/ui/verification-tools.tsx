@@ -21,7 +21,7 @@ export default async function Tools() {
   const sourcifyFavicon = await getFavicon("https://sourcify.dev/#/");
   return (
     <>
-      <Label className="text-lg font-semibold">Other Verification Tools</Label>
+      <Label className="text-lg font-semibold">Open Source Verification Tools</Label>
       <Table className="w-full max-w-2xl rounded-lg shadow-lg">
         <TableHeader>
           <TableRow className="hover:bg-transparent">

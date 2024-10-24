@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
 import { ContractInteract } from "./contract-interact";
 
 export type ContractInfo = {
+  chain: string;
+  network: string;
   contractAddress: string;
   compilerType: string;
   compilerVersion: string;
@@ -28,7 +30,7 @@ export const VerifiyPage = async ({
 
   if (contractAddress) {
     // FIXME: network should be dynamic
-    if (chain === "arbitrum" && !!network) {
+    if (chain === "arbitrum" && network !== undefined) {
       result = await getArbitrumVerificationResult(
         network.toLowerCase() === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
         contractAddress
@@ -57,11 +59,7 @@ export const VerifiyPage = async ({
         </h1>
         <p className="text-center  mb-6">
           Source code verification provides transparency for users interacting
-          with smart contracts. By uploading the source code, Arbitrum Sepolia
-          will match the compiled code with that on the blockchain.{" "}
-          <a href="#" className="text-blue-600">
-            Read more.
-          </a>
+          with smart contracts.
         </p>
         <div className="flex w-full flex-col justify-center gap-4">
           {verifiedSrcUrl ? (

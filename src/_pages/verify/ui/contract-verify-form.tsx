@@ -24,10 +24,6 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
       <div>
         <ol className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>
-            The Stylus contract source code verifier is experimental and subject
-            to change.
-          </li>
-          <li>
             Does not support external libraries, constructor arguments,
             optimization settings or speficic compiler versions.
           </li>
@@ -36,6 +32,8 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
       </div>
       <div className="rounded-md p-1 dark:bg-gray-900 bg-gray-200">
         <ol className="my-6 ml-6 list-disc [&>li]:mt-2">
+          <li>Chain : {contractInfo.chain}</li>
+          <li>Network : {contractInfo.network}</li>
           <li>Contract Address: {contractInfo.contractAddress}</li>
           <li>Compiler Type: {contractInfo.compilerType}</li>
           <li>Compiler Version: {contractInfo.compilerVersion}</li>
@@ -52,7 +50,7 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
               htmlFor="compiler-type"
               className="block text-sm font-medium "
             >
-              Enter the contract Stylus Source Zip file
+              Enter the contract {contractInfo.compilerType} Source Zip file
             </Label>
             <InputFile
               contractInfo={contractInfo}
