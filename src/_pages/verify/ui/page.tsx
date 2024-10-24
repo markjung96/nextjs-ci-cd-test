@@ -1,5 +1,5 @@
-import { getVerificationResult } from "@/src/features/verify/api";
-import { ArbitrumStepper } from "./arbitrum-stepper";
+import { getArbitrumVerificationResult } from "@/src/features/verify/api";
+import { VerifyStepper } from "./verify-stepper";
 import { CodeExplorer } from "./code-explorer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
 import { ContractInteract } from "./contract-interact";
@@ -16,6 +16,8 @@ export const VerifiyPage = async ({
 }: {
   searchParams?: { [key: string]: string | undefined };
 }) => {
+  const chain = searchParams?.chain;
+  const network = searchParams?.network;
   const contractAddress = searchParams?.contractAddress;
   const compilerType = searchParams?.compilerType;
   const compilerVersion = searchParams?.compilerVersion;
@@ -26,19 +28,23 @@ export const VerifiyPage = async ({
 
   if (contractAddress) {
     // FIXME: network should be dynamic
-    result = await getVerificationResult("ARBITRUM_SEPOLIA", contractAddress);
-    console.log("result", result);
+    if (chain === "arbitrum" && !!network) {
+      result = await getArbitrumVerificationResult(
+        network.toLowerCase() === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
+        contractAddress
+      );
+    }
 
     // 검증이 완룓되었을 때
-    if (result.verifiedSrcUrl) {
+    if (result?.verifiedSrcUrl) {
       verifiedSrcUrl = result.verifiedSrcUrl;
     }
-    if (result.outFileUrl) {
+    if (result?.outFileUrl) {
       outFileUrl = result.outFileUrl;
     }
 
     // 리믹스에 소스코드가 업로드 되었을 때
-    if (result.isRemixSrcUploaded) {
+    if (result?.isRemixSrcUploaded) {
       initialStep = 1;
     }
   }
@@ -91,8 +97,10 @@ export const VerifiyPage = async ({
               </Tabs>
             </>
           ) : (
-            <ArbitrumStepper
+            <VerifyStepper
               initialStep={initialStep}
+              chain={chain}
+              network={network}
               contractAddress={contractAddress}
               compilerType={compilerType}
               compilerVersion={compilerVersion}

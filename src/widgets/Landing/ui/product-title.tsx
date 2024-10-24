@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 
-const chains = ["Arbitrum", "SUI", "Aptos", "Neutron"];
+const chains = ["Ethereum", "Arbitrum", "Starknet"];
+// TODO: add ["SUI", "Aptos", "Neutron"];
 
 export const config = createConfig({
   chains: [arbitrum, arbitrumSepolia],
@@ -39,7 +40,7 @@ export default function ProductTitle() {
   }, []);
 
   return (
-    <h1 className="w-[600px] flex gap-4 text-4xl font-bold">
+    <h1 className="w-[660px] flex gap-4 text-4xl font-bold">
       Multichain Verificator for{" "}
       <div
         className={`text-blue-500 transition-all duration-500 ${

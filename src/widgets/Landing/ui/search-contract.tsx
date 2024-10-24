@@ -22,12 +22,12 @@ import React from "react";
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 
-const chains = ["Arbitrum", "SUI", "Aptos", "Neutron"];
-
 export const config = createConfig({
-  chains: [arbitrum, arbitrumSepolia],
+  chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
   ssr: true,
   transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
     [arbitrum.id]: http(),
     [arbitrumSepolia.id]: http(),
   },
@@ -43,7 +43,7 @@ export function SearchContractWrapper() {
 
 const getSuggestionsList = async (address: string) => {
   // TODO: Add other chains here
-  const chainIds = [arbitrumSepolia.id];
+  const chainIds = [mainnet.id, sepolia.id, arbitrum.id, arbitrumSepolia.id];
 
   try {
     const suggestions = await Promise.all(
@@ -61,6 +61,18 @@ const getSuggestionsList = async (address: string) => {
         let networkName = "";
         // TODO: Add other chains here
         switch (chainIds[index]) {
+          case mainnet.id:
+            chainName = "Ethereum";
+            networkName = "Mainnet";
+            break;
+          case sepolia.id:
+            chainName = "Ethereum";
+            networkName = "Sepolia";
+            break;
+          case arbitrum.id:
+            chainName = "Arbitrum";
+            networkName = "One";
+            break;
           case arbitrumSepolia.id:
             chainName = "Arbitrum";
             networkName = "Sepolia";
@@ -108,16 +120,11 @@ export function SearchContract() {
     isContract: boolean;
     address: string;
   }) => {
-    if (
-      suggestion.chainName === "Arbitrum" &&
-      suggestion.networkName === "Sepolia"
-    ) {
-      router.push(`/verify?contractAddress=${suggestion.address}`);
-    } else {
-      router.push(
-        `/verification?chain=${suggestion.chainName}&network=${suggestion.networkName}&transaction=${suggestion.address}`
-      );
-    }
+    router.push(
+      `/verify?chain=${suggestion.chainName.toLowerCase()}&network=${suggestion.networkName.toLowerCase()}&contractAddress=${
+        suggestion.address
+      }`
+    );
     setIsOpen(false);
   };
 

@@ -83,7 +83,7 @@ export interface ArbitrumVerificationCheckResultDto {
   verifiedCliVersion?: string;
 }
 
-export const getVerificationResult = async (
+export const getArbitrumVerificationResult = async (
   network: ArbitrumNetwork,
   contractAddress: string
 ): Promise<ArbitrumVerificationCheckResultDto> => {

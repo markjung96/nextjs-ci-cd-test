@@ -12,16 +12,20 @@ const steps = [
   { label: "Verify & Publish" },
 ] satisfies StepItem[];
 
-interface ArbitrumStepperProps {
+interface VerifyStepperProps {
   initialStep: number;
+  chain?: string;
+  network?: string;
   contractAddress?: string;
   compilerType?: string;
   compilerVersion?: string;
   checkResult?: ArbitrumVerificationCheckResultDto;
 }
 
-export const ArbitrumStepper: FC<ArbitrumStepperProps> = ({
+export const VerifyStepper: FC<VerifyStepperProps> = ({
   initialStep,
+  chain,
+  network,
   contractAddress,
   compilerType,
   compilerVersion,
@@ -69,7 +73,10 @@ export const ArbitrumStepper: FC<ArbitrumStepperProps> = ({
           </Step>
         );
       })}
-      <ResultVerify contractInfo={contractInfo} isRemixSrcUploaded={checkResult?.isRemixSrcUploaded}/>
+      <ResultVerify
+        contractInfo={contractInfo}
+        isRemixSrcUploaded={checkResult?.isRemixSrcUploaded}
+      />
     </Stepper>
   );
 };

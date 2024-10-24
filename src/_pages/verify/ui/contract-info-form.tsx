@@ -12,11 +12,35 @@ import {
   SelectValue,
 } from "@/src/shared/ui";
 import { useStepper } from "@/src/widgets/Stpper";
-import { Dispatch, FC, SetStateAction } from "react";
+import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
 import { ContractInfo } from "./page";
 
-const compilerTypes = ["stylus"];
-const compilerVersions = ["0.5.2"];
+type ChainInfo = {
+  chainName: string;
+  networks: string[];
+  supportedLanguages: string[];
+};
+
+const chainInfos: ChainInfo[] = [
+  {
+    chainName: "ethereum",
+    networks: ["mainnet", "sepolia"],
+    supportedLanguages: ["solidity"],
+  },
+  {
+    chainName: "arbitrum",
+    networks: ["one", "sepolia"],
+    supportedLanguages: ["solidity", "stylus"],
+  },
+  {
+    chainName: "starknet",
+    networks: ["mainnet", "sepolia"],
+    supportedLanguages: ["cairo"],
+  },
+];
+
+const solidityCompilerVersions = ["0.8.25", "0.8.26", "0.8.27", "0.8.28"];
+const stylusCompilerVersions = ["0.5.2"];
 
 interface ContractInfoProps {
   contractInfo: ContractInfo;
@@ -28,6 +52,25 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
   setContractInfo,
 }) => {
   const { nextStep } = useStepper();
+  const [selectedChain, setSelectedChain] = useState<ChainInfo>(chainInfos[0]);
+  const [selectedNetwork, setSelectedNetwork] = useState<string>(
+    chainInfos[0].networks[0]
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(
+    chainInfos[0].supportedLanguages[0]
+  );
+  const [selectedCompilerVersion, setSelectedCompilerVersion] =
+    useState<string>("");
+
+  const compilerVersions = useMemo(() => {
+    if (selectedLanguage === "solidity") {
+      return solidityCompilerVersions;
+    } else if (selectedLanguage === "stylus") {
+      return stylusCompilerVersions;
+    }
+    return [];
+  }, [selectedLanguage]);
+
   return (
     <form className="space-y-4">
       <div>
@@ -51,76 +94,144 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           }
         />
       </div>
-      <div>
-        <Label htmlFor="compiler-type" className="block text-sm font-medium ">
-          Please Select Compiler Type
-        </Label>
-        <Select defaultValue={contractInfo.compilerType}>
-          <SelectTrigger className="w-[180px] mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
-            <SelectValue placeholder="Select a Protocol" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {compilerTypes.map((item) => (
-                <SelectItem
-                  key={item}
-                  value={item.toLowerCase()}
-                  // onClick={() =>
-                  //   setValue((prevValue) => ({
-                  //     ...prevValue,
-                  //     protocol: item.toLowerCase(),
-                  //   }))
-                  // }
-                  // onKeyDown={() =>
-                  //   setValue((prevValue) => ({
-                  //     ...prevValue,
-                  //     protocol: item.toLowerCase(),
-                  //   }))
-                  // }
-                >
-                  {item}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex row w-full gap-10 padding-4">
+        <div className="flex-1">
+          <Label htmlFor="compiler-type" className="block text-sm font-medium ">
+            Please Select Chain
+          </Label>
+          <Select
+            defaultValue={selectedChain.chainName}
+            onValueChange={(item) => {
+              setSelectedChain(
+                chainInfos.filter(
+                  (chainInfo) => chainInfo.chainName === item
+                )[0]
+              );
+              setSelectedNetwork(
+                chainInfos.filter(
+                  (chainInfo) => chainInfo.chainName === item
+                )[0].networks[0]
+              );
+            }}
+          >
+            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectValue placeholder="Select a Protocol" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {chainInfos.map((item) => (
+                  <SelectItem
+                    key={item.chainName}
+                    value={item.chainName.toLowerCase()}
+                  >
+                    {item.chainName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex-1">
+          <Label htmlFor="compiler-type" className="block text-sm font-medium ">
+            Please Select Network
+          </Label>
+          <Select
+            value={selectedNetwork}
+            onValueChange={(network) => setSelectedNetwork(network)}
+          >
+            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectValue placeholder="Select a Protocol" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {selectedChain.networks.map((item) => (
+                  <SelectItem key={item} value={item.toLowerCase()}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div>
-        <Label
-          htmlFor="compiler-version"
-          className="block text-sm font-medium "
-        >
-          Please Select Compiler Version
-        </Label>
-        <Select defaultValue={contractInfo.compilerVersion}>
-          <SelectTrigger className="w-[180px] mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
-            <SelectValue placeholder="Select a Protocol" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {compilerVersions.map((item) => (
-                <SelectItem
-                  key={item}
-                  value={item.toLowerCase()}
-                  // onClick={() =>
-                  //   setValue((prevValue) => ({
-                  //     ...prevValue,
-                  //     protocol: item.toLowerCase(),
-                  //   }))
-                  // }
-                  // onKeyDown={() =>
-                  //   setValue((prevValue) => ({
-                  //     ...prevValue,
-                  //     protocol: item.toLowerCase(),
-                  //   }))
-                  // }
-                >
-                  {item}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex row w-full gap-10">
+        <div className="flex-1">
+          <Label htmlFor="compiler-type" className="block text-sm font-medium ">
+            Please Select Compiler Type
+          </Label>
+          <Select
+            value={selectedLanguage}
+            onValueChange={(language) => setSelectedLanguage(language)}
+          >
+            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectValue placeholder="Select a Protocol" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {selectedChain.supportedLanguages.map((item) => (
+                  <SelectItem
+                    key={item}
+                    value={item.toLowerCase()}
+                    // onClick={() =>
+                    //   setValue((prevValue) => ({
+                    //     ...prevValue,
+                    //     protocol: item.toLowerCase(),
+                    //   }))
+                    // }
+                    // onKeyDown={() =>
+                    //   setValue((prevValue) => ({
+                    //     ...prevValue,
+                    //     protocol: item.toLowerCase(),
+                    //   }))
+                    // }
+                  >
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex-1">
+          <Label
+            htmlFor="compiler-version"
+            className="block text-sm font-medium "
+          >
+            Please Select Compiler Version
+          </Label>
+          <Select
+            defaultValue={selectedCompilerVersion}
+            onValueChange={(version) => setSelectedCompilerVersion(version)}
+          >
+            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectValue placeholder="Select a compiler version" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {compilerVersions.map((item) => (
+                  <SelectItem
+                    key={item}
+                    value={item.toLowerCase()}
+                    // onClick={() =>
+                    //   setValue((prevValue) => ({
+                    //     ...prevValue,
+                    //     protocol: item.toLowerCase(),
+                    //   }))
+                    // }
+                    // onKeyDown={() =>
+                    //   setValue((prevValue) => ({
+                    //     ...prevValue,
+                    //     protocol: item.toLowerCase(),
+                    //   }))
+                    // }
+                  >
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       {/* <div className="flex items-center">
             <Input
@@ -150,29 +261,30 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
               <option>[Please Select]</option>
             </Select>
           </div> */}
-
-      <div>
-        <Label htmlFor="building-env" className="block text-sm font-medium ">
-          Please Select Building Environment
-        </Label>
-        <RadioGroup
-          defaultValue="x86"
-          className="flex row mt-2"
-          id="building-env"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="x86" id="r1" />
-            <Label htmlFor="r1">x86</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            {/* TODO: arm 계열의 verify 준비되면 비활성화 풀기 */}
-            <RadioGroupItem disabled value="arm" id="r2" />
-            <Label htmlFor="r2" className="text-gray-400">
-              arm
-            </Label>
-          </div>
-        </RadioGroup>
-      </div>
+      {selectedLanguage === "stylus" && (
+        <div>
+          <Label htmlFor="building-env" className="block text-sm font-medium ">
+            Please Select Building Environment
+          </Label>
+          <RadioGroup
+            defaultValue="x86"
+            className="flex row mt-2"
+            id="building-env"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="x86" id="r1" />
+              <Label htmlFor="r1">x86</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              {/* TODO: arm 계열의 verify 준비되면 비활성화 풀기 */}
+              <RadioGroupItem disabled value="arm" id="r2" />
+              <Label htmlFor="r2" className="text-gray-400">
+                arm
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+      )}
 
       <div className="flex items-center">
         <Input
