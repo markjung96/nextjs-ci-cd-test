@@ -4,6 +4,7 @@ export interface ArbitrumVerificationSrcUploadReqDto {
   network: ArbitrumNetwork;
   contractAddress: string;
   srcZipFile: File;
+  compilerVersion: string;
 }
 export interface ArbitrumVerificationSrcUploadResultDto {
   srcFileId: string;
@@ -18,6 +19,7 @@ export const postArbitrumStylusSourceCode = async (
   formData.append("network", request.network);
   formData.append("contractAddress", request.contractAddress);
   formData.append("srcZipFile", request.srcZipFile);
+  formData.append("compilerVersion", request.compilerVersion);
   try {
     const response = await fetch(`${baseUrl}/arbitrum/verifications/sources`, {
       method: "POST",
@@ -40,6 +42,7 @@ export interface ArbitrumVerificationReqDto {
   network: ArbitrumNetwork;
   contractAddress: string;
   srcFileId?: string;
+  cliVersion: string;
 }
 
 export interface ArbitrumVerificationResultDto {
@@ -48,6 +51,7 @@ export interface ArbitrumVerificationResultDto {
   deploymentTxHash: string;
   verifiedSrcUrl?: string;
   nullable: true;
+  cliVersion: string;
   errMsg?: string;
 }
 
