@@ -108,10 +108,10 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@3.4.10)
   viem:
-    specifier: ~2.21.34
+    specifier: ~2.21.5
     version: 2.21.34(typescript@5.5.4)(zod@3.23.8)
   wagmi:
-    specifier: ^2.12.25
+    specifier: ^2.12.10
     version: 2.12.25(@tanstack/react-query@5.55.4)(@types/react@18.3.5)(react-dom@18.3.1)(react-native@0.75.2)(react@18.3.1)(typescript@5.5.4)(viem@2.21.34)(zod@3.23.8)
   zod:
     specifier: ^3.23.8

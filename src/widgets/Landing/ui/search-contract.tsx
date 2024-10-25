@@ -15,13 +15,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/src/shared/ui";
-import { getBytecode } from "@wagmi/core";
+import { getBytecode, createConfig } from "@wagmi/core";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, ChangeEventHandler, useMemo } from "react";
-import { createConfig, http, WagmiProvider } from "wagmi";
+import { http, WagmiProvider, createConfig as createConfigGeneral } from "wagmi";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 import _ from "lodash";
+
+export const configGeneral = createConfigGeneral({
+  chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
+  ssr: true,
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+    [arbitrum.id]: http(),
+    [arbitrumSepolia.id]: http(),
+  },
+});
 
 export const config = createConfig({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -36,7 +47,7 @@ export const config = createConfig({
 
 export function SearchContractWrapper() {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={configGeneral}>
       <SearchContract />
     </WagmiProvider>
   );

@@ -14,7 +14,7 @@ import {
 import { http, WagmiProvider, useAccount, useWriteContract } from "wagmi";
 import { arbitrum, arbitrumSepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { readContract } from "@wagmi/core";
+import { createConfig, readContract } from "@wagmi/core";
 import { Abi, AbiFunction, AbiParameter } from "viem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { switchChain } from "@wagmi/core";
@@ -23,6 +23,15 @@ import {
   RainbowKitProvider,
   ConnectButton,
 } from "@rainbow-me/rainbowkit";
+
+const configViem = createConfig({
+  chains: [arbitrumSepolia, arbitrum],
+  ssr: true,
+  transports: {
+    [arbitrumSepolia.id]: http(),
+    [arbitrum.id]: http(),
+  },
+});
 
 export const config = getDefaultConfig({
   appName: "Arbitrum Sepolia",
@@ -170,7 +179,7 @@ const ConnectButtonWrapper = () => {
 
   if (isConnected) {
     if (chainId !== arbitrumSepolia.id) {
-      switchChain(config, { chainId: arbitrumSepolia.id });
+      switchChain(configViem, { chainId: arbitrumSepolia.id });
     }
   }
 
@@ -220,7 +229,7 @@ const AccordionCard = ({
     });
 
     try {
-      const res = await readContract(config, {
+      const res = await readContract(configViem, {
         abi,
         address: contractAddress as `0x${string}`,
         functionName: abiFragment.name,
