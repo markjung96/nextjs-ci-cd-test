@@ -61,6 +61,18 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
           sourceFile: null,
         };
   }
+  // starknet chain
+  if (chain === "starknet") {
+    _contractInfo = {
+      chain: chain,
+      network: network || "mainnet",
+      contractAddress: contractAddress || "",
+      compilerType: compilerType || "cairo",
+      compilerVersion: compilerVersion || "0.0.1",
+      sourceFile: null,
+    };
+  }
+
   const [contractInfo, setContractInfo] = useState<ContractInfo>(_contractInfo);
   const [loading, setLoading] = useState(false);
   return (

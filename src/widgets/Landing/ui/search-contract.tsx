@@ -19,7 +19,11 @@ import { getBytecode, createConfig } from "@wagmi/core";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, ChangeEventHandler, useMemo } from "react";
-import { http, WagmiProvider, createConfig as createConfigGeneral } from "wagmi";
+import {
+  http,
+  WagmiProvider,
+  createConfig as createConfigGeneral,
+} from "wagmi";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 import _ from "lodash";
 
@@ -58,6 +62,56 @@ const getSuggestionsList = async (address: string) => {
   const chainIds = [mainnet.id, sepolia.id, arbitrum.id, arbitrumSepolia.id];
 
   try {
+    // starknet suggestion
+    const networks = [
+      {
+        network: "mainnet",
+        url: "https://starknet-mainnet.g.allthatnode.com/archive/json_rpc/e7b5f99e57a748b7a86148649cc002d5",
+      },
+      {
+        network: "sepolia",
+        url: "https://starknet-sepolia.g.allthatnode.com/archive/json_rpc/e7b5f99e57a748b7a86148649cc002d5",
+      },
+    ];
+    const starknetSuggestion = await Promise.all(
+      networks.map(async (network) => {
+        const starknetSuggestionsRaw = await fetch(network.url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "starknet_getClassHashAt",
+            params: ["latest", address],
+            id: 1,
+          }),
+        });
+        const starknetSuggestions = await starknetSuggestionsRaw.json();
+        if (starknetSuggestions.error) {
+          console.error(
+            "Error getting starknet suggestions",
+            starknetSuggestions
+          );
+          return null;
+        } else {
+          return {
+            chainName: "Starknet",
+            networkName: network.network,
+            isContract: starknetSuggestions.result !== "0x",
+            address,
+          };
+        }
+      })
+    );
+
+    // starknet 주소가 있으면 starknet suggestion만 반환
+    if (
+      starknetSuggestion.filter((suggestion) => suggestion !== null).length > 0
+    ) {
+      return starknetSuggestion.filter((suggestion) => suggestion !== null);
+    }
+
     const suggestions = await Promise.all(
       chainIds.map((chainId) => {
         return getBytecode(config, {
