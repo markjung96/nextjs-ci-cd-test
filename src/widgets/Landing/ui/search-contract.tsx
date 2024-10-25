@@ -66,16 +66,16 @@ const getSuggestionsList = async (address: string) => {
     const networks = [
       {
         network: "mainnet",
-        url: "https://starknet-mainnet.g.allthatnode.com/archive/json_rpc/e7b5f99e57a748b7a86148649cc002d5",
+        url: process.env.NEXT_PUBLIC_STARKNET_MAINNET_URL
       },
       {
         network: "sepolia",
-        url: "https://starknet-sepolia.g.allthatnode.com/archive/json_rpc/e7b5f99e57a748b7a86148649cc002d5",
+        url: process.env.NEXT_PUBLIC_STARKNET_SEPOLIA_URL
       },
     ];
     const starknetSuggestion = await Promise.all(
       networks.map(async (network) => {
-        const starknetSuggestionsRaw = await fetch(network.url, {
+        const starknetSuggestionsRaw = await fetch(network.url!, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
