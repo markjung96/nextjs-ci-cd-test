@@ -5,9 +5,11 @@ import { ContractVerifyForm } from "./contract-verify-form";
 import { ResultVerify } from "./result-verify";
 import { FC, useState } from "react";
 import { ContractInfo } from "./page";
-import { ArbitrumVerificationCheckResultDto } from "@/src/features/verify/api";
-import { EvmVerificationResultDto } from "@/src/features/verify/api/solidity";
-import { CairoVerificationResultDto } from "@/src/features/verify/api/cairo";
+import {
+  EvmVerificationResultDto,
+  StylusVerificationCheckResultDto,
+  CairoVerificationResultDto,
+} from "@/src/features/verify/api";
 
 const steps = [
   { label: "Enter Contract Details" },
@@ -22,8 +24,8 @@ interface VerifyStepperProps {
   compilerType?: string;
   compilerVersion?: string;
   checkResult?:
-    | ArbitrumVerificationCheckResultDto
     | EvmVerificationResultDto
+    | StylusVerificationCheckResultDto
     | CairoVerificationResultDto;
 }
 
@@ -47,8 +49,8 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
   };
   // arbitrum chain
   if (chain === "arbitrum" && checkResult) {
-    // casting chaeckREsult to ArbitrumVerificationCheckResultDto
-    checkResult = checkResult as ArbitrumVerificationCheckResultDto;
+    // casting chaeckREsult to StylusVerificationCheckResultDto
+    checkResult = checkResult as StylusVerificationCheckResultDto;
     // remix로 소스코드 업로드한 경우,
     _contractInfo = checkResult?.isRemixSrcUploaded
       ? {
@@ -104,7 +106,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
                 setContractInfo={setContractInfo}
                 isRemixSrcUploaded={
                   chain === "arbitrum"
-                    ? (checkResult as ArbitrumVerificationCheckResultDto)
+                    ? (checkResult as StylusVerificationCheckResultDto)
                         .isRemixSrcUploaded
                     : false
                 }
@@ -117,7 +119,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
         contractInfo={contractInfo}
         isRemixSrcUploaded={
           chain === "arbitrum"
-            ? (checkResult as ArbitrumVerificationCheckResultDto)
+            ? (checkResult as StylusVerificationCheckResultDto)
                 .isRemixSrcUploaded
             : false
         }

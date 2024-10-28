@@ -4,17 +4,13 @@ import { Loader2, CircleCheck, Circle, CircleX } from "lucide-react";
 import { ContractInfo } from "./page";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  postArbitrumStylusSourceCode,
-  verifyArbitrumStylus,
-} from "@/src/features/verify/api";
-import {
+  postStylusSourceCode,
+  verifyStylus,
   postSoliditySourceCode,
   verifySolidity,
-} from "@/src/features/verify/api/solidity";
-import {
   postCairoSourceCode,
   verifyCairo,
-} from "@/src/features/verify/api/cairo";
+} from "@/src/features/verify/api";
 
 interface ResultVerifyProps {
   contractInfo: ContractInfo;
@@ -75,7 +71,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
         setUploadStatus("done");
         return result;
       } else if (contractInfo.chain === "arbitrum") {
-        const result = await postArbitrumStylusSourceCode({
+        const result = await postStylusSourceCode({
           network:
             contractInfo.network === "one"
               ? "ARBITRUM_ONE"
@@ -109,9 +105,10 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
     async (srcFileId?: string) => {
       setVerifyStatus("loading");
       try {
+        let result = null;
         // TODO: 다른 chain 지원
         if (contractInfo.chain === "ethereum") {
-          const result = await verifySolidity({
+          result = await verifySolidity({
             optimize: "1",
             optimizeRuns: "200",
             evmVersion: "default",
@@ -123,15 +120,8 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
                 ? "0x1"
                 : "0xaa36a7",
           });
-          setVerifyStatus("done");
-          if (result.isVerified) {
-            return result;
-          } else {
-            setVerifyErrorMsg(result.errMsg || "");
-            setVerifyStatus("error");
-          }
         } else if (contractInfo.chain === "arbitrum") {
-          const result = await verifyArbitrumStylus({
+          result = await verifyStylus({
             network:
               contractInfo.network === "one"
                 ? "ARBITRUM_ONE"
@@ -140,15 +130,8 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             srcFileId,
             cliVersion: contractInfo.compilerVersion,
           });
-          setVerifyStatus("done");
-          if (result.verifiedSrcUrl) {
-            return result;
-          } else {
-            setVerifyErrorMsg(result.errMsg || "");
-            setVerifyStatus("error");
-          }
         } else if (contractInfo.chain === "starknet") {
-          const result = await verifyCairo({
+          result = await verifyCairo({
             chainId:
               contractInfo.network === "mainnet"
                 ? "0x534e5f4d41494e"
@@ -158,15 +141,15 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             scarbVersion: "",
             srcFileId: srcFileId!,
           });
-          setVerifyStatus("done");
-          if (result.isVerified) {
-            return result;
-          } else {
-            setVerifyErrorMsg(result.errMsg || "");
-            setVerifyStatus("error");
-          }
         } else {
           throw new Error("Unsupported chain");
+        }
+        setVerifyStatus("done");
+        if (result && result.verifiedSrcUrl) {
+          return result;
+        } else {
+          setVerifyErrorMsg(result.errMsg || "");
+          setVerifyStatus("error");
         }
       } catch (error) {
         setVerifyStatus("error");

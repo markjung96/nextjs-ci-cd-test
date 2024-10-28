@@ -1,10 +1,12 @@
-import { getArbitrumVerificationResult } from "@/src/features/verify/api";
+import {
+  getSolidityVerificationResult,
+  getStylusVerificationResult,
+  getCairoVerificationResult,
+} from "@/src/features/verify/api";
 import { VerifyStepper } from "./verify-stepper";
 import { CodeExplorer } from "./code-explorer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
 import { ContractInteract } from "./contract-interact";
-import { getSolidityVerificationResult } from "@/src/features/verify/api/solidity";
-import { getCairoVerificationResult } from "@/src/features/verify/api/cairo";
 
 export type ContractInfo = {
   chain: string;
@@ -39,7 +41,7 @@ export const VerifiyPage = async ({
       );
     }
     if (chain === "arbitrum" && network !== undefined) {
-      result = await getArbitrumVerificationResult(
+      result = await getStylusVerificationResult(
         network.toLowerCase() === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
         contractAddress
       );
