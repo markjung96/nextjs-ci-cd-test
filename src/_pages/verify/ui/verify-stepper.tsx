@@ -6,6 +6,7 @@ import { ResultVerify } from "./result-verify";
 import { FC, useState } from "react";
 import { ContractInfo } from "./page";
 import { ArbitrumVerificationCheckResultDto } from "@/src/features/verify/api";
+import { EvmVerificationResultDto } from "@/src/features/verify/api/solidity";
 
 const steps = [
   { label: "Enter Contract Details" },
@@ -19,7 +20,7 @@ interface VerifyStepperProps {
   contractAddress?: string;
   compilerType?: string;
   compilerVersion?: string;
-  checkResult?: ArbitrumVerificationCheckResultDto;
+  checkResult?: ArbitrumVerificationCheckResultDto | EvmVerificationResultDto;
 }
 
 export const VerifyStepper: FC<VerifyStepperProps> = ({
@@ -42,6 +43,8 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
   };
   // arbitrum chain
   if (chain === "arbitrum" && checkResult) {
+    // casting chaeckREsult to ArbitrumVerificationCheckResultDto
+    checkResult = checkResult as ArbitrumVerificationCheckResultDto;
     // remix로 소스코드 업로드한 경우,
     _contractInfo = checkResult?.isRemixSrcUploaded
       ? {
@@ -95,7 +98,12 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
               <ContractVerifyForm
                 contractInfo={contractInfo}
                 setContractInfo={setContractInfo}
-                isRemixSrcUploaded={checkResult?.isRemixSrcUploaded}
+                isRemixSrcUploaded={
+                  chain === "arbitrum"
+                    ? (checkResult as ArbitrumVerificationCheckResultDto)
+                        .isRemixSrcUploaded
+                    : false
+                }
               />
             )}
           </Step>
@@ -103,7 +111,12 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
       })}
       <ResultVerify
         contractInfo={contractInfo}
-        isRemixSrcUploaded={checkResult?.isRemixSrcUploaded}
+        isRemixSrcUploaded={
+          chain === "arbitrum"
+            ? (checkResult as ArbitrumVerificationCheckResultDto)
+                .isRemixSrcUploaded
+            : false
+        }
       />
     </Stepper>
   );

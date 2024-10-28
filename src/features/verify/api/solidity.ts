@@ -55,6 +55,8 @@ export interface EvmVerificationResultDto {
   contractAddress: string;
   isVerified: boolean;
   errMsg?: string;
+  verifiedSrcUrl?: string;
+  outFileUrl?: string;
 }
 
 export const verifySolidity = async (

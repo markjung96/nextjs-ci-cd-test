@@ -3,6 +3,7 @@ import { VerifyStepper } from "./verify-stepper";
 import { CodeExplorer } from "./code-explorer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
 import { ContractInteract } from "./contract-interact";
+import { getSolidityVerificationResult } from "@/src/features/verify/api/solidity";
 
 export type ContractInfo = {
   chain: string;
@@ -35,6 +36,17 @@ export const VerifiyPage = async ({
         network.toLowerCase() === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
         contractAddress
       );
+      // 리믹스에 소스코드가 업로드 되었을 때
+      if (result?.isRemixSrcUploaded) {
+        initialStep = 1;
+      }
+    }
+    if (chain === "ethereum" && network !== undefined) {
+      result = await getSolidityVerificationResult(
+        "ethereum",
+        network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+        contractAddress
+      );
     }
 
     // 검증이 완룓되었을 때
@@ -43,11 +55,6 @@ export const VerifiyPage = async ({
     }
     if (result?.outFileUrl) {
       outFileUrl = result.outFileUrl;
-    }
-
-    // 리믹스에 소스코드가 업로드 되었을 때
-    if (result?.isRemixSrcUploaded) {
-      initialStep = 1;
     }
   }
 
