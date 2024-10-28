@@ -4,7 +4,14 @@ import { ContractInfoForm } from "./contract-info-form";
 import { ContractVerifyForm } from "./contract-verify-form";
 import { ResultVerify } from "./result-verify";
 import { FC, useState } from "react";
-import { ContractInfo } from "./page";
+import {
+  ArbitrumContractInfo,
+  ContractInfo,
+  EthereumContractInfo,
+  StarknetContractInfo,
+  SupportedChain,
+  SupportedCompilerType,
+} from "./page";
 import {
   EvmVerificationResultDto,
   StylusVerificationCheckResultDto,
@@ -18,10 +25,10 @@ const steps = [
 
 interface VerifyStepperProps {
   initialStep: number;
-  chain?: string;
+  chain?: SupportedChain;
   network?: string;
   contractAddress?: string;
-  compilerType?: string;
+  compilerType?: SupportedCompilerType;
   compilerVersion?: string;
   checkResult?:
     | EvmVerificationResultDto
@@ -40,46 +47,52 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
 }) => {
   // 사용자가 verify 페이지에 직접 접근했을 때, 초기값 설정
   let _contractInfo: ContractInfo = {
-    chain: chain || "ethereum",
-    network: network || "mainnet",
-    contractAddress: contractAddress || "",
-    compilerType: compilerType || "solidity",
-    compilerVersion: compilerVersion || "0.8.25",
+    chain: "ethereum",
+    network: "mainnet",
+    contractAddress: "",
+    compilerType: "solidity",
+    compilerVersion: "v0.8.26+commit.8a97fa7a",
     sourceFile: null,
   };
-  // arbitrum chain
-  if (chain === "arbitrum" && checkResult) {
-    // casting chaeckREsult to StylusVerificationCheckResultDto
-    checkResult = checkResult as StylusVerificationCheckResultDto;
-    // remix로 소스코드 업로드한 경우,
-    _contractInfo = checkResult?.isRemixSrcUploaded
-      ? {
-          chain: chain || "ethereum",
-          network: network || "mainnet",
-          contractAddress: checkResult.contractAddress!,
-          compilerType: "stylus",
-          compilerVersion: checkResult.deployedCliVersion || "0.5.2",
-          sourceFile: null,
-        }
-      : {
-          chain: chain || "ethereum",
-          network: network || "mainnet",
-          contractAddress: contractAddress || "",
-          compilerType: compilerType || "stylus",
-          compilerVersion: compilerVersion || "0.5.2",
-          sourceFile: null,
-        };
-  }
-  // starknet chain
-  if (chain === "starknet") {
-    _contractInfo = {
-      chain: chain,
-      network: network || "mainnet",
-      contractAddress: contractAddress || "",
-      compilerType: compilerType || "cairo",
-      compilerVersion: compilerVersion || "0.0.1",
-      sourceFile: null,
-    };
+  switch (chain) {
+    case undefined:
+    case "ethereum":
+      _contractInfo = {
+        chain: chain || "ethereum",
+        network: (network as EthereumContractInfo["network"]) || "mainnet",
+        contractAddress: contractAddress || "",
+        compilerType:
+          (compilerType as EthereumContractInfo["compilerType"]) || "solidity",
+        compilerVersion: compilerVersion || "v0.8.26+commit.8a97fa7a",
+        sourceFile: null,
+      };
+      break;
+    case "arbitrum":
+      _contractInfo = {
+        chain: chain,
+        network: (network as ArbitrumContractInfo["network"]) || "mainnet",
+        contractAddress: contractAddress || "",
+        compilerType:
+          (compilerType as ArbitrumContractInfo["compilerType"]) || "stylus",
+        compilerVersion: compilerVersion || "0.5.3",
+        sourceFile: null,
+      };
+
+      break;
+    case "starknet":
+      _contractInfo = {
+        chain: chain,
+        network: (network as StarknetContractInfo["network"]) || "mainnet",
+        contractAddress: contractAddress || "",
+        compilerType:
+          (compilerType as StarknetContractInfo["compilerType"]) || "cairo",
+        compilerVersion: compilerVersion || "0.0.1",
+        sourceFile: null,
+      };
+      break;
+
+    default:
+      break;
   }
 
   const [contractInfo, setContractInfo] = useState<ContractInfo>(_contractInfo);

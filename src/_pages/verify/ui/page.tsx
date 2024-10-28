@@ -6,24 +6,51 @@ import {
 import { VerifyStepper } from "./verify-stepper";
 import { VerifiedInfo } from "./verified-info";
 
-export type ContractInfo = {
-  chain: string;
-  network: string;
+export type SupportedChain = "ethereum" | "arbitrum" | "starknet";
+export type SupportedNetwork = "mainnet" | "sepolia" | "goerli" | "one";
+export type SupportedCompilerType = "solidity" | "stylus" | "cairo";
+
+export type EthereumContractInfo = {
+  chain: "ethereum";
+  network: "mainnet" | "sepolia" | "goerli";
   contractAddress: string;
-  compilerType: string;
+  compilerType: "solidity";
   compilerVersion: string;
   sourceFile: File | null;
 };
+
+export type ArbitrumContractInfo = {
+  chain: "arbitrum";
+  network: "one" | "sepolia";
+  contractAddress: string;
+  compilerType: "stylus";
+  compilerVersion: string;
+  sourceFile: File | null;
+};
+
+export type StarknetContractInfo = {
+  chain: "starknet";
+  network: "mainnet" | "sepolia";
+  contractAddress: string;
+  compilerType: "cairo";
+  compilerVersion: string;
+  sourceFile: File | null;
+};
+
+export type ContractInfo =
+  | EthereumContractInfo
+  | ArbitrumContractInfo
+  | StarknetContractInfo;
 
 export const VerifiyPage = async ({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | undefined };
 }) => {
-  const chain = searchParams?.chain;
+  const chain = searchParams?.chain as SupportedChain;
   const network = searchParams?.network;
   const contractAddress = searchParams?.contractAddress;
-  const compilerType = searchParams?.compilerType;
+  const compilerType = searchParams?.compilerType as SupportedCompilerType;
   const compilerVersion = searchParams?.compilerVersion;
   let verifiedSrcUrl = null;
   let outFileUrl = null;

@@ -12,7 +12,7 @@ import {
 } from "@/src/shared/ui";
 import { useStepper } from "@/src/widgets/Stpper";
 import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
-import { ContractInfo } from "./page";
+import { ContractInfo, SupportedChain } from "./page";
 import solidityVersion from "@/src/shared/lib/solidity-version.json";
 
 type ChainInfo = {
@@ -103,19 +103,22 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           </Label>
           <Select
             defaultValue={selectedChain.chainName}
-            onValueChange={(item) => {
+            onValueChange={(item: SupportedChain) => {
               setSelectedChain(
                 chainInfos.filter(
                   (chainInfo) => chainInfo.chainName === item
                 )[0]
               );
-              setContractInfo((prevValue) => ({
-                ...prevValue,
-                chain: item,
-                network: chainInfos.filter(
-                  (chainInfo) => chainInfo.chainName === item
-                )[0].networks[0],
-              }));
+              setContractInfo(
+                (prevValue) =>
+                  ({
+                    ...prevValue,
+                    chain: item,
+                    network: chainInfos.filter(
+                      (chainInfo) => chainInfo.chainName === item
+                    )[0].networks[0],
+                  } as ContractInfo)
+              );
             }}
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
@@ -142,10 +145,13 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           <Select
             value={contractInfo.network}
             onValueChange={(network) =>
-              setContractInfo((prevValue) => ({
-                ...prevValue,
-                network,
-              }))
+              setContractInfo(
+                (prevValue) =>
+                  ({
+                    ...prevValue,
+                    network: network,
+                  } as ContractInfo)
+              )
             }
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
@@ -171,10 +177,13 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           <Select
             value={contractInfo.compilerType}
             onValueChange={(compiler) =>
-              setContractInfo((prevValue) => ({
-                ...prevValue,
-                compilerType: compiler,
-              }))
+              setContractInfo(
+                (prevValue) =>
+                  ({
+                    ...prevValue,
+                    compilerType: compiler,
+                  } as ContractInfo)
+              )
             }
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
