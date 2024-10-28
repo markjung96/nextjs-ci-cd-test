@@ -47,7 +47,6 @@ interface CairoVerificationReqDto {
 export interface CairoVerificationResultDto {
   chainId: string;
   contractAddress: string;
-  isVerified: boolean;
   errMsg?: string;
   verifiedSrcUrl?: string;
   outFileUrl?: string;

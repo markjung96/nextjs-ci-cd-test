@@ -53,7 +53,6 @@ export interface EvmVerificationResultDto {
   protocol: string;
   chainId: string;
   contractAddress: string;
-  isVerified: boolean;
   errMsg?: string;
   verifiedSrcUrl?: string;
   outFileUrl?: string;
