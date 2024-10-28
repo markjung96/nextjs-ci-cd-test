@@ -50,7 +50,6 @@ export interface ArbitrumVerificationResultDto {
   contractAddress?: string;
   deploymentTxHash: string;
   verifiedSrcUrl?: string;
-  nullable: true;
   cliVersion: string;
   errMsg?: string;
 }

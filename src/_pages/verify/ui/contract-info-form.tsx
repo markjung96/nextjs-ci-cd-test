@@ -44,7 +44,7 @@ const solidityCompilerVersions = solidityVersion.builds
   .reverse()
   .filter((build) => !build.longVersion.includes("nightly"))
   .map((build) => `v${build.version}+${build.build}`);
-const stylusCompilerVersions = ["0.5.2"];
+const stylusCompilerVersions = ["0.5.1", "0.5.3"];
 const cairoCompilerVersions = ["0.0.1"];
 
 interface ContractInfoProps {

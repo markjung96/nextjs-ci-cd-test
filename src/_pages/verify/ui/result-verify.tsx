@@ -82,6 +82,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
               : "ARBITRUM_SEPOLIA",
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
+          compilerVersion: contractInfo.compilerVersion,
         });
         setUploadStatus("done");
         return result;
@@ -137,6 +138,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
                 : "ARBITRUM_SEPOLIA",
             contractAddress: contractInfo.contractAddress,
             srcFileId,
+            cliVersion: contractInfo.compilerVersion,
           });
           setVerifyStatus("done");
           if (result.verifiedSrcUrl) {
