@@ -7,7 +7,14 @@ import {
   postArbitrumStylusSourceCode,
   verifyArbitrumStylus,
 } from "@/src/features/verify/api";
-import { postSoliditySourceCode, verifySolidity } from "@/src/features/verify/api/solidity";
+import {
+  postSoliditySourceCode,
+  verifySolidity,
+} from "@/src/features/verify/api/solidity";
+import {
+  postCairoSourceCode,
+  verifyCairo,
+} from "@/src/features/verify/api/cairo";
 
 interface ResultVerifyProps {
   contractInfo: ContractInfo;
@@ -58,7 +65,10 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
       if (contractInfo.chain === "ethereum") {
         const result = await postSoliditySourceCode({
           protocol: contractInfo.chain.toLowerCase() as "ethereum" | "arbitrum",
-          chainId: contractInfo.network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+          chainId:
+            contractInfo.network.toLowerCase() === "mainnet"
+              ? "0x1"
+              : "0xaa36a7",
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
         });
@@ -70,6 +80,17 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             contractInfo.network === "one"
               ? "ARBITRUM_ONE"
               : "ARBITRUM_SEPOLIA",
+          contractAddress: contractInfo.contractAddress,
+          srcZipFile: contractInfo.sourceFile!,
+        });
+        setUploadStatus("done");
+        return result;
+      } else if (contractInfo.chain === "starknet") {
+        const result = await postCairoSourceCode({
+          chainId:
+            contractInfo.network === "mainnet"
+              ? "0x534e5f4d41494e"
+              : "0x534e5f5345504f4c4941",
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
         });
@@ -96,7 +117,10 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             compilerVersion: contractInfo.compilerVersion,
             contractAddress: contractInfo.contractAddress,
             protocol: "ethereum",
-            chainId: contractInfo.network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+            chainId:
+              contractInfo.network.toLowerCase() === "mainnet"
+                ? "0x1"
+                : "0xaa36a7",
           });
           setVerifyStatus("done");
           if (result.isVerified) {
@@ -105,8 +129,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             setVerifyErrorMsg(result.errMsg || "");
             setVerifyStatus("error");
           }
-        } else
-        if (contractInfo.chain === "arbitrum") {
+        } else if (contractInfo.chain === "arbitrum") {
           const result = await verifyArbitrumStylus({
             network:
               contractInfo.network === "one"
@@ -117,6 +140,24 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
           });
           setVerifyStatus("done");
           if (result.verifiedSrcUrl) {
+            return result;
+          } else {
+            setVerifyErrorMsg(result.errMsg || "");
+            setVerifyStatus("error");
+          }
+        } else if (contractInfo.chain === "starknet") {
+          const result = await verifyCairo({
+            chainId:
+              contractInfo.network === "mainnet"
+                ? "0x534e5f4d41494e"
+                : "0x534e5f5345504f4c4941",
+            contractAddress: contractInfo.contractAddress,
+            declareTxHash: "",
+            scarbVersion: "",
+            srcFileId: srcFileId!,
+          });
+          setVerifyStatus("done");
+          if (result.isVerified) {
             return result;
           } else {
             setVerifyErrorMsg(result.errMsg || "");

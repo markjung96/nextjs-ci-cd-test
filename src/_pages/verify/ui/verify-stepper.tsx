@@ -7,6 +7,7 @@ import { FC, useState } from "react";
 import { ContractInfo } from "./page";
 import { ArbitrumVerificationCheckResultDto } from "@/src/features/verify/api";
 import { EvmVerificationResultDto } from "@/src/features/verify/api/solidity";
+import { CairoVerificationResultDto } from "@/src/features/verify/api/cairo";
 
 const steps = [
   { label: "Enter Contract Details" },
@@ -20,7 +21,10 @@ interface VerifyStepperProps {
   contractAddress?: string;
   compilerType?: string;
   compilerVersion?: string;
-  checkResult?: ArbitrumVerificationCheckResultDto | EvmVerificationResultDto;
+  checkResult?:
+    | ArbitrumVerificationCheckResultDto
+    | EvmVerificationResultDto
+    | CairoVerificationResultDto;
 }
 
 export const VerifyStepper: FC<VerifyStepperProps> = ({

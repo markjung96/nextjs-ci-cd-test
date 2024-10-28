@@ -4,6 +4,7 @@ import { CodeExplorer } from "./code-explorer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
 import { ContractInteract } from "./contract-interact";
 import { getSolidityVerificationResult } from "@/src/features/verify/api/solidity";
+import { getCairoVerificationResult } from "@/src/features/verify/api/cairo";
 
 export type ContractInfo = {
   chain: string;
@@ -30,7 +31,13 @@ export const VerifiyPage = async ({
   let result = null;
 
   if (contractAddress) {
-    // FIXME: network should be dynamic
+    if (chain === "ethereum" && network !== undefined) {
+      result = await getSolidityVerificationResult(
+        "ethereum",
+        network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+        contractAddress
+      );
+    }
     if (chain === "arbitrum" && network !== undefined) {
       result = await getArbitrumVerificationResult(
         network.toLowerCase() === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
@@ -41,10 +48,11 @@ export const VerifiyPage = async ({
         initialStep = 1;
       }
     }
-    if (chain === "ethereum" && network !== undefined) {
-      result = await getSolidityVerificationResult(
-        "ethereum",
-        network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+    if (chain === "starknet" && network !== undefined) {
+      result = await getCairoVerificationResult(
+        network.toLowerCase() === "mainnet"
+          ? "0x534e5f4d41494e"
+          : "0x534e5f5345504f4c4941",
         contractAddress
       );
     }
