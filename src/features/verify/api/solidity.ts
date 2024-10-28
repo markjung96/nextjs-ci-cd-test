@@ -1,3 +1,5 @@
+import { baseUrl } from ".";
+
 export interface EthereumVerificationSrcUploadReqDto {
   protocol: "ethereum" | "arbitrum";
   chainId: "0x1" | "0xaa36a7" | "0x4268";
@@ -7,8 +9,6 @@ export interface EthereumVerificationSrcUploadReqDto {
 export interface EthereumVerificationSrcUploadResultDto {
   srcFileId: string;
 }
-
-const baseUrl = "https://verify.welldonestudio.io";
 
 export const postSoliditySourceCode = async (
   request: EthereumVerificationSrcUploadReqDto

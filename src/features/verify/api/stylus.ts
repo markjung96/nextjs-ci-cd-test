@@ -1,3 +1,5 @@
+import { baseUrl } from ".";
+
 type ArbitrumNetwork = "ARBITRUM_ONE" | "ARBITRUM_SEPOLIA";
 
 export interface StylusVerificationSrcUploadReqDto {
@@ -9,8 +11,6 @@ export interface StylusVerificationSrcUploadReqDto {
 export interface StylusVerificationSrcUploadResultDto {
   srcFileId: string;
 }
-
-const baseUrl = "https://verify.welldonestudio.io";
 
 export const postStylusSourceCode = async (
   request: StylusVerificationSrcUploadReqDto

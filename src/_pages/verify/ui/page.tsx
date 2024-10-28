@@ -4,9 +4,7 @@ import {
   getCairoVerificationResult,
 } from "@/src/features/verify/api";
 import { VerifyStepper } from "./verify-stepper";
-import { CodeExplorer } from "./code-explorer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
-import { ContractInteract } from "./contract-interact";
+import { VerifiedInfo } from "./verified-info";
 
 export type ContractInfo = {
   chain: string;
@@ -80,37 +78,11 @@ export const VerifiyPage = async ({
         </p>
         <div className="flex w-full flex-col justify-center gap-4">
           {verifiedSrcUrl ? (
-            <>
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-                <p className="block sm:inline">
-                  Contract {contractAddress} has been verified
-                </p>
-                <br />
-                <p className="block sm:inline">
-                  You can download the verified source code{" "}
-                  <a href={verifiedSrcUrl} className="text-blue-600" download>
-                    here
-                  </a>
-                </p>
-              </div>
-              <Tabs defaultValue="code">
-                <TabsList>
-                  <TabsTrigger value="code">Code</TabsTrigger>
-                  <TabsTrigger value="interact">Interact</TabsTrigger>
-                </TabsList>
-                <TabsContent value="code">
-                  <CodeExplorer url={verifiedSrcUrl} />
-                </TabsContent>
-                <TabsContent value="interact">
-                  {outFileUrl && (
-                    <ContractInteract
-                      outFileUrl={outFileUrl}
-                      contractAddress={contractAddress!}
-                    />
-                  )}
-                </TabsContent>
-              </Tabs>
-            </>
+            <VerifiedInfo
+              contractAddress={contractAddress!}
+              verifiedSrcUrl={verifiedSrcUrl}
+              outFileUrl={outFileUrl ? outFileUrl : undefined}
+            />
           ) : (
             <VerifyStepper
               initialStep={initialStep}

@@ -1,3 +1,5 @@
+import { baseUrl } from ".";
+
 type StarknetChainId = "0x534e5f4d41494e" | "0x534e5f5345504f4c4941";
 export interface CairoVerificationSrcUploadReqDto {
   chainId: StarknetChainId;
@@ -9,8 +11,6 @@ export interface CairoVerificationSrcUploadResultDto {
   contractAddress: string;
   srcFileId: string;
 }
-
-const baseUrl = "https://verify.welldonestudio.io";
 
 export const postCairoSourceCode = async (
   request: CairoVerificationSrcUploadReqDto
