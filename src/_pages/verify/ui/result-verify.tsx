@@ -7,6 +7,7 @@ import {
   postArbitrumStylusSourceCode,
   verifyArbitrumStylus,
 } from "@/src/features/verify/api";
+import { postSoliditySourceCode, verifySolidity } from "@/src/features/verify/api/solidity";
 
 interface ResultVerifyProps {
   contractInfo: ContractInfo;
@@ -54,7 +55,16 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
     setUploadStatus("loading");
     try {
       // TODO: 다른 chain 지원
-      if (contractInfo.chain === "arbitrum") {
+      if (contractInfo.chain === "ethereum") {
+        const result = await postSoliditySourceCode({
+          protocol: contractInfo.chain.toLowerCase() as "ethereum" | "arbitrum",
+          chainId: contractInfo.network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+          contractAddress: contractInfo.contractAddress,
+          srcZipFile: contractInfo.sourceFile!,
+        });
+        setUploadStatus("done");
+        return result;
+      } else if (contractInfo.chain === "arbitrum") {
         const result = await postArbitrumStylusSourceCode({
           network:
             contractInfo.network === "one"
@@ -78,6 +88,24 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
       setVerifyStatus("loading");
       try {
         // TODO: 다른 chain 지원
+        if (contractInfo.chain === "ethereum") {
+          const result = await verifySolidity({
+            optimize: "1",
+            optimizeRuns: "200",
+            evmVersion: "default",
+            compilerVersion: contractInfo.compilerVersion,
+            contractAddress: contractInfo.contractAddress,
+            protocol: "ethereum",
+            chainId: contractInfo.network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
+          });
+          setVerifyStatus("done");
+          if (result.isVerified) {
+            return result;
+          } else {
+            setVerifyErrorMsg(result.errMsg || "");
+            setVerifyStatus("error");
+          }
+        } else
         if (contractInfo.chain === "arbitrum") {
           const result = await verifyArbitrumStylus({
             network:

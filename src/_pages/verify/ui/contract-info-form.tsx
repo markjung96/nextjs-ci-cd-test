@@ -14,6 +14,7 @@ import {
 import { useStepper } from "@/src/widgets/Stpper";
 import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
 import { ContractInfo } from "./page";
+import solidityVersion from "@/src/shared/lib/solidity-version.json";
 
 type ChainInfo = {
   chainName: string;
@@ -39,7 +40,10 @@ const chainInfos: ChainInfo[] = [
   },
 ];
 
-const solidityCompilerVersions = ["0.8.25", "0.8.26", "0.8.27", "0.8.28"];
+const solidityCompilerVersions = solidityVersion.builds
+  .reverse()
+  .filter((build) => !build.longVersion.includes("nightly"))
+  .map((build) => `v${build.version}+${build.build}`);
 const stylusCompilerVersions = ["0.5.2"];
 const cairoCompilerVersions = ["0.0.1"];
 

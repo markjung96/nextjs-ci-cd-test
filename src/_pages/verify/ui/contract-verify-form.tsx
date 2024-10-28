@@ -4,9 +4,6 @@ import { Dispatch, FC, SetStateAction } from "react";
 import { ContractInfo } from "./page";
 import { InputFile } from "./input-file";
 
-const compilerTypes = ["stylus"];
-const compilerVersions = ["0.5.2"];
-
 interface ContractInfoProps {
   contractInfo: ContractInfo;
   setContractInfo: Dispatch<SetStateAction<ContractInfo>>;
