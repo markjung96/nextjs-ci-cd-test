@@ -12,7 +12,7 @@ import {
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
 import { http, WagmiProvider, useAccount, useWriteContract } from "wagmi";
-import { arbitrum, arbitrumSepolia } from "wagmi/chains";
+import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createConfig, readContract } from "@wagmi/core";
 import { Abi, AbiFunction, AbiParameter } from "viem";
@@ -25,25 +25,58 @@ import {
 } from "@rainbow-me/rainbowkit";
 
 const configViem = createConfig({
-  chains: [arbitrumSepolia, arbitrum],
+  chains: [mainnet, sepolia, arbitrumSepolia, arbitrum],
   ssr: true,
   transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
     [arbitrumSepolia.id]: http(),
     [arbitrum.id]: http(),
   },
 });
 
-export const config = getDefaultConfig({
-  appName: "Arbitrum Sepolia",
-  projectId: process.env.NEXT_PUBLIC_WALLET_PROJECT_ID!,
-  chains: [arbitrumSepolia, arbitrum],
-  multiInjectedProviderDiscovery: false,
-  transports: {
-    [arbitrumSepolia.id]: http(),
-    [arbitrum.id]: http(),
-  },
-  ssr: true,
-});
+const getConfig = (chain: string, network: string) => {
+  let chains: any = [];
+  let transports = {};
+  switch (`${chain}/${network}`) {
+    case "ethereum/mainnet":
+      chains = [mainnet];
+      transports = {
+        [mainnet.id]: http(),
+      };
+      break;
+    case "ethereum/sepolia":
+      chains = [sepolia];
+      transports = {
+        [sepolia.id]: http(),
+      };
+      break;
+    case "arbitrum/one":
+      chains = [arbitrum];
+      transports = {
+        [arbitrum.id]: http(),
+      };
+      break;
+    case "arbitrum/sepolia":
+      chains = [arbitrumSepolia];
+      transports = {
+        [arbitrumSepolia.id]: http(),
+      };
+      break;
+
+    default:
+      break;
+  }
+  return getDefaultConfig({
+    appName: "Arbitrum Sepolia",
+    projectId: process.env.NEXT_PUBLIC_WALLET_PROJECT_ID!,
+    chains,
+    multiInjectedProviderDiscovery: false,
+    transports,
+    ssr: true,
+  });
+};
+
 const queryClient = new QueryClient();
 
 type File = {
@@ -55,11 +88,15 @@ const isFunctionFragment = (abi: AbiFunction | Abi): abi is AbiFunction =>
   (abi as AbiFunction).type === "function";
 
 interface ContractInteractProps {
+  chain: string;
+  network: string;
   outFileUrl: string;
   contractAddress: string;
 }
 
 export const ContractInteract: FC<ContractInteractProps> = ({
+  chain,
+  network,
   outFileUrl,
   contractAddress,
 }) => {
@@ -82,6 +119,8 @@ export const ContractInteract: FC<ContractInteractProps> = ({
     const codes = await Promise.all(filePromises);
     return codes;
   };
+
+  const config = getConfig(chain, network);
 
   const fetchZip = async (url: string) => {
     const zipFile = await fetch(url);
@@ -120,7 +159,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider modalSize="compact">
-          <ConnectButtonWrapper />
+          <ConnectButtonWrapper chain={chain} network={network} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
             <Card>
               <CardHeader>
@@ -175,12 +214,31 @@ export const ContractInteract: FC<ContractInteractProps> = ({
   );
 };
 
-const ConnectButtonWrapper = () => {
+interface ConnectButtonWrapperProps {
+  chain: string;
+  network: string;
+}
+
+const ConnectButtonWrapper = ({
+  chain,
+  network,
+}: ConnectButtonWrapperProps) => {
   const { isConnected, chainId } = useAccount();
 
   if (isConnected) {
-    if (chainId !== arbitrumSepolia.id) {
-      switchChain(configViem, { chainId: arbitrumSepolia.id });
+    if (chain === "ethereum") {
+      if (network === "mainnet" && chainId !== mainnet.id) {
+        switchChain(configViem, { chainId: mainnet.id });
+      } else if (network === "sepolia" && chainId !== sepolia.id) {
+        switchChain(configViem, { chainId: sepolia.id });
+      }
+    }
+    if (chain === "arbitrum") {
+      if (network === "one" && chainId !== arbitrum.id) {
+        switchChain(configViem, { chainId: arbitrum.id });
+      } else if (network === "sepolia" && chainId !== arbitrumSepolia.id) {
+        switchChain(configViem, { chainId: arbitrumSepolia.id });
+      }
     }
   }
 

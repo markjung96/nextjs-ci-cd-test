@@ -4,12 +4,16 @@ import { CodeExplorer } from "./code-explorer";
 import { ContractInteract } from "./contract-interact";
 
 interface VerifiedInfoProps {
+  chain: string;
+  network: string;
   contractAddress: string;
   verifiedSrcUrl: string;
   outFileUrl?: string;
 }
 
 export const VerifiedInfo: FC<VerifiedInfoProps> = ({
+  chain,
+  network,
   contractAddress,
   verifiedSrcUrl,
   outFileUrl,
@@ -39,6 +43,8 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
         <TabsContent value="interact">
           {outFileUrl && (
             <ContractInteract
+              chain={chain}
+              network={network}
               outFileUrl={outFileUrl}
               contractAddress={contractAddress!}
             />

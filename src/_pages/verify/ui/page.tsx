@@ -108,6 +108,8 @@ export const VerifiyPage = async ({
           <Suspense fallback={<div>Loading...</div>}>
             {verifiedSrcUrl ? (
               <VerifiedInfo
+                chain={chain}
+                network={network!}
                 contractAddress={contractAddress!}
                 verifiedSrcUrl={verifiedSrcUrl}
                 outFileUrl={outFileUrl ? outFileUrl : undefined}
