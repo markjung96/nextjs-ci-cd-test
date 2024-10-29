@@ -90,7 +90,8 @@ export const ContractInteract: FC<ContractInteractProps> = ({
     const zip = new JSZip();
     const unzippedFiles = await zip.loadAsync(zipBlob);
     const files: File[] = await processFiles(unzippedFiles);
-    const abiFile = files.find((file) => file.name === "output/abi.json");
+    // const abiFile = files.find((file) => file.name === "output/abi.json");
+    const abiFile = files.find((file) => file.name.includes("abi.json"));
     if (abiFile) {
       const totalAbi = JSON.parse(abiFile.content);
       const readAbi = totalAbi.filter(
@@ -236,7 +237,6 @@ const AccordionCard = ({
         args: parms,
         chainId: arbitrumSepolia.id,
       });
-      console.log("res", Number(res).toString());
       setValue(Number(res).toString());
     } catch (e: any) {
       console.error(e);

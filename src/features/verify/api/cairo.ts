@@ -19,9 +19,6 @@ export const postCairoSourceCode = async (
   formData.append("chainId", request.chainId);
   formData.append("contractAddress", request.contractAddress);
   formData.append("srcZipFile", request.srcZipFile);
-  for (const x of Array.from(formData.entries())) {
-    console.log(x);
-  }
   try {
     const response = await fetch(`${baseUrl}/starknet/verifications/sources`, {
       method: "POST",

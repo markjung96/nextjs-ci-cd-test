@@ -18,9 +18,6 @@ export const postSoliditySourceCode = async (
   formData.append("chainId", request.chainId);
   formData.append("contractAddress", request.contractAddress);
   formData.append("srcZipFile", request.srcZipFile);
-  for (const x of Array.from(formData.entries())) {
-    console.log(x);
-   };
   try {
     const response = await fetch(`${baseUrl}/evm/verifications/sources`, {
       method: "POST",
