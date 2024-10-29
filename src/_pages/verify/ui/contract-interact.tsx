@@ -171,6 +171,8 @@ export const ContractInteract: FC<ContractInteractProps> = ({
                     if (isFunctionFragment(abiItem))
                       return (
                         <AccordionCard
+                          chain={chain}
+                          network={network}
                           abi={abi}
                           key={`Methods_A_${abiIndex}`}
                           contractAddress={contractAddress}
@@ -194,6 +196,8 @@ export const ContractInteract: FC<ContractInteractProps> = ({
                     if (isFunctionFragment(abiItem))
                       return (
                         <AccordionCard
+                          chain={chain}
+                          network={network}
                           abi={abi}
                           key={`Methods_A_${abiIndex}`}
                           contractAddress={contractAddress}
@@ -246,12 +250,16 @@ const ConnectButtonWrapper = ({
 };
 
 interface AccordionCardProps {
+  chain: string;
+  network: string;
   abi: Abi[];
   abiFragment: AbiFunction;
   index: number;
   contractAddress: string;
 }
 const AccordionCard = ({
+  chain,
+  network,
   abi,
   abiFragment,
   index,
@@ -261,7 +269,21 @@ const AccordionCard = ({
   const { isConnected, chainId } = useAccount();
   const [value, setValue] = useState<string>("");
   const [args, setArgs] = useState<{ [key: string]: string }>({});
-  const isArbitrumSepolia = chainId === arbitrumSepolia.id;
+  const isRightNetwork = React.useMemo(() => {
+    if (chain === "ethereum" && network === "mainnet") {
+      return chainId === mainnet.id;
+    }
+    if (chain === "ethereum" && network === "sepolia") {
+      return chainId === sepolia.id;
+    }
+    if (chain === "arbitrum" && network === "one") {
+      return chainId === arbitrum.id;
+    }
+    if (chain === "arbitrum" && network === "sepolia") {
+      return chainId === arbitrumSepolia.id;
+    }
+    return false;
+  }, [chain, network, chainId]);
 
   const getButtonVariant = (state: string = ""): string => {
     switch (state) {
@@ -279,8 +301,23 @@ const AccordionCard = ({
   };
 
   const handleCallOnClick = async () => {
-    // if (!account || !client) return;
-    // setLoading(true);
+    let chainId;
+    switch (`${chain}/${network}`) {
+      case "ethereum/mainnet":
+        chainId = mainnet.id;
+        break;
+      case "ethereum/sepolia":
+        chainId = sepolia.id;
+        break;
+      case "arbitrum/one":
+        chainId = arbitrum.id;
+        break;
+      case "arbitrum/sepolia":
+        chainId = arbitrumSepolia.id;
+        break;
+      default:
+        break;
+    }
 
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {
@@ -293,9 +330,27 @@ const AccordionCard = ({
         address: contractAddress as `0x${string}`,
         functionName: abiFragment.name,
         args: parms,
-        chainId: arbitrumSepolia.id,
+        chainId,
       });
-      setValue(Number(res).toString());
+      let _value = "";
+      switch (abiFragment.outputs[0].type) {
+        case "address":
+          _value = String(res);
+          break;
+        case "uint":
+        case "uint256":
+          _value = Number(res).toString();
+          break;
+        case "bool":
+          _value = Boolean(res).toString();
+          break;
+        case "string":
+        case "bytes":
+        default:
+          _value = String(res);
+          break;
+      }
+      setValue(_value);
     } catch (e: any) {
       console.error(e);
     } finally {
@@ -304,10 +359,6 @@ const AccordionCard = ({
   };
 
   const handleTransactOnClick = async () => {
-    // if (!account || !client || !provider) return;
-    // setLoading(true);
-    // setResult({});
-
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {
       parms.push(args[item.name!]);
@@ -319,11 +370,27 @@ const AccordionCard = ({
         abi,
         functionName: abiFragment.name,
         args: parms,
+        chainId,
       });
     } catch (e: any) {
       console.error(e);
     } finally {
       // setLoading(false);
+    }
+  };
+
+  const tranactionViewUrl = (hash: string) => {
+    switch (`${chain}/${network}`) {
+      case "ethereum/mainnet":
+        return `https://etherscan.io/tx/${hash}`;
+      case "ethereum/sepolia":
+        return `https://sepolia.etherscan.io/tx/${hash}`;
+      case "arbitrum/one":
+        return `https://arbiscan.io/tx/${hash}`;
+      case "arbitrum/sepolia":
+        return `https://sepolia.arbiscan.io/tx/${hash}`;
+      default:
+        return "";
     }
   };
 
@@ -336,7 +403,7 @@ const AccordionCard = ({
   }, [abiFragment.inputs]);
 
   return (
-    <AccordionItem key={`Methods_A_${index}`} value={abiFragment.name}>
+    <AccordionItem key={`Methods_A_${index}`} value={abiFragment.name + abiFragment.inputs.length}>
       <div style={{ padding: "0" }}>
         <AccordionTrigger>{abiFragment.name}</AccordionTrigger>
         <AccordionContent>
@@ -350,7 +417,7 @@ const AccordionCard = ({
               ) : (
                 <Button
                   size="sm"
-                  disabled={!isConnected || !isArbitrumSepolia}
+                  disabled={!isConnected || !isRightNetwork}
                   onClick={handleTransactOnClick}
                 >
                   transact
@@ -358,28 +425,29 @@ const AccordionCard = ({
               )}
               {hash && (
                 <div className="mt-2">
-                  <a
-                    href={`https://sepolia.arbiscan.io/tx/${hash}`}
-                    target="_blank"
-                  >
+                  <a href={tranactionViewUrl(hash)} target="_blank">
                     view transaction
                   </a>
                 </div>
               )}
               {value && (
-                <Input
-                  className="mt-2"
-                  value={value}
-                  readOnly
-                  size={10}
-                  placeholder="result"
-                  hidden={
-                    !(
-                      abiFragment.stateMutability === "view" ||
-                      abiFragment.stateMutability === "pure"
-                    )
-                  }
-                />
+                <div className="mt-4">
+                  <Label htmlFor="text">{abiFragment.outputs[0].type}</Label>
+                  <Input
+                    type="text"
+                    className="mt-2"
+                    value={value}
+                    readOnly
+                    size={10}
+                    placeholder="result"
+                    hidden={
+                      !(
+                        abiFragment.stateMutability === "view" ||
+                        abiFragment.stateMutability === "pure"
+                      )
+                    }
+                  />
+                </div>
               )}
             </div>
           </div>
