@@ -2,6 +2,7 @@ import { FC } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
 import { CodeExplorer } from "./code-explorer";
 import { ContractInteract } from "./contract-interact";
+import { ContractInteractStarknet } from "./contract-interact-starknet";
 
 interface VerifiedInfoProps {
   chain: string;
@@ -42,12 +43,23 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
         </TabsContent>
         <TabsContent value="interact">
           {outFileUrl && (
-            <ContractInteract
-              chain={chain}
-              network={network}
-              outFileUrl={outFileUrl}
-              contractAddress={contractAddress!}
-            />
+            <>
+              {chain === "starknet" ? (
+                <ContractInteractStarknet
+                  chain={chain}
+                  network={network}
+                  outFileUrl={outFileUrl}
+                  contractAddress={contractAddress!}
+                />
+              ) : (
+                <ContractInteract
+                  chain={chain}
+                  network={network}
+                  outFileUrl={outFileUrl}
+                  contractAddress={contractAddress!}
+                />
+              )}
+            </>
           )}
         </TabsContent>
       </Tabs>
