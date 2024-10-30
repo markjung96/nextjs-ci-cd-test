@@ -167,14 +167,18 @@ const ConnectButtonWrapper = ({
   const handleClickConnect = async () => {
     await connectWallet(network === "mainnet" ? "mainnet" : "sepolia");
   };
-  console.log('walletAccount', walletAccount);
-  console.log('walletAccount.address', walletAccount?.address);
+  const address = React.useMemo(async () => {
+    if (!walletAccount) {
+      return "";
+    }
+    // sleep 0.1s
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    return walletAccount.address;
+  }, [walletAccount]);
   return (
     <>
       {!!walletAccount ? (
-        <div className="text-green-500">
-          Connected to {walletAccount.address}
-        </div>
+        <div className="text-green-500">Connected to {address}</div>
       ) : (
         <Button size="sm" onClick={handleClickConnect}>
           Connect
