@@ -84,9 +84,11 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
         chain: chain,
         network: (network as StarknetContractInfo["network"]) || "mainnet",
         contractAddress: contractAddress || "",
+        declareTxHash: "",
         compilerType:
           (compilerType as StarknetContractInfo["compilerType"]) || "cairo",
         compilerVersion: compilerVersion || "2.8.2",
+        scarbVersion: compilerVersion || "2.8.2",
         sourceFile: null,
       };
       break;

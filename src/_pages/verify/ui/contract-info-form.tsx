@@ -270,7 +270,11 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
             Please Select Compiler Version
           </Label>
           <Select
-            defaultValue={contractInfo.compilerVersion}
+            defaultValue={
+              contractInfo.chain === "starknet"
+                ? contractInfo.scarbVersion
+                : contractInfo.compilerVersion
+            }
             onValueChange={(version) =>
               setContractInfo((prevValue) => {
                 if (contractInfo.chain === "starknet") {
