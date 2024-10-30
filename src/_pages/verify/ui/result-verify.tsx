@@ -137,8 +137,8 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
                 ? "0x534e5f4d41494e"
                 : "0x534e5f5345504f4c4941",
             contractAddress: contractInfo.contractAddress,
-            declareTxHash: "",
-            scarbVersion: "",
+            declareTxHash: contractInfo.declareTxHash,
+            scarbVersion: contractInfo.scarbVersion,
             srcFileId: srcFileId!,
           });
         } else {

@@ -33,6 +33,8 @@ export type StarknetContractInfo = {
   chain: "starknet";
   network: "mainnet" | "sepolia";
   contractAddress: string;
+  declareTxHash: string;
+  scarbVersion: string;
   compilerType: "cairo";
   compilerVersion: string;
   sourceFile: File | null;

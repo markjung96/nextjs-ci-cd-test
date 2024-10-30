@@ -44,7 +44,31 @@ const solidityCompilerVersions = solidityVersion.builds
   .filter((build) => !build.longVersion.includes("nightly"))
   .map((build) => `v${build.version}+${build.build}`);
 const stylusCompilerVersions = ["0.5.1", "0.5.3"];
-const cairoCompilerVersions = ["0.0.1"];
+const cairoCompilerVersions = [
+  "2.3.0",
+  "2.3.1",
+  "2.4.0",
+  "2.4.1",
+  "2.4.2",
+  "2.4.3",
+  "2.4.4",
+  "2.5.0",
+  "2.5.1",
+  "2.5.2",
+  "2.5.3",
+  "2.5.4",
+  "2.6.0",
+  "2.6.1",
+  "2.6.2",
+  "2.6.3",
+  "2.6.4",
+  "2.6.5",
+  "2.7.0",
+  "2.7.1",
+  "2.8.0",
+  "2.8.1",
+  "2.8.2",
+];
 
 interface ContractInfoProps {
   contractInfo: ContractInfo;
@@ -96,6 +120,29 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           }
         />
       </div>
+      {contractInfo.chain === "starknet" && (
+        <div>
+          <Label
+            htmlFor="contract-address"
+            className="block text-sm font-medium "
+          >
+            Please enter the Declare Transaction Hash
+          </Label>
+          <Input
+            type="text"
+            id="contract-address"
+            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            placeholder="0x"
+            value={contractInfo.declareTxHash}
+            onChange={(e) =>
+              setContractInfo((prevValue) => ({
+                ...prevValue,
+                declareTxHash: e.target.value,
+              }))
+            }
+          />
+        </div>
+      )}
       <div className="flex row w-full gap-10 padding-4">
         <div className="flex-1">
           <Label htmlFor="compiler-type" className="block text-sm font-medium ">
@@ -225,10 +272,18 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           <Select
             defaultValue={contractInfo.compilerVersion}
             onValueChange={(version) =>
-              setContractInfo((prevValue) => ({
-                ...prevValue,
-                compilerVersion: version,
-              }))
+              setContractInfo((prevValue) => {
+                if (contractInfo.chain === "starknet") {
+                  return {
+                    ...prevValue,
+                    scarbVersion: version,
+                  };
+                }
+                return {
+                  ...prevValue,
+                  compilerVersion: version,
+                };
+              })
             }
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">

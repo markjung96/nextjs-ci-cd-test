@@ -32,8 +32,15 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
           <li>Chain : {contractInfo.chain}</li>
           <li>Network : {contractInfo.network}</li>
           <li>Contract Address: {contractInfo.contractAddress}</li>
+          {contractInfo.chain === "starknet" ? (
+            <>
+              <li>Declare TxHash: {contractInfo.declareTxHash}</li>
+              <li>Scarb Version: {contractInfo.scarbVersion}</li>
+            </>
+          ) : (
+            <li>Compiler Version: {contractInfo.compilerVersion}</li>
+          )}
           <li>Compiler Type: {contractInfo.compilerType}</li>
-          <li>Compiler Version: {contractInfo.compilerVersion}</li>
         </ol>
       </div>
       <div>

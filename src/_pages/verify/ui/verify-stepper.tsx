@@ -86,7 +86,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
         contractAddress: contractAddress || "",
         compilerType:
           (compilerType as StarknetContractInfo["compilerType"]) || "cairo",
-        compilerVersion: compilerVersion || "0.0.1",
+        compilerVersion: compilerVersion || "2.8.2",
         sourceFile: null,
       };
       break;
