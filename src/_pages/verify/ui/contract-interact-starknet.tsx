@@ -11,13 +11,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
-import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "wagmi/chains";
 import { Abi, AbiFunction, AbiParameter } from "viem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { connect } from "get-starknet"; // v4.0.0 min
-import { Contract, RpcProvider, WalletAccount } from "starknet"; // v6.10.0 min
-
-const rpcUrl = "https://free-rpc.nethermind.io/mainnet-juno/v0_7";
+import { Contract, RpcProvider } from "starknet"; // v6.10.0 min
+import { StarknetProvider, useStarknetProvider } from "./starknet-provider";
 
 type File = {
   name: string;
@@ -99,7 +96,7 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
   }, []);
 
   return (
-    <>
+    <StarknetProvider>
       <ConnectButtonWrapper chain={chain} network={network} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
         <Card>
@@ -153,7 +150,7 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
           </CardContent>
         </Card>
       </div>
-    </>
+    </StarknetProvider>
   );
 };
 
@@ -166,31 +163,26 @@ const ConnectButtonWrapper = ({
   chain,
   network,
 }: ConnectButtonWrapperProps) => {
+  const { connectWallet, walletAccount } = useStarknetProvider();
   const handleClickConnect = async () => {
-    const selectedWalletSWO = await connect({
-      modalMode: "alwaysAsk",
-      modalTheme: "light",
-    });
-    if (!selectedWalletSWO) {
-      return;
-    }
-    const myWalletAccount = new WalletAccount(
-      { nodeUrl: rpcUrl },
-      selectedWalletSWO
-    );
+    await connectWallet(network === "mainnet" ? "mainnet" : "sepolia");
   };
+  console.log('walletAccount', walletAccount);
+  console.log('walletAccount.address', walletAccount?.address);
   return (
-    <Button size="sm" onClick={handleClickConnect}>
-      Connect
-    </Button>
+    <>
+      {!!walletAccount ? (
+        <div className="text-green-500">
+          Connected to {walletAccount.address}
+        </div>
+      ) : (
+        <Button size="sm" onClick={handleClickConnect}>
+          Connect
+        </Button>
+      )}
+    </>
   );
 };
-
-const provider = new RpcProvider({
-  nodeUrl: `${process.env.NEXT_PUBLIC_STARKNET_SEPOLIA_URL}`,
-});
-const testAddress =
-  "0x009b0a3a29c105c495b1869444662ce012fd119483201623721f698ddc05acdc";
 
 interface AccordionCardProps {
   chain: string;
@@ -208,6 +200,7 @@ const AccordionCard = ({
   index,
   contractAddress,
 }: AccordionCardProps) => {
+  const { provider, walletAccount } = useStarknetProvider();
   const [hash, setHash] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [args, setArgs] = useState<{ [key: string]: string }>({});
@@ -229,11 +222,11 @@ const AccordionCard = ({
   };
 
   const handleCallOnClick = async () => {
-    const { abi: testAbi } = await provider.getClassAt(testAddress);
-    if (testAbi === undefined) {
+    const { abi: realAbi } = await provider.getClassAt(contractAddress);
+    if (realAbi === undefined) {
       throw new Error("no abi.");
     }
-    const myTestContract = new Contract(testAbi, testAddress, provider);
+    const contract = new Contract(realAbi, contractAddress, provider);
 
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {
@@ -241,7 +234,7 @@ const AccordionCard = ({
     });
 
     try {
-      const result = await myTestContract[abiFragment.name](...parms);
+      const result = await contract[abiFragment.name](...parms);
       let _value = "";
       if (abiFragment.outputs[0].type.includes("integer")) {
         _value = result.toString();
@@ -256,32 +249,23 @@ const AccordionCard = ({
   };
 
   const handleTransactOnClick = async () => {
-    const selectedWalletSWO = await connect({
-      modalMode: "alwaysAsk",
-      modalTheme: "light",
-    });
-    if (!selectedWalletSWO) {
-      return;
+    if (walletAccount === null) {
+      throw new Error("walletAccount is null.");
     }
-    const myWalletAccount = new WalletAccount(
-      { nodeUrl: rpcUrl },
-      selectedWalletSWO
-    );
-
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {
       parms.push(args[item.name!]);
     });
-    const { abi: testAbi } = await provider.getClassAt(testAddress);
-    if (testAbi === undefined) {
+    const { abi: realAbi } = await provider.getClassAt(contractAddress);
+    if (realAbi === undefined) {
       throw new Error("no abi.");
     }
 
     try {
-      const myTestContract = new Contract(testAbi, testAddress, provider);
-      myTestContract.connect(myWalletAccount);
+      const contract = new Contract(realAbi, contractAddress, provider);
+      contract.connect(walletAccount);
 
-      const resp = await myTestContract[abiFragment.name](...parms);
+      const resp = await contract[abiFragment.name](...parms);
       setHash(resp.transaction_hash);
       // const resp = await myWalletAccount.execute(interact);
       // write contract
@@ -293,8 +277,9 @@ const AccordionCard = ({
   };
 
   const tranactionViewUrl = (hash: string) => {
-    return `https://sepolia.starkscan.co/tx/${hash}`;
-    // return `https://starkscan.co/tx/${hash}`;
+    return network === "mainnet"
+      ? `https://starkscan.co/tx/${hash}`
+      : `https://sepolia.starkscan.co/tx/${hash}`;
   };
 
   useEffect(() => {
@@ -323,7 +308,7 @@ const AccordionCard = ({
               ) : (
                 <Button
                   size="sm"
-                  // disabled={!isConnected || !isRightNetwork}
+                  disabled={!walletAccount || !isRightNetwork}
                   onClick={handleTransactOnClick}
                 >
                   transact
