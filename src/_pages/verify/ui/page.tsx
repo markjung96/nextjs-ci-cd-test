@@ -27,6 +27,7 @@ export type ArbitrumContractInfo = {
   compilerType: "stylus";
   compilerVersion: string;
   sourceFile: File | null;
+  os: "x86" | "arm";
 };
 
 export type StarknetContractInfo = {
@@ -40,16 +41,9 @@ export type StarknetContractInfo = {
   sourceFile: File | null;
 };
 
-export type ContractInfo =
-  | EthereumContractInfo
-  | ArbitrumContractInfo
-  | StarknetContractInfo;
+export type ContractInfo = EthereumContractInfo | ArbitrumContractInfo | StarknetContractInfo;
 
-export const VerifiyPage = async ({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | undefined };
-}) => {
+export const VerifiyPage = async ({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) => {
   const chain = searchParams?.chain as SupportedChain;
   const network = searchParams?.network;
   const contractAddress = searchParams?.contractAddress;
@@ -80,9 +74,7 @@ export const VerifiyPage = async ({
     }
     if (chain === "starknet" && network !== undefined) {
       result = await getCairoVerificationResult(
-        network.toLowerCase() === "mainnet"
-          ? "0x534e5f4d41494e"
-          : "0x534e5f5345504f4c4941",
+        network.toLowerCase() === "mainnet" ? "0x534e5f4d41494e" : "0x534e5f5345504f4c4941",
         contractAddress
       );
     }
@@ -99,12 +91,9 @@ export const VerifiyPage = async ({
   return (
     <div className="h-full flex flex-col items-center justify-center p-4">
       <div className="max-w-7xl w-full p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-2">
-          Verify & Publish Contract Source Code
-        </h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Verify & Publish Contract Source Code</h1>
         <p className="text-center  mb-6">
-          Source code verification provides transparency for users interacting
-          with smart contracts.
+          Source code verification provides transparency for users interacting with smart contracts.
         </p>
         <div className="flex w-full flex-col justify-center gap-4">
           <Suspense fallback={<div>Loading...</div>}>
