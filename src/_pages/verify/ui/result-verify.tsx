@@ -19,10 +19,7 @@ interface ResultVerifyProps {
 
 type Status = "not_started" | "loading" | "done" | "error";
 
-export const ResultVerify: FC<ResultVerifyProps> = ({
-  contractInfo,
-  isRemixSrcUploaded,
-}) => {
+export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUploaded }) => {
   const { hasCompletedAllSteps } = useStepper();
   const [uploadStatus, setUploadStatus] = useState<Status>("not_started");
   const [verifyStatus, setVerifyStatus] = useState<Status>("not_started");
@@ -61,10 +58,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
       if (contractInfo.chain === "ethereum") {
         const result = await postSoliditySourceCode({
           protocol: contractInfo.chain.toLowerCase() as "ethereum" | "arbitrum",
-          chainId:
-            contractInfo.network.toLowerCase() === "mainnet"
-              ? "0x1"
-              : "0xaa36a7",
+          chainId: contractInfo.network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
         });
@@ -72,22 +66,17 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
         return result;
       } else if (contractInfo.chain === "arbitrum") {
         const result = await postStylusSourceCode({
-          network:
-            contractInfo.network === "one"
-              ? "ARBITRUM_ONE"
-              : "ARBITRUM_SEPOLIA",
+          network: contractInfo.network === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
           compilerVersion: contractInfo.compilerVersion,
+          os: contractInfo.os,
         });
         setUploadStatus("done");
         return result;
       } else if (contractInfo.chain === "starknet") {
         const result = await postCairoSourceCode({
-          chainId:
-            contractInfo.network === "mainnet"
-              ? "0x534e5f4d41494e"
-              : "0x534e5f5345504f4c4941",
+          chainId: contractInfo.network === "mainnet" ? "0x534e5f4d41494e" : "0x534e5f5345504f4c4941",
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
         });
@@ -115,27 +104,19 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             compilerVersion: contractInfo.compilerVersion,
             contractAddress: contractInfo.contractAddress,
             protocol: "ethereum",
-            chainId:
-              contractInfo.network.toLowerCase() === "mainnet"
-                ? "0x1"
-                : "0xaa36a7",
+            chainId: contractInfo.network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
           });
         } else if (contractInfo.chain === "arbitrum") {
           result = await verifyStylus({
-            network:
-              contractInfo.network === "one"
-                ? "ARBITRUM_ONE"
-                : "ARBITRUM_SEPOLIA",
+            network: contractInfo.network === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
             contractAddress: contractInfo.contractAddress,
             srcFileId,
             cliVersion: contractInfo.compilerVersion,
+            os: contractInfo.os,
           });
         } else if (contractInfo.chain === "starknet") {
           result = await verifyCairo({
-            chainId:
-              contractInfo.network === "mainnet"
-                ? "0x534e5f4d41494e"
-                : "0x534e5f5345504f4c4941",
+            chainId: contractInfo.network === "mainnet" ? "0x534e5f4d41494e" : "0x534e5f5345504f4c4941",
             contractAddress: contractInfo.contractAddress,
             declareTxHash: contractInfo.declareTxHash,
             scarbVersion: contractInfo.scarbVersion,
@@ -165,19 +146,14 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
           await verifyContract();
         } else {
           const result = await uploadSourceFiles();
+          console.log("result", result);
           if (result && result.srcFileId) {
             await verifyContract(result.srcFileId);
           }
         }
       })();
     }
-  }, [
-    hasCompletedAllSteps,
-    contractInfo,
-    uploadSourceFiles,
-    verifyContract,
-    isRemixSrcUploaded,
-  ]);
+  }, [hasCompletedAllSteps, contractInfo, uploadSourceFiles, verifyContract, isRemixSrcUploaded]);
 
   return (
     <>
@@ -193,9 +169,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             {verifyStatusIcon}
             <p>Verifing</p>
           </div>
-          {verifyStatus === "error" && (
-            <p className="text-red-500 text-sm">{verifyErrorMsg}</p>
-          )}
+          {verifyStatus === "error" && <p className="text-red-500 text-sm">{verifyErrorMsg}</p>}
         </div>
       )}
     </>

@@ -75,15 +75,10 @@ interface ContractInfoProps {
   setContractInfo: Dispatch<SetStateAction<ContractInfo>>;
 }
 
-export const ContractInfoForm: FC<ContractInfoProps> = ({
-  contractInfo,
-  setContractInfo,
-}) => {
+export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContractInfo }) => {
   const { nextStep } = useStepper();
   const [selectedChain, setSelectedChain] = useState<ChainInfo>(
-    chainInfos.filter(
-      (chainInfo) => contractInfo.chain === chainInfo.chainName
-    )[0]
+    chainInfos.filter((chainInfo) => contractInfo.chain === chainInfo.chainName)[0]
   );
 
   const compilerVersions = useMemo(() => {
@@ -100,10 +95,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
   return (
     <form className="space-y-4">
       <div>
-        <Label
-          htmlFor="contract-address"
-          className="block text-sm font-medium "
-        >
+        <Label htmlFor="contract-address" className="block text-sm font-medium ">
           Please enter the Contract Address you would like to verify
         </Label>
         <Input
@@ -122,10 +114,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
       </div>
       {contractInfo.chain === "starknet" && (
         <div>
-          <Label
-            htmlFor="contract-address"
-            className="block text-sm font-medium "
-          >
+          <Label htmlFor="contract-address" className="block text-sm font-medium ">
             Please enter the Declare Transaction Hash
           </Label>
           <Input
@@ -151,19 +140,13 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           <Select
             defaultValue={selectedChain.chainName}
             onValueChange={(item: SupportedChain) => {
-              setSelectedChain(
-                chainInfos.filter(
-                  (chainInfo) => chainInfo.chainName === item
-                )[0]
-              );
+              setSelectedChain(chainInfos.filter((chainInfo) => chainInfo.chainName === item)[0]);
               setContractInfo(
                 (prevValue) =>
                   ({
                     ...prevValue,
                     chain: item,
-                    network: chainInfos.filter(
-                      (chainInfo) => chainInfo.chainName === item
-                    )[0].networks[0],
+                    network: chainInfos.filter((chainInfo) => chainInfo.chainName === item)[0].networks[0],
                   } as ContractInfo)
               );
             }}
@@ -174,10 +157,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
             <SelectContent>
               <SelectGroup>
                 {chainInfos.map((item) => (
-                  <SelectItem
-                    key={item.chainName}
-                    value={item.chainName.toLowerCase()}
-                  >
+                  <SelectItem key={item.chainName} value={item.chainName.toLowerCase()}>
                     {item.chainName}
                   </SelectItem>
                 ))}
@@ -263,18 +243,11 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           </Select>
         </div>
         <div className="flex-1">
-          <Label
-            htmlFor="compiler-version"
-            className="block text-sm font-medium "
-          >
+          <Label htmlFor="compiler-version" className="block text-sm font-medium ">
             Please Select Compiler Version
           </Label>
           <Select
-            defaultValue={
-              contractInfo.chain === "starknet"
-                ? contractInfo.scarbVersion
-                : contractInfo.compilerVersion
-            }
+            defaultValue={contractInfo.chain === "starknet" ? contractInfo.scarbVersion : contractInfo.compilerVersion}
             onValueChange={(version) =>
               setContractInfo((prevValue) => {
                 if (contractInfo.chain === "starknet") {
@@ -353,21 +326,32 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
           <Label htmlFor="building-env" className="block text-sm font-medium ">
             Please Select Building Environment
           </Label>
-          <RadioGroup
-            defaultValue="x86"
-            className="flex row mt-2"
-            id="building-env"
-          >
+          <RadioGroup defaultValue="x86" className="flex row mt-2" id="building-env">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="x86" id="r1" />
+              <RadioGroupItem
+                value="x86"
+                id="r1"
+                onClick={() => {
+                  setContractInfo((prevValue) => ({
+                    ...prevValue,
+                    os: "x86",
+                  }));
+                }}
+              />
               <Label htmlFor="r1">x86</Label>
             </div>
             <div className="flex items-center space-x-2">
-              {/* TODO: arm 계열의 verify 준비되면 비활성화 풀기 */}
-              <RadioGroupItem disabled value="arm" id="r2" />
-              <Label htmlFor="r2" className="text-gray-400">
-                arm
-              </Label>
+              <RadioGroupItem
+                value="arm"
+                id="r2"
+                onClick={() => {
+                  setContractInfo((prevValue) => ({
+                    ...prevValue,
+                    os: "arm",
+                  }));
+                }}
+              />
+              <Label htmlFor="r2">arm</Label>
             </div>
           </RadioGroup>
         </div>
@@ -389,10 +373,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
       </div>
 
       <div className="flex justify-end space-x-4">
-        <Button
-          type="reset"
-          className="px-4 py-2 text-sm font-medium  bg-gray-200 rounded-md hover:bg-gray-300"
-        >
+        <Button type="reset" className="px-4 py-2 text-sm font-medium  bg-gray-200 rounded-md hover:bg-gray-300">
           Reset
         </Button>
         <Button
