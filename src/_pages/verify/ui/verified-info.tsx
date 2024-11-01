@@ -86,6 +86,7 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
                   network={network}
                   outFileUrl={outFileUrl}
                   contractAddress={contractAddress!}
+                  fileStructure={fileStructure}
                 />
               ) : (
                 <ContractInteract
