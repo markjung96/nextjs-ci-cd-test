@@ -23,6 +23,9 @@ import {
   RainbowKitProvider,
   ConnectButton,
 } from "@rainbow-me/rainbowkit";
+import { fetchZip } from "@/src/shared/lib/utils";
+import { FileStructure } from "./code-explorer";
+import FunctionExplainModal from "./function-explain-modal";
 
 const configViem = createConfig({
   chains: [mainnet, sepolia, arbitrumSepolia, arbitrum],
@@ -79,19 +82,36 @@ const getConfig = (chain: string, network: string) => {
 
 const queryClient = new QueryClient();
 
-type File = {
-  name: string;
-  content: string;
-};
-
 const isFunctionFragment = (abi: AbiFunction | Abi): abi is AbiFunction =>
   (abi as AbiFunction).type === "function";
+
+type FunctionMap = {
+  [key: string]: string;
+};
+
+function extractFunctionsFromSolidityCode(solidityCode: string): FunctionMap {
+  // FIXME: This regex is not perfect, but it should work for most cases
+  // virtual functions are not supported
+  const functionRegex =
+    /function\s+(\w+)\s*\(([^)]*)\)\s*(public|external|internal|private)?\s*(view|pure)?\s*(returns\s*\(([^)]*)\))?\s*{([\s\S]*?)}/g;
+  const functions: FunctionMap = {};
+  let match;
+
+  while ((match = functionRegex.exec(solidityCode)) !== null) {
+    const functionName = match[1];
+    const functionCode = match[0];
+    functions[functionName] = functionCode;
+  }
+
+  return functions;
+}
 
 interface ContractInteractProps {
   chain: string;
   network: string;
   outFileUrl: string;
   contractAddress: string;
+  fileStructure?: FileStructure[];
 }
 
 export const ContractInteract: FC<ContractInteractProps> = ({
@@ -99,36 +119,19 @@ export const ContractInteract: FC<ContractInteractProps> = ({
   network,
   outFileUrl,
   contractAddress,
+  fileStructure,
 }) => {
   const [abi, setAbi] = useState<Abi[]>([]);
   const [readAbiFragments, setReadAbiFragments] = useState<AbiFunction[]>([]);
   const [writeAbiFragments, setWriteAbiFragments] = useState<AbiFunction[]>([]);
-
-  const processFiles = async (unzipped: any) => {
-    const filePromises: any = [];
-
-    unzipped.forEach((relativePath: any, file: any) => {
-      if (!file.dir) {
-        const filePromise = file.async("text").then((content: any) => {
-          return { name: file.name, content: content };
-        });
-        filePromises.push(filePromise);
-      }
-    });
-
-    const codes = await Promise.all(filePromises);
-    return codes;
-  };
-
   const config = getConfig(chain, network);
 
-  const fetchZip = async (url: string) => {
-    const zipFile = await fetch(url);
-    const arrayBuffer = await zipFile.arrayBuffer();
-    const zipBlob = new Blob([arrayBuffer], { type: "application/zip" });
-    const zip = new JSZip();
-    const unzippedFiles = await zip.loadAsync(zipBlob);
-    const files: File[] = await processFiles(unzippedFiles);
+  const code = chain === "ethereum" ? fileStructure?.[0].content : "";
+  const functionMap =
+    chain === "ethereum" ? extractFunctionsFromSolidityCode(code!) : null;
+
+  const getAbi = async (url: string) => {
+    const files = await fetchZip(url);
     // const abiFile = files.find((file) => file.name === "output/abi.json");
     const abiFile = files.find((file) => file.name.includes("abi.json"));
     if (abiFile) {
@@ -152,7 +155,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({
   };
 
   useEffect(() => {
-    fetchZip(outFileUrl);
+    getAbi(outFileUrl);
   }, []);
 
   return (
@@ -203,6 +206,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({
                           contractAddress={contractAddress}
                           abiFragment={abiItem}
                           index={abiIndex}
+                          functionMap={functionMap}
                         />
                       );
 
@@ -256,6 +260,7 @@ interface AccordionCardProps {
   abiFragment: AbiFunction;
   index: number;
   contractAddress: string;
+  functionMap?: FunctionMap | null;
 }
 const AccordionCard = ({
   chain,
@@ -264,6 +269,7 @@ const AccordionCard = ({
   abiFragment,
   index,
   contractAddress,
+  functionMap,
 }: AccordionCardProps) => {
   const { data: hash, writeContract } = useWriteContract();
   const { isConnected, chainId } = useAccount();
@@ -403,7 +409,10 @@ const AccordionCard = ({
   }, [abiFragment.inputs]);
 
   return (
-    <AccordionItem key={`Methods_A_${index}`} value={abiFragment.name + abiFragment.inputs.length}>
+    <AccordionItem
+      key={`Methods_A_${index}`}
+      value={abiFragment.name + abiFragment.inputs.length}
+    >
       <div style={{ padding: "0" }}>
         <AccordionTrigger>{abiFragment.name}</AccordionTrigger>
         <AccordionContent>
@@ -411,17 +420,23 @@ const AccordionCard = ({
             <Method abi={abiFragment} setArgs={setArgs} />
             <div className="mb-3">
               {getButtonVariant(abiFragment.stateMutability) === "primary" ? (
-                <Button size="sm" onClick={handleCallOnClick}>
-                  query
-                </Button>
+                <>
+                  <Button size="sm" onClick={handleCallOnClick}>
+                    query
+                  </Button>
+                  <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
+                </>
               ) : (
-                <Button
-                  size="sm"
-                  disabled={!isConnected || !isRightNetwork}
-                  onClick={handleTransactOnClick}
-                >
-                  transact
-                </Button>
+                <>
+                  <Button
+                    size="sm"
+                    disabled={!isConnected || !isRightNetwork}
+                    onClick={handleTransactOnClick}
+                  >
+                    transact
+                  </Button>
+                  <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
+                </>
               )}
               {hash && (
                 <div className="mt-2">

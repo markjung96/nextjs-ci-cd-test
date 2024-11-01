@@ -1,7 +1,5 @@
 "use client";
 import { FC } from "react";
-import JSZip from "jszip";
-import { useEffect } from "react";
 import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { File, Folder } from "lucide-react";
@@ -9,81 +7,23 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { CodeExplain } from "./code-explain";
 
-interface CodeExplorerProps {
-  url: string;
-}
-
-type File = {
-  name: string;
-  content: string;
-};
-
-type FileStructure = {
+export type FileStructure = {
   name: string;
   type: string;
   content: string | null;
   children?: FileStructure[];
 };
+interface CodeExplorerProps {
+  url: string;
+  fileStructure?: FileStructure[];
+}
 
-export const CodeExplorer: FC<CodeExplorerProps> = ({ url }) => {
-  const [fileStructure, setFileStructure] = React.useState<FileStructure[]>([]);
+export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
+  // const [fileStructure, setFileStructure] = React.useState<FileStructure[]>([]);
   const [selectedFile, setSelectedFile] = React.useState<FileStructure | null>(
     null
   );
 
-  const processFiles = async (unzipped: any) => {
-    const filePromises: any = [];
-
-    unzipped.forEach((relativePath: any, file: any) => {
-      if (!file.dir) {
-        const filePromise = file.async("text").then((content: any) => {
-          return { name: file.name, content: content };
-        });
-        filePromises.push(filePromise);
-      }
-    });
-
-    const codes = await Promise.all(filePromises);
-    return codes;
-  };
-
-  const fetchZip = async (url: string) => {
-    const zipFile = await fetch(url);
-    const arrayBuffer = await zipFile.arrayBuffer();
-    const zipBlob = new Blob([arrayBuffer], { type: "application/zip" });
-    const zip = new JSZip();
-    const unzippedFiles = await zip.loadAsync(zipBlob);
-    const files: File[] = await processFiles(unzippedFiles);
-
-    const structedFiles = files.reduce((acc: FileStructure[], file) => {
-      const path = file.name.split("/");
-      let current = acc;
-      for (let i = 0; i < path.length; i++) {
-        const name = path[i];
-        const existing = current.find(
-          (item: FileStructure) => item.name === name
-        );
-        if (existing) {
-          current = existing.children!;
-        } else {
-          const newFolder = {
-            name,
-            type: i === path.length - 1 ? "file" : "folder",
-            content: i === path.length - 1 ? file.content : null,
-            children: [],
-          };
-          current.push(newFolder);
-          current = newFolder.children;
-        }
-      }
-      return acc;
-    }, []);
-    setFileStructure(structedFiles);
-  };
-
-  useEffect(() => {
-    fetchZip(url);
-  }, []);
 
   const renderFileTree = (items?: FileStructure[]) => {
     return items?.map((item) => (
