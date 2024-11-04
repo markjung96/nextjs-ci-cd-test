@@ -30,7 +30,7 @@ export const postSoliditySourceCode = async (
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return (await response.json()).data;
+    return await response.json();
   } catch (error) {
     throw new Error("Failed to upload source code");
   }
