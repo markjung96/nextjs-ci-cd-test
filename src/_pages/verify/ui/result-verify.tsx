@@ -109,7 +109,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
         // TODO: 다른 chain 지원
         if (contractInfo.chain === "ethereum") {
           result = await verifySolidity({
-            optimize: "1",
+            optimize: "0",
             optimizeRuns: "200",
             evmVersion: "default",
             compilerVersion: contractInfo.compilerVersion,
@@ -119,6 +119,8 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
               contractInfo.network.toLowerCase() === "mainnet"
                 ? "0x1"
                 : "0xaa36a7",
+            srcFileId: srcFileId!,
+            contractName: contractInfo.sourceFile!.name.split(".")[0],
           });
         } else if (contractInfo.chain === "arbitrum") {
           result = await verifyStylus({

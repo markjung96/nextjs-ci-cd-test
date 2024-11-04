@@ -31,7 +31,7 @@ const configViem = createConfig({
   ssr: true,
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
     [arbitrumSepolia.id]: http(),
     [arbitrum.id]: http(),
   },
@@ -50,7 +50,7 @@ const getConfig = (chain: string, network: string) => {
     case "ethereum/sepolia":
       chains = [sepolia];
       transports = {
-        [sepolia.id]: http(),
+        [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
       };
       break;
     case "arbitrum/one":

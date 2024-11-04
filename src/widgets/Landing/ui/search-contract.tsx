@@ -32,7 +32,7 @@ export const configGeneral = createConfigGeneral({
   ssr: true,
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
     [arbitrum.id]: http(),
     [arbitrumSepolia.id]: http(),
   },
@@ -43,7 +43,7 @@ export const config = createConfig({
   ssr: true,
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
     [arbitrum.id]: http(),
     [arbitrumSepolia.id]: http(),
   },
