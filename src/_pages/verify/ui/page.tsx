@@ -97,7 +97,7 @@ export const VerifiyPage = async ({
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4">
+    <div className="h-full flex flex-col items-center justify-center p-4 w-4/5">
       <div className="max-w-7xl w-full p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">
           Verify & Publish Contract Source Code

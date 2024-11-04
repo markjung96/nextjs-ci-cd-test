@@ -24,22 +24,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en">
       <body
-        className={`${inter.className} flex flex-col h-full bg-gradient-to-b dark:from-gray-900 dark:to-black dark:text-white text-black from-gray-50 to-gray-100`}
+        className={`${inter.className} flex flex-col bg-gradient-to-b dark:from-gray-900 dark:to-black dark:text-white text-black from-gray-50 to-gray-100`}
       >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex flex-col min-h-[100vh]">
             <Header />
-            <main className="flex-grow container mx-auto px-4 py-8">
+            <main className="flex justify-center items-center my-auto">
               {children}
             </main>
             <Footer />
-          </ThemeProvider>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

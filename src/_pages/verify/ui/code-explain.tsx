@@ -5,6 +5,7 @@ import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import ReactMarkdown from "react-markdown";
 
 interface CodeExplainProps {
   content: string;
@@ -35,7 +36,7 @@ export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
   }, [content]);
 
   return (
-    <div className="border rounded-lg shadow-sm h-[600px] flex">
+    <div className="border rounded-lg shadow-sm h-[600px] flex mt-4">
       <div className="flex-1 flex flex-col">
         <div className="p-4 border-b">
           <h3 className="font-semibold">
