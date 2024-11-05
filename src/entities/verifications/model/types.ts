@@ -1,16 +1,16 @@
 // General Type
-export type VerificationStatus = "VERIFIED_SAME" | "VERIFIED_DIFFERENT" | "NOT_VERIFIED";
+export type VerificationStatus = 'VERIFIED_SAME' | 'VERIFIED_DIFFERENT' | 'NOT_VERIFIED';
 
 // Aptos Type
-export type AptosNetwork = "mainnet" | "testnet" | "devnet";
+export type AptosNetwork = 'mainnet' | 'testnet' | 'devnet';
 export const isAptosNetwork = (network: string): network is AptosNetwork => {
-  return ["mainnet", "testnet", "devnet"].includes(network);
+  return ['mainnet', 'testnet', 'devnet'].includes(network);
 };
 
 // Sui Type
-export type SuiNetwork = "mainnet" | "testnet" | "devnet";
+export type SuiNetwork = 'mainnet' | 'testnet' | 'devnet';
 export const isSuiNetwork = (network: string): network is SuiNetwork => {
-  return ["mainnet", "testnet", "devnet"].includes(network);
+  return ['mainnet', 'testnet', 'devnet'].includes(network);
 };
 
 export type SuiVerificationModule = {
@@ -27,7 +27,7 @@ export type SuiSourceCode = {
 export type SuiModuleSourceCode = Record<string, string | null>;
 
 // Neutron Type
-export type NeutronChainId = "pion-1" | "neutron-1";
+export type NeutronChainId = 'pion-1' | 'neutron-1';
 export type NeutronVerification = {
   chainId: NeutronChainId; // pion-1
   contractAddress: string; // neutron19qdpnkxmrh8p6emrtf6303pdzclhxhsr8mrzle4lmp2lqvs22hpqqt90gw

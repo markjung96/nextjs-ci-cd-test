@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
-import { cn } from "@/src/shared/lib/utils";
+import { cn } from '@/src/shared/lib/utils';
 
-import { StepperProvider } from "./context";
-import { Step } from "./step";
-import { useMediaQuery } from "../lib/use-media-query";
-import { useStepper } from "../lib/use-stepper";
+import { StepperProvider } from './context';
+import { Step } from './step';
+import { useMediaQuery } from '../lib/use-media-query';
+import { useStepper } from '../lib/use-stepper';
 
-import type { StepItem, StepProps, StepperProps } from "./types";
+import type { StepItem, StepProps, StepperProps } from './types';
 
 const VARIABLE_SIZES = {
-  sm: "36px",
-  md: "40px",
-  lg: "44px",
+  sm: '36px',
+  md: '40px',
+  lg: '44px',
 };
 
 const Stepper = React.forwardRef<HTMLDivElement, StepperProps>((props, ref: React.Ref<HTMLDivElement>) => {
@@ -45,7 +45,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>((props, ref: Reac
 
   const footer = childArr.map((child, _index) => {
     if (!React.isValidElement(child)) {
-      throw new Error("Stepper children must be valid React elements.");
+      throw new Error('Stepper children must be valid React elements.');
     }
     if (child.type === Step) {
       items.push(child);
@@ -57,13 +57,13 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>((props, ref: Reac
 
   const stepCount = items.length;
 
-  const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint || "768px"})`);
+  const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint || '768px'})`);
 
   const clickable = !!onClickStep;
 
-  const orientation = isMobile && responsive ? "vertical" : orientationProp;
+  const orientation = isMobile && responsive ? 'vertical' : orientationProp;
 
-  const isVertical = orientation === "vertical";
+  const isVertical = orientation === 'vertical';
 
   return (
     <StepperProvider
@@ -79,7 +79,7 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>((props, ref: Reac
         clickable,
         stepCount,
         isVertical,
-        variant: variant || "circle",
+        variant: variant || 'circle',
         expandVerticalSteps,
         steps,
         scrollTracking,
@@ -89,34 +89,34 @@ const Stepper = React.forwardRef<HTMLDivElement, StepperProps>((props, ref: Reac
       <div
         ref={ref}
         className={cn(
-          "stepper__main-container",
-          "flex w-full flex-wrap",
-          stepCount === 1 ? "justify-end" : "justify-between",
-          orientation === "vertical" ? "flex-col" : "flex-row",
-          variant === "line" && orientation === "horizontal" && "gap-4",
+          'stepper__main-container',
+          'flex w-full flex-wrap',
+          stepCount === 1 ? 'justify-end' : 'justify-between',
+          orientation === 'vertical' ? 'flex-col' : 'flex-row',
+          variant === 'line' && orientation === 'horizontal' && 'gap-4',
           className,
-          styles?.["main-container"]
+          styles?.['main-container'],
         )}
         style={
           {
-            "--step-icon-size": variables?.["--step-icon-size"] || `${VARIABLE_SIZES[size || "md"]}`,
-            "--step-gap": variables?.["--step-gap"] || "8px",
+            '--step-icon-size': variables?.['--step-icon-size'] || `${VARIABLE_SIZES[size || 'md']}`,
+            '--step-gap': variables?.['--step-gap'] || '8px',
           } as React.CSSProperties
         }
         {...rest}
       >
         <VerticalContent>{items}</VerticalContent>
       </div>
-      {orientation === "horizontal" && <HorizontalContent>{items}</HorizontalContent>}
+      {orientation === 'horizontal' && <HorizontalContent>{items}</HorizontalContent>}
       {footer}
     </StepperProvider>
   );
 });
-Stepper.displayName = "Stepper";
+Stepper.displayName = 'Stepper';
 
 Stepper.defaultProps = {
-  size: "md",
-  orientation: "horizontal",
+  size: 'md',
+  orientation: 'horizontal',
   responsive: true,
 };
 

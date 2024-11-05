@@ -1,7 +1,7 @@
-"use client";
-import { Button } from "@/src/shared/ui";
-import Image from "next/image";
-import { FC } from "react";
+'use client';
+import { Button } from '@/src/shared/ui';
+import Image from 'next/image';
+import { FC } from 'react';
 
 interface LinkButtonProps {
   value: string;
@@ -10,7 +10,7 @@ interface LinkButtonProps {
 }
 export const LinkButton: FC<LinkButtonProps> = ({ value, href, imgSrc }) => {
   const handleClickLink = () => {
-    window.open(href, "_blank");
+    window.open(href, '_blank');
   };
   return (
     <Button variant="ghost" onClick={handleClickLink}>

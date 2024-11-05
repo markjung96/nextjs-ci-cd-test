@@ -1,7 +1,7 @@
-import { ThemeToggle } from "@/src/widgets/ThemeToggle";
-import { Logo } from "@/src/widgets/Logo";
-import { Separator } from "@/src/shared/ui";
-import Link from "next/link";
+import { ThemeToggle } from '@/src/widgets/ThemeToggle';
+import { Logo } from '@/src/widgets/Logo';
+import { Separator } from '@/src/shared/ui';
+import Link from 'next/link';
 
 type Props = {};
 export function Header(props: Props) {

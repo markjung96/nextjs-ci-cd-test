@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Command,
   CommandEmpty,
@@ -8,24 +8,16 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/src/shared/ui";
-import { getBytecode, createConfig } from "@wagmi/core";
-import { SearchIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { ChangeEvent, ChangeEventHandler, useMemo } from "react";
-import {
-  http,
-  WagmiProvider,
-  createConfig as createConfigGeneral,
-} from "wagmi";
-import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
-import _ from "lodash";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/src/shared/ui';
+import { getBytecode, createConfig } from '@wagmi/core';
+import { SearchIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { ChangeEvent, ChangeEventHandler, useMemo } from 'react';
+import { http, WagmiProvider, createConfig as createConfigGeneral } from 'wagmi';
+import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
+import _ from 'lodash';
 
 export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -65,50 +57,45 @@ const getSuggestionsList = async (address: string) => {
     // starknet suggestion
     const networks = [
       {
-        network: "mainnet",
-        url: process.env.NEXT_PUBLIC_STARKNET_MAINNET_URL
+        network: 'mainnet',
+        url: process.env.NEXT_PUBLIC_STARKNET_MAINNET_URL,
       },
       {
-        network: "sepolia",
-        url: process.env.NEXT_PUBLIC_STARKNET_SEPOLIA_URL
+        network: 'sepolia',
+        url: process.env.NEXT_PUBLIC_STARKNET_SEPOLIA_URL,
       },
     ];
     const starknetSuggestion = await Promise.all(
       networks.map(async (network) => {
         const starknetSuggestionsRaw = await fetch(network.url!, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "starknet_getClassHashAt",
-            params: ["latest", address],
+            jsonrpc: '2.0',
+            method: 'starknet_getClassHashAt',
+            params: ['latest', address],
             id: 1,
           }),
         });
         const starknetSuggestions = await starknetSuggestionsRaw.json();
         if (starknetSuggestions.error) {
-          console.error(
-            "Error getting starknet suggestions",
-            starknetSuggestions
-          );
+          console.error('Error getting starknet suggestions', starknetSuggestions);
           return null;
         } else {
           return {
-            chainName: "Starknet",
+            chainName: 'Starknet',
             networkName: network.network,
-            isContract: starknetSuggestions.result !== "0x",
+            isContract: starknetSuggestions.result !== '0x',
             address,
           };
         }
-      })
+      }),
     );
 
     // starknet 주소가 있으면 starknet suggestion만 반환
-    if (
-      starknetSuggestion.filter((suggestion) => suggestion !== null).length > 0
-    ) {
+    if (starknetSuggestion.filter((suggestion) => suggestion !== null).length > 0) {
       return starknetSuggestion.filter((suggestion) => suggestion !== null);
     }
 
@@ -118,43 +105,43 @@ const getSuggestionsList = async (address: string) => {
           chainId,
           address: address as `0x${string}`,
         });
-      })
+      }),
     );
 
     return suggestions
       .map((suggestion, index) => {
-        let chainName = "";
-        let networkName = "";
+        let chainName = '';
+        let networkName = '';
         // TODO: Add other chains here
         switch (chainIds[index]) {
           case mainnet.id:
-            chainName = "Ethereum";
-            networkName = "Mainnet";
+            chainName = 'Ethereum';
+            networkName = 'Mainnet';
             break;
           case sepolia.id:
-            chainName = "Ethereum";
-            networkName = "Sepolia";
+            chainName = 'Ethereum';
+            networkName = 'Sepolia';
             break;
           case arbitrum.id:
-            chainName = "Arbitrum";
-            networkName = "One";
+            chainName = 'Arbitrum';
+            networkName = 'One';
             break;
           case arbitrumSepolia.id:
-            chainName = "Arbitrum";
-            networkName = "Sepolia";
+            chainName = 'Arbitrum';
+            networkName = 'Sepolia';
             break;
         }
         return {
           chainName,
           networkName,
-          isContract: suggestion !== undefined && suggestion !== "0x",
+          isContract: suggestion !== undefined && suggestion !== '0x',
           address,
           // suggestion,
         };
       })
       .filter((suggestion) => suggestion.isContract);
   } catch (error) {
-    console.error("Error getting suggestions", error);
+    console.error('Error getting suggestions', error);
     return [];
   }
 };
@@ -178,7 +165,7 @@ export function SearchContract() {
         const suggestions = await getSuggestionsList(address);
         setSuggestions(suggestions);
       }, 300),
-    []
+    [],
   );
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -200,7 +187,7 @@ export function SearchContract() {
     router.push(
       `/verify?chain=${suggestion.chainName.toLowerCase()}&network=${suggestion.networkName.toLowerCase()}&contractAddress=${
         suggestion.address
-      }`
+      }`,
     );
     setIsOpen(false);
   };
@@ -225,12 +212,8 @@ export function SearchContract() {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Suggestions">
               {suggestions.map((suggestion, index) => (
-                <CommandItem
-                  key={index}
-                  onSelect={() => handleClickSuggestion(suggestion)}
-                >
-                  {`${suggestion.chainName} ${suggestion.networkName}`}{" "}
-                  {suggestion.address}
+                <CommandItem key={index} onSelect={() => handleClickSuggestion(suggestion)}>
+                  {`${suggestion.chainName} ${suggestion.networkName}`} {suggestion.address}
                 </CommandItem>
               ))}
             </CommandGroup>

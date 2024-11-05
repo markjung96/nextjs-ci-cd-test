@@ -1,6 +1,6 @@
-import { cn } from "@/src/shared/lib/utils";
-import { cva } from "class-variance-authority";
-import { useStepper } from "../lib/use-stepper";
+import { cn } from '@/src/shared/lib/utils';
+import { cva } from 'class-variance-authority';
+import { useStepper } from '../lib/use-stepper';
 
 interface StepLabelProps {
   isCurrentStep?: boolean;
@@ -9,29 +9,29 @@ interface StepLabelProps {
   description?: string | null;
 }
 
-const labelVariants = cva("", {
+const labelVariants = cva('', {
   variants: {
     size: {
-      sm: "text-sm",
-      md: "text-sm",
-      lg: "text-base",
+      sm: 'text-sm',
+      md: 'text-sm',
+      lg: 'text-base',
     },
   },
   defaultVariants: {
-    size: "md",
+    size: 'md',
   },
 });
 
-const descriptionVariants = cva("", {
+const descriptionVariants = cva('', {
   variants: {
     size: {
-      sm: "text-xs",
-      md: "text-xs",
-      lg: "text-sm",
+      sm: 'text-xs',
+      md: 'text-xs',
+      lg: 'text-sm',
     },
   },
   defaultVariants: {
-    size: "md",
+    size: 'md',
   },
 });
 
@@ -41,30 +41,30 @@ const StepLabel = ({ isCurrentStep, opacity, label, description }: StepLabelProp
 
   return shouldRender ? (
     <div
-      aria-current={isCurrentStep ? "step" : undefined}
+      aria-current={isCurrentStep ? 'step' : undefined}
       className={cn(
-        "stepper__step-label-container",
-        "flex-col flex",
-        variant !== "line" ? "ms-2" : orientation === "horizontal" && "my-2",
-        variant === "circle-alt" && "text-center",
-        variant === "circle-alt" && orientation === "horizontal" && "ms-0",
-        variant === "circle-alt" && orientation === "vertical" && "text-start",
-        styles?.["step-label-container"]
+        'stepper__step-label-container',
+        'flex-col flex',
+        variant !== 'line' ? 'ms-2' : orientation === 'horizontal' && 'my-2',
+        variant === 'circle-alt' && 'text-center',
+        variant === 'circle-alt' && orientation === 'horizontal' && 'ms-0',
+        variant === 'circle-alt' && orientation === 'vertical' && 'text-start',
+        styles?.['step-label-container'],
       )}
       style={{
         opacity,
       }}
     >
       {!!label && (
-        <span className={cn("stepper__step-label", labelVariants({ size }), styles?.["step-label"])}>{label}</span>
+        <span className={cn('stepper__step-label', labelVariants({ size }), styles?.['step-label'])}>{label}</span>
       )}
       {!!description && (
         <span
           className={cn(
-            "stepper__step-description",
-            "text-muted-foreground",
+            'stepper__step-description',
+            'text-muted-foreground',
             descriptionVariants({ size }),
-            styles?.["step-description"]
+            styles?.['step-description'],
           )}
         >
           {description}

@@ -1,9 +1,9 @@
-import { cn } from "@/src/shared/lib/utils";
-import { cva } from "class-variance-authority";
-import { CheckIcon, Loader2, X } from "lucide-react";
-import * as React from "react";
-import type { IconType } from "./types";
-import { useStepper } from "../lib/use-stepper";
+import { cn } from '@/src/shared/lib/utils';
+import { cva } from 'class-variance-authority';
+import { CheckIcon, Loader2, X } from 'lucide-react';
+import * as React from 'react';
+import type { IconType } from './types';
+import { useStepper } from '../lib/use-stepper';
 
 interface StepIconProps {
   isCompletedStep?: boolean;
@@ -17,16 +17,16 @@ interface StepIconProps {
   errorIcon?: IconType;
 }
 
-const iconVariants = cva("", {
+const iconVariants = cva('', {
   variants: {
     size: {
-      sm: "size-4",
-      md: "size-4",
-      lg: "size-5",
+      sm: 'size-4',
+      md: 'size-4',
+      lg: 'size-5',
     },
   },
   defaultVariants: {
-    size: "md",
+    size: 'md',
   },
 });
 
@@ -82,7 +82,7 @@ const StepIcon = React.forwardRef<HTMLDivElement, StepIconProps>((props, ref) =>
         );
       }
       if (isLoading) {
-        return <Loader2 className={cn(iconVariants({ size }), "animate-spin")} />;
+        return <Loader2 className={cn(iconVariants({ size }), 'animate-spin')} />;
       }
     }
     if (Icon) {
@@ -93,12 +93,12 @@ const StepIcon = React.forwardRef<HTMLDivElement, StepIconProps>((props, ref) =>
       );
     }
     return (
-      <span ref={ref} key="label" className={cn("font-medium text-center text-md")}>
+      <span ref={ref} key="label" className={cn('font-medium text-center text-md')}>
         {(index || 0) + 1}
       </span>
     );
   }, [isCompletedStep, isCurrentStep, isError, isLoading, Icon, index, Check, ErrorIcon, isKeepError, ref, size]);
 });
-StepIcon.displayName = "StepIcon";
+StepIcon.displayName = 'StepIcon';
 
 export { StepIcon };

@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
 type IconType = LucideIcon | React.ComponentType<any> | undefined;
 
@@ -11,41 +11,41 @@ type StepItem = {
 };
 
 interface StepOptions {
-  orientation?: "vertical" | "horizontal";
-  state?: "loading" | "error";
+  orientation?: 'vertical' | 'horizontal';
+  state?: 'loading' | 'error';
   responsive?: boolean;
   checkIcon?: IconType;
   errorIcon?: IconType;
   onClickStep?: (step: number, setStep: (step: number) => void) => void;
   mobileBreakpoint?: string;
-  variant?: "circle" | "circle-alt" | "line";
+  variant?: 'circle' | 'circle-alt' | 'line';
   expandVerticalSteps?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   styles?: {
     /** Styles for the main container */
-    "main-container"?: string;
+    'main-container'?: string;
     /** Styles for the horizontal step */
-    "horizontal-step"?: string;
+    'horizontal-step'?: string;
     /** Styles for the horizontal step container (button and labels) */
-    "horizontal-step-container"?: string;
+    'horizontal-step-container'?: string;
     /** Styles for the vertical step */
-    "vertical-step"?: string;
+    'vertical-step'?: string;
     /** Styles for the vertical step container (button and labels) */
-    "vertical-step-container"?: string;
+    'vertical-step-container'?: string;
     /** Styles for the vertical step content */
-    "vertical-step-content"?: string;
+    'vertical-step-content'?: string;
     /** Styles for the step button container */
-    "step-button-container"?: string;
+    'step-button-container'?: string;
     /** Styles for the label and description container */
-    "step-label-container"?: string;
+    'step-label-container'?: string;
     /** Styles for the step label */
-    "step-label"?: string;
+    'step-label'?: string;
     /** Styles for the step description */
-    "step-description"?: string;
+    'step-description'?: string;
   };
   variables?: {
-    "--step-icon-size"?: string;
-    "--step-gap"?: string;
+    '--step-icon-size'?: string;
+    '--step-gap'?: string;
   };
   scrollTracking?: boolean;
 }
@@ -61,7 +61,7 @@ interface StepProps extends React.HTMLAttributes<HTMLLIElement> {
   label?: string | React.ReactNode;
   description?: string;
   icon?: IconType;
-  state?: "loading" | "error";
+  state?: 'loading' | 'error';
   checkIcon?: IconType;
   errorIcon?: IconType;
   isCompletedStep?: boolean;

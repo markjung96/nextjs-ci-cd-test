@@ -1,5 +1,5 @@
-import { Input } from "@/src/shared/ui";
-import { Label } from "@/src/shared/ui";
+import { Input } from '@/src/shared/ui';
+import { Label } from '@/src/shared/ui';
 
 type Props = { label?: string };
 export const InputFile = (props: Props) => (
