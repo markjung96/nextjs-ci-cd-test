@@ -299,16 +299,16 @@ const AccordionCard = ({
             <Method abi={abiFragment} setArgs={setArgs} />
             <div className="mb-3">
               {getButtonVariant(abiFragment.stateMutability) === "primary" ? (
-                <>
+                <div className="flex gap-1">
                   <Button size="sm" onClick={handleCallOnClick}>
                     query
                   </Button>
                   <FunctionExplainModal
                     code={functionMap?.[abiFragment.name]}
                   />
-                </>
+                </div>
               ) : (
-                <>
+                <div className="flex gap-1">
                   <Button
                     size="sm"
                     disabled={!walletAccount || !isRightNetwork}
@@ -319,7 +319,7 @@ const AccordionCard = ({
                   <FunctionExplainModal
                     code={functionMap?.[abiFragment.name]}
                   />
-                </>
+                </div>
               )}
               {hash && (
                 <div className="mt-2">
