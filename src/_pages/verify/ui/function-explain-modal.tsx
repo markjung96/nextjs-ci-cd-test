@@ -12,8 +12,12 @@ import {
 import { Button } from "@/src/shared/ui";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import {
+  a11yDark,
+  a11yLight,
+} from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { MarkdownPreview } from "./mark-down-preview";
+import { useTheme } from "next-themes";
 
 interface FunctionExplainModalProps {
   code?: string;
@@ -22,6 +26,7 @@ interface FunctionExplainModalProps {
 export default function FunctionExplainModal({
   code,
 }: FunctionExplainModalProps) {
+  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [explanation, setExplanation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -59,17 +64,17 @@ export default function FunctionExplainModal({
         <DialogHeader>
           <DialogTitle>Function code and explanation</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-4 mt-4 h-[calc(80vh-100px)]">
+        <div className="flex flex-col gap-4 mt-4 ">
           {/* 왼쪽: 코드 */}
-          <div className="h-1/2">
+          <div className="max-h-[50%]">
             <h3 className="text-lg font-semibold mb-2">Code</h3>
-            <pre className="bg-gray-800 text-white p-4 rounded overflow-x-auto">
-              <ScrollArea className="h-[calc(100%-2rem)] rounded border p-4">
+            <pre className="bg-white-800 dark:bg-gray-800 text-white rounded overflow-x-auto">
+              <ScrollArea className="max-h-[calc(100%-2rem)] rounded border p-4">
                 <SyntaxHighlighter
                   language="solidity"
-                  style={a11yDark}
                   wrapLongLines
                   className="text-sm"
+                  style={theme === "dark" ? a11yDark : a11yLight}
                 >
                   {code || ""}
                 </SyntaxHighlighter>
@@ -82,9 +87,9 @@ export default function FunctionExplainModal({
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
             </div>
           ) : (
-            <div className="h-1/2">
+            <div className="max-h-[50%]">
               <h3 className="text-lg font-semibold mb-2">Explanation</h3>
-              <ScrollArea className="h-[calc(100%-2rem)] rounded border p-4">
+              <ScrollArea className="h-[calc(100%-2rem)] rounded border p-4 flex-1">
                 <MarkdownPreview markdown={explanation} />
               </ScrollArea>
             </div>
