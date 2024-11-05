@@ -1,7 +1,6 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
-import JSZip from 'jszip';
 import { useEffect } from 'react';
 import * as React from 'react';
 import { Button, Input, Label } from '@/src/shared/ui';
@@ -14,13 +13,16 @@ import { Abi, AbiFunction, AbiParameter } from 'viem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { switchChain } from '@wagmi/core';
 import { getDefaultConfig, RainbowKitProvider, ConnectButton } from '@rainbow-me/rainbowkit';
+import { fetchZip } from '@/src/shared/lib/utils';
+import { FileStructure } from './code-explorer';
+import FunctionExplainModal from './function-explain-modal';
 
 const configViem = createConfig({
   chains: [mainnet, sepolia, arbitrumSepolia, arbitrum],
   ssr: true,
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
     [arbitrumSepolia.id]: http(),
     [arbitrum.id]: http(),
   },
@@ -39,7 +41,7 @@ const getConfig = (chain: string, network: string) => {
     case 'ethereum/sepolia':
       chains = [sepolia];
       transports = {
-        [sepolia.id]: http(),
+        [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
       };
       break;
     case 'arbitrum/one':
@@ -70,50 +72,117 @@ const getConfig = (chain: string, network: string) => {
 
 const queryClient = new QueryClient();
 
-type File = {
-  name: string;
-  content: string;
+const isFunctionFragment = (abi: AbiFunction | Abi): abi is AbiFunction => (abi as AbiFunction).type === 'function';
+
+export type FunctionMap = {
+  [key: string]: string;
 };
 
-const isFunctionFragment = (abi: AbiFunction | Abi): abi is AbiFunction => (abi as AbiFunction).type === 'function';
+function snakeToCamel(snake: string): string {
+  return snake.replace(/(_\w)/g, (matches) => matches[1].toUpperCase());
+}
+
+function extractFunctionsFromCode(chain: 'ethereum' | 'arbitrum' | 'starknet', solidityCode: string): FunctionMap {
+  // FIXME: This regex is not perfect, but it should work for most cases
+  // virtual functions are not supported
+  let functionRegex;
+  switch (chain) {
+    case 'ethereum':
+      functionRegex =
+        /function\s+(\w+)\s*\(([^)]*)\)\s*(public|external|internal|private)?\s*(view|pure)?\s*(returns\s*\(([^)]*)\))?\s*{([\s\S]*?)}/g;
+      break;
+    case 'arbitrum':
+      functionRegex =
+        /(?:#\[.*?\]\s*)?(?:pub\s+)?fn\s+(\w+)\s*\([^)]*\)\s*(->\s*[\w\s:<>]*)?\s*{([^{}]*({[^{}]*})*[^{}]*)}/g;
+      break;
+    case 'starknet':
+      functionRegex =
+        /(?:#\[.*?\]\s*)?(?:pub\s+)?fn\s+(\w+)\s*\([^)]*\)\s*(->\s*[\w\s:<>]*)?\s*{([^{}]*({[^{}]*})*[^{}]*)}/g;
+      break;
+    default:
+      break;
+  }
+  if (!functionRegex) {
+    return {};
+  }
+  const functions: FunctionMap = {};
+  let match;
+
+  while ((match = functionRegex.exec(solidityCode)) !== null) {
+    const functionName = match[1];
+    const functionCode = match[0];
+    functions[snakeToCamel(functionName)] = functionCode;
+  }
+
+  return functions;
+}
+
+export function extractFunctionsFromFiles(chain: 'ethereum' | 'arbitrum' | 'starknet', files?: FileStructure[]) {
+  if (!files) {
+    return {};
+  }
+
+  let code = '';
+  switch (chain) {
+    case 'ethereum':
+      code = files[0].content || '';
+      break;
+    case 'arbitrum':
+      // concat files which are under src directory
+      files
+        .filter((file) => file.name === 'src')[0]
+        .children?.forEach((file) => {
+          code += file.content || '';
+        });
+      break;
+    case 'starknet':
+      // concat files which are under src directory
+      // src is not root directory in starknet
+      // find src directory
+      const srcParentDir = files.find((file) => file.children?.some((f) => f.name === 'src'));
+      if (!srcParentDir) {
+        return {};
+      }
+      const src = srcParentDir.children?.find((file) => file.name === 'src');
+      if (!src) {
+        return {};
+      }
+      const srcFiles = src.children || [];
+      srcFiles.forEach((file) => {
+        code += file.content || '';
+      });
+      break;
+    default:
+      break;
+  }
+  const extractedFunctions = extractFunctionsFromCode(chain, code);
+  return extractedFunctions;
+}
 
 interface ContractInteractProps {
   chain: string;
   network: string;
   outFileUrl: string;
   contractAddress: string;
+  fileStructure?: FileStructure[];
 }
 
-export const ContractInteract: FC<ContractInteractProps> = ({ chain, network, outFileUrl, contractAddress }) => {
+export const ContractInteract: FC<ContractInteractProps> = ({
+  chain,
+  network,
+  outFileUrl,
+  contractAddress,
+  fileStructure,
+}) => {
   const [abi, setAbi] = useState<Abi[]>([]);
   const [readAbiFragments, setReadAbiFragments] = useState<AbiFunction[]>([]);
   const [writeAbiFragments, setWriteAbiFragments] = useState<AbiFunction[]>([]);
-
-  const processFiles = async (unzipped: any) => {
-    const filePromises: any = [];
-
-    unzipped.forEach((relativePath: any, file: any) => {
-      if (!file.dir) {
-        const filePromise = file.async('text').then((content: any) => {
-          return { name: file.name, content: content };
-        });
-        filePromises.push(filePromise);
-      }
-    });
-
-    const codes = await Promise.all(filePromises);
-    return codes;
-  };
-
   const config = getConfig(chain, network);
 
-  const fetchZip = async (url: string) => {
-    const zipFile = await fetch(url);
-    const arrayBuffer = await zipFile.arrayBuffer();
-    const zipBlob = new Blob([arrayBuffer], { type: 'application/zip' });
-    const zip = new JSZip();
-    const unzippedFiles = await zip.loadAsync(zipBlob);
-    const files: File[] = await processFiles(unzippedFiles);
+  const functionMap = extractFunctionsFromFiles(chain as 'ethereum' | 'arbitrum' | 'starknet', fileStructure);
+
+  const getAbi = async (url: string) => {
+    const files = await fetchZip(url);
     // const abiFile = files.find((file) => file.name === "output/abi.json");
     const abiFile = files.find((file) => file.name.includes('abi.json'));
     if (abiFile) {
@@ -133,7 +202,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({ chain, network, ou
   };
 
   useEffect(() => {
-    fetchZip(outFileUrl);
+    getAbi(outFileUrl);
   }, []);
 
   return (
@@ -159,6 +228,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({ chain, network, ou
                           contractAddress={contractAddress}
                           abiFragment={abiItem}
                           index={abiIndex}
+                          functionMap={functionMap}
                         />
                       );
 
@@ -184,6 +254,7 @@ export const ContractInteract: FC<ContractInteractProps> = ({ chain, network, ou
                           contractAddress={contractAddress}
                           abiFragment={abiItem}
                           index={abiIndex}
+                          functionMap={functionMap}
                         />
                       );
 
@@ -234,8 +305,17 @@ interface AccordionCardProps {
   abiFragment: AbiFunction;
   index: number;
   contractAddress: string;
+  functionMap?: FunctionMap | null;
 }
-const AccordionCard = ({ chain, network, abi, abiFragment, index, contractAddress }: AccordionCardProps) => {
+const AccordionCard = ({
+  chain,
+  network,
+  abi,
+  abiFragment,
+  index,
+  contractAddress,
+  functionMap,
+}: AccordionCardProps) => {
   const { data: hash, writeContract } = useWriteContract();
   const { isConnected, chainId } = useAccount();
   const [value, setValue] = useState<string>('');
@@ -382,13 +462,19 @@ const AccordionCard = ({ chain, network, abi, abiFragment, index, contractAddres
             <Method abi={abiFragment} setArgs={setArgs} />
             <div className="mb-3">
               {getButtonVariant(abiFragment.stateMutability) === 'primary' ? (
-                <Button size="sm" onClick={handleCallOnClick}>
-                  query
-                </Button>
+                <div className="flex gap-1">
+                  <Button size="sm" onClick={handleCallOnClick}>
+                    query
+                  </Button>
+                  <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
+                </div>
               ) : (
-                <Button size="sm" disabled={!isConnected || !isRightNetwork} onClick={handleTransactOnClick}>
-                  transact
-                </Button>
+                <div className="flex gap-1">
+                  <Button size="sm" disabled={!isConnected || !isRightNetwork} onClick={handleTransactOnClick}>
+                    transact
+                  </Button>
+                  <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
+                </div>
               )}
               {hash && (
                 <div className="mt-2">

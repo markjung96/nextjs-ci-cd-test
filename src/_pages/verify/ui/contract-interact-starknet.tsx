@@ -1,15 +1,18 @@
 'use client';
 import '@rainbow-me/rainbowkit/styles.css';
 import { Dispatch, FC, SetStateAction, useState } from 'react';
-import JSZip from 'jszip';
 import { useEffect } from 'react';
 import * as React from 'react';
 import { Button, Input, Label } from '@/src/shared/ui';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
 import { Abi, AbiFunction, AbiParameter } from 'viem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Contract, RpcProvider } from 'starknet'; // v6.10.0 min
+import { Contract } from 'starknet'; // v6.10.0 min
 import { StarknetProvider, useStarknetProvider } from './starknet-provider';
+import { FileStructure } from './code-explorer';
+import { extractFunctionsFromFiles, FunctionMap } from './contract-interact';
+import FunctionExplainModal from './function-explain-modal';
+import { fetchZip } from '@/src/shared/lib/utils';
 
 type File = {
   name: string;
@@ -23,6 +26,7 @@ interface ContractInteractProps {
   network: string;
   outFileUrl: string;
   contractAddress: string;
+  fileStructure?: FileStructure[];
 }
 
 export const ContractInteractStarknet: FC<ContractInteractProps> = ({
@@ -30,34 +34,16 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
   network,
   outFileUrl,
   contractAddress,
+  fileStructure,
 }) => {
   const [abi, setAbi] = useState<Abi[]>([]);
   const [readAbiFragments, setReadAbiFragments] = useState<AbiFunction[]>([]);
   const [writeAbiFragments, setWriteAbiFragments] = useState<AbiFunction[]>([]);
 
-  const processFiles = async (unzipped: any) => {
-    const filePromises: any = [];
+  const functionMap = extractFunctionsFromFiles(chain as 'starknet', fileStructure);
 
-    unzipped.forEach((relativePath: any, file: any) => {
-      if (!file.dir) {
-        const filePromise = file.async('text').then((content: any) => {
-          return { name: file.name, content: content };
-        });
-        filePromises.push(filePromise);
-      }
-    });
-
-    const codes = await Promise.all(filePromises);
-    return codes;
-  };
-
-  const fetchZip = async (url: string) => {
-    const zipFile = await fetch(url);
-    const arrayBuffer = await zipFile.arrayBuffer();
-    const zipBlob = new Blob([arrayBuffer], { type: 'application/zip' });
-    const zip = new JSZip();
-    const unzippedFiles = await zip.loadAsync(zipBlob);
-    const files: File[] = await processFiles(unzippedFiles);
+  const getAbi = async (url: string) => {
+    const files = await fetchZip(url);
     // const abiFile = files.find((file) => file.name === "output/abi.json");
     const abiFile = files.find((file) => file.name.includes('abi.json'));
     if (abiFile) {
@@ -82,7 +68,7 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
   };
 
   useEffect(() => {
-    fetchZip(outFileUrl);
+    getAbi(outFileUrl);
   }, []);
 
   return (
@@ -106,6 +92,7 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
                       contractAddress={contractAddress}
                       abiFragment={abiItem}
                       index={abiIndex}
+                      functionMap={functionMap}
                     />
                   );
 
@@ -131,6 +118,7 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
                       contractAddress={contractAddress}
                       abiFragment={abiItem}
                       index={abiIndex}
+                      functionMap={functionMap}
                     />
                   );
 
@@ -182,8 +170,17 @@ interface AccordionCardProps {
   abiFragment: AbiFunction;
   index: number;
   contractAddress: string;
+  functionMap?: FunctionMap | null;
 }
-const AccordionCard = ({ chain, network, abi, abiFragment, index, contractAddress }: AccordionCardProps) => {
+const AccordionCard = ({
+  chain,
+  network,
+  abi,
+  abiFragment,
+  index,
+  contractAddress,
+  functionMap,
+}: AccordionCardProps) => {
   const { provider, walletAccount } = useStarknetProvider();
   const [hash, setHash] = useState<string>('');
   const [value, setValue] = useState<string>('');
@@ -281,13 +278,19 @@ const AccordionCard = ({ chain, network, abi, abiFragment, index, contractAddres
             <Method abi={abiFragment} setArgs={setArgs} />
             <div className="mb-3">
               {getButtonVariant(abiFragment.stateMutability) === 'primary' ? (
-                <Button size="sm" onClick={handleCallOnClick}>
-                  query
-                </Button>
+                <div className="flex gap-1">
+                  <Button size="sm" onClick={handleCallOnClick}>
+                    query
+                  </Button>
+                  <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
+                </div>
               ) : (
-                <Button size="sm" disabled={!walletAccount || !isRightNetwork} onClick={handleTransactOnClick}>
-                  transact
-                </Button>
+                <div className="flex gap-1">
+                  <Button size="sm" disabled={!walletAccount || !isRightNetwork} onClick={handleTransactOnClick}>
+                    transact
+                  </Button>
+                  <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
+                </div>
               )}
               {hash && (
                 <div className="mt-2">

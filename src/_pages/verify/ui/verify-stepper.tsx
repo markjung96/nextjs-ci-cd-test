@@ -3,7 +3,7 @@ import { Step, type StepItem, Stepper } from '@/src/widgets/Stpper';
 import { ContractInfoForm } from './contract-info-form';
 import { ContractVerifyForm } from './contract-verify-form';
 import { ResultVerify } from './result-verify';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   ArbitrumContractInfo,
   ContractInfo,
@@ -47,6 +47,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
     compilerType: 'solidity',
     compilerVersion: 'v0.8.26+commit.8a97fa7a',
     sourceFile: null,
+    optimize: '0',
   };
   switch (chain) {
     case undefined:
@@ -58,6 +59,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
         compilerType: (compilerType as EthereumContractInfo['compilerType']) || 'solidity',
         compilerVersion: compilerVersion || 'v0.8.26+commit.8a97fa7a',
         sourceFile: null,
+        optimize: '0',
       };
       break;
     case 'arbitrum':

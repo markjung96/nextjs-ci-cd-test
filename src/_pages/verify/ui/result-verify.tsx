@@ -11,6 +11,8 @@ import {
   postCairoSourceCode,
   verifyCairo,
 } from '@/src/features/verify/api';
+import { Button } from '@/src/shared/ui';
+import { useRouter } from 'next/navigation';
 
 interface ResultVerifyProps {
   contractInfo: ContractInfo;
@@ -20,6 +22,7 @@ interface ResultVerifyProps {
 type Status = 'not_started' | 'loading' | 'done' | 'error';
 
 export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUploaded }) => {
+  const router = useRouter();
   const { hasCompletedAllSteps } = useStepper();
   const [uploadStatus, setUploadStatus] = useState<Status>('not_started');
   const [verifyStatus, setVerifyStatus] = useState<Status>('not_started');
@@ -98,13 +101,15 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
         // TODO: 다른 chain 지원
         if (contractInfo.chain === 'ethereum') {
           result = await verifySolidity({
-            optimize: '1',
+            optimize: contractInfo.optimize,
             optimizeRuns: '200',
             evmVersion: 'default',
             compilerVersion: contractInfo.compilerVersion,
             contractAddress: contractInfo.contractAddress,
             protocol: 'ethereum',
             chainId: contractInfo.network.toLowerCase() === 'mainnet' ? '0x1' : '0xaa36a7',
+            srcFileId: srcFileId!,
+            contractName: contractInfo.sourceFile!.name.split('.')[0],
           });
         } else if (contractInfo.chain === 'arbitrum') {
           result = await verifyStylus({
@@ -139,6 +144,12 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
     [contractInfo],
   );
 
+  const handleClickViewVerified = () => {
+    // refresh page to show verified info
+    const url = `/verify?chain=${contractInfo.chain}&network=${contractInfo.network}&contractAddress=${contractInfo.contractAddress}`;
+    router.push(url);
+  };
+
   useEffect(() => {
     if (hasCompletedAllSteps) {
       (async () => {
@@ -170,6 +181,11 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
             <p>Verifing</p>
           </div>
           {verifyStatus === 'error' && <p className="text-red-500 text-sm">{verifyErrorMsg}</p>}
+          {verifyStatus === 'done' && (
+            <Button className="w-1/4" onClick={handleClickViewVerified}>
+              View Verified Info
+            </Button>
+          )}
         </div>
       )}
     </>

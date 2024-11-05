@@ -6,6 +6,7 @@ import {
 import { VerifyStepper } from './verify-stepper';
 import { VerifiedInfo } from './verified-info';
 import { Suspense } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export type SupportedChain = 'ethereum' | 'arbitrum' | 'starknet';
 export type SupportedNetwork = 'mainnet' | 'sepolia' | 'goerli' | 'one';
@@ -18,6 +19,9 @@ export type EthereumContractInfo = {
   compilerType: 'solidity';
   compilerVersion: string;
   sourceFile: File | null;
+  optimize: '0' | '1';
+  optimizeRuns?: string | '200';
+  evmVersion?: string | 'default';
 };
 
 export type ArbitrumContractInfo = {
@@ -89,14 +93,20 @@ export const VerifiyPage = async ({ searchParams }: { searchParams?: { [key: str
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4">
+    <div className="h-full flex flex-col items-center justify-center p-4 w-4/5">
       <div className="max-w-7xl w-full p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">Verify & Publish Contract Source Code</h1>
         <p className="text-center  mb-6">
           Source code verification provides transparency for users interacting with smart contracts.
         </p>
         <div className="flex w-full flex-col justify-center gap-4">
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense
+            fallback={
+              <div className="flex justify-center">
+                <LoadingSpinner />
+              </div>
+            }
+          >
             {verifiedSrcUrl ? (
               <VerifiedInfo
                 chain={chain}
