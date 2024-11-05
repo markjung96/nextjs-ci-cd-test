@@ -354,7 +354,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({
             Please Select Optimization Option
           </Label>
           <RadioGroup
-            defaultValue="x86"
+            defaultValue="No"
             className="flex row mt-2"
             id="building-env"
             onValueChange={(value) =>
