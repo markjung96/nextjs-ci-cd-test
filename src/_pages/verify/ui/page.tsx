@@ -18,6 +18,9 @@ export type EthereumContractInfo = {
   compilerType: "solidity";
   compilerVersion: string;
   sourceFile: File | null;
+  optimize: "0" | "1";
+  optimizeRuns?: string | "200";
+  evmVersion?: string | "default";
 };
 
 export type ArbitrumContractInfo = {

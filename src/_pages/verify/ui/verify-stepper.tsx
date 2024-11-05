@@ -53,6 +53,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
     compilerType: "solidity",
     compilerVersion: "v0.8.26+commit.8a97fa7a",
     sourceFile: null,
+    optimize: "0",
   };
   switch (chain) {
     case undefined:
@@ -65,6 +66,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
           (compilerType as EthereumContractInfo["compilerType"]) || "solidity",
         compilerVersion: compilerVersion || "v0.8.26+commit.8a97fa7a",
         sourceFile: null,
+        optimize: "0",
       };
       break;
     case "arbitrum":
