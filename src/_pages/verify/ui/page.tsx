@@ -24,6 +24,8 @@ export type EthereumContractInfo = {
   evmVersion?: string | 'default';
 };
 
+type OsType = 'x86' | 'arm';
+export const isOsType = (value: string): value is OsType => value === 'x86' || value === 'arm';
 export type ArbitrumContractInfo = {
   chain: 'arbitrum';
   network: 'one' | 'sepolia';

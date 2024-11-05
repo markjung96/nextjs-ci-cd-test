@@ -157,7 +157,6 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
           await verifyContract();
         } else {
           const result = await uploadSourceFiles();
-          console.log('result', result);
           if (result && result.srcFileId) {
             await verifyContract(result.srcFileId);
           }

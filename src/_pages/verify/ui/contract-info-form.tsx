@@ -12,7 +12,7 @@ import {
 } from '@/src/shared/ui';
 import { useStepper } from '@/src/widgets/Stpper';
 import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
-import { ContractInfo, EthereumContractInfo, SupportedChain } from './page';
+import { ContractInfo, EthereumContractInfo, isOsType, SupportedChain } from './page';
 import solidityVersion from '@/src/shared/lib/solidity-version.json';
 
 type ChainInfo = {
@@ -353,31 +353,24 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           <Label htmlFor="building-env" className="block text-sm font-medium ">
             Please Select Building Environment
           </Label>
-          <RadioGroup defaultValue="x86" className="flex row mt-2" id="building-env">
+          <RadioGroup
+            defaultValue="x86"
+            className="flex row mt-2"
+            id="building-env"
+            onValueChange={(value) => {
+              if (isOsType(value))
+                setContractInfo((prevValue) => ({
+                  ...prevValue,
+                  os: value,
+                }));
+            }}
+          >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="x86"
-                id="r1"
-                onClick={() => {
-                  setContractInfo((prevValue) => ({
-                    ...prevValue,
-                    os: 'x86',
-                  }));
-                }}
-              />
+              <RadioGroupItem value="x86" id="r1" />
               <Label htmlFor="r1">x86</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="arm"
-                id="r2"
-                onClick={() => {
-                  setContractInfo((prevValue) => ({
-                    ...prevValue,
-                    os: 'arm',
-                  }));
-                }}
-              />
+              <RadioGroupItem value="arm" id="r2" />
               <Label htmlFor="r2">arm</Label>
             </div>
           </RadioGroup>
