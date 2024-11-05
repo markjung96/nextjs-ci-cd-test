@@ -1,7 +1,7 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/src/shared/ui";
-import { FileText } from "lucide-react";
+import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/src/shared/ui';
+import { FileText } from 'lucide-react';
 
 interface Transaction {
   chain: string;
@@ -12,34 +12,34 @@ interface Transaction {
 
 const transactions: Transaction[] = [
   {
-    chain: "Arbitrum",
-    network: "sepolia",
-    contractAddress: "0x7395b3f7b3510887665beb894ee63de1d79993e3",
-    verifiedAt: "1 hour ago",
+    chain: 'Arbitrum',
+    network: 'sepolia',
+    contractAddress: '0x7395b3f7b3510887665beb894ee63de1d79993e3',
+    verifiedAt: '1 hour ago',
   },
   {
-    chain: "Arbitrum",
-    network: "sepolia",
-    contractAddress: "0x7395b3f7b3510887665beb894ee63de1d79993e3",
-    verifiedAt: "1 day ago",
+    chain: 'Arbitrum',
+    network: 'sepolia',
+    contractAddress: '0x7395b3f7b3510887665beb894ee63de1d79993e3',
+    verifiedAt: '1 day ago',
   },
   {
-    chain: "Arbitrum",
-    network: "sepolia",
-    contractAddress: "0x7395b3f7b3510887665beb894ee63de1d79993e3",
-    verifiedAt: "2 day ago",
+    chain: 'Arbitrum',
+    network: 'sepolia',
+    contractAddress: '0x7395b3f7b3510887665beb894ee63de1d79993e3',
+    verifiedAt: '2 day ago',
   },
   {
-    chain: "Arbitrum",
-    network: "sepolia",
-    contractAddress: "0x7395b3f7b3510887665beb894ee63de1d79993e3",
-    verifiedAt: "3 day ago",
+    chain: 'Arbitrum',
+    network: 'sepolia',
+    contractAddress: '0x7395b3f7b3510887665beb894ee63de1d79993e3',
+    verifiedAt: '3 day ago',
   },
   {
-    chain: "Arbitrum",
-    network: "sepolia",
-    contractAddress: "0x7395b3f7b3510887665beb894ee63de1d79993e3",
-    verifiedAt: "4 day ago",
+    chain: 'Arbitrum',
+    network: 'sepolia',
+    contractAddress: '0x7395b3f7b3510887665beb894ee63de1d79993e3',
+    verifiedAt: '4 day ago',
   },
 ];
 

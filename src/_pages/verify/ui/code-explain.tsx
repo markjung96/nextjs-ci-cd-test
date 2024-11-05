@@ -1,28 +1,24 @@
-"use client";
-import { FC } from "react";
-import { useEffect } from "react";
-import * as React from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import ReactMarkdown from "react-markdown";
+'use client';
+import { FC } from 'react';
+import { useEffect } from 'react';
+import * as React from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MarkdownPreview } from './mark-down-preview';
 
 interface CodeExplainProps {
   content: string;
 }
 
 export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
-  const [explainContent, setExplainContent] = React.useState<string | null>(
-    null
-  );
+  const [explainContent, setExplainContent] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const getExplainContentByAi = async (content: string) => {
     setIsLoading(true);
-    const result = await fetch("api/chat", {
-      method: "POST",
+    const result = await fetch('api/chat', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ content }),
     });
@@ -39,9 +35,7 @@ export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
     <div className="border rounded-lg shadow-sm h-[600px] flex mt-4">
       <div className="flex-1 flex flex-col">
         <div className="p-4 border-b">
-          <h3 className="font-semibold">
-            Code Explain By AI (Gemini 1.5 Flash)
-          </h3>
+          <h3 className="font-semibold">Code Explain By AI (Gemini 1.5 Flash)</h3>
         </div>
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center">
@@ -49,13 +43,7 @@ export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
           </div>
         ) : (
           <ScrollArea className="flex-1">
-            <SyntaxHighlighter
-              language="markdown"
-              wrapLongLines
-              style={a11yDark}
-            >
-              {explainContent || ""}
-            </SyntaxHighlighter>
+            <MarkdownPreview markdown={explainContent || ''} />
           </ScrollArea>
         )}
       </div>

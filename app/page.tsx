@@ -1,6 +1,6 @@
-import { SearchContractWrapper } from "@/src/widgets/Landing/ui/search-contract";
-import Tools from "@/src/widgets/Landing/ui/verification-tools";
-import ProductTitle from "@/src/widgets/Landing/ui/product-title";
+import { SearchContractWrapper } from '@/src/widgets/Landing/ui/search-contract';
+import Tools from '@/src/widgets/Landing/ui/verification-tools';
+import ProductTitle from '@/src/widgets/Landing/ui/product-title';
 
 export default async function HomeWrapper() {
   return (

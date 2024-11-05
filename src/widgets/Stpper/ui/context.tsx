@@ -1,5 +1,5 @@
-import * as React from "react";
-import type { StepperProps } from "./types";
+import * as React from 'react';
+import type { StepperProps } from './types';
 
 interface StepperContextValue extends StepperProps {
   clickable?: boolean;
@@ -13,7 +13,7 @@ interface StepperContextValue extends StepperProps {
 }
 
 type StepperContextProviderProps = {
-  value: Omit<StepperContextValue, "activeStep">;
+  value: Omit<StepperContextValue, 'activeStep'>;
   children: React.ReactNode;
 };
 
@@ -35,8 +35,8 @@ const StepperContext = React.createContext<
 });
 
 const StepperProvider = ({ value, children }: StepperContextProviderProps) => {
-  const isError = value.state === "error";
-  const isLoading = value.state === "loading";
+  const isError = value.state === 'error';
+  const isLoading = value.state === 'loading';
 
   const [activeStep, setActiveStep] = React.useState(value.initialStep);
 

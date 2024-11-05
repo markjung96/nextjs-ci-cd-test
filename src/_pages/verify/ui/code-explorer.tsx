@@ -1,11 +1,12 @@
-"use client";
-import { FC } from "react";
-import * as React from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { File, Folder } from "lucide-react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { CodeExplain } from "./code-explain";
+'use client';
+import { FC } from 'react';
+import * as React from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { File, Folder } from 'lucide-react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { a11yDark, a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { CodeExplain } from './code-explain';
+import { useTheme } from 'next-themes';
 
 export type FileStructure = {
   name: string;
@@ -19,16 +20,13 @@ interface CodeExplorerProps {
 }
 
 export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
-  // const [fileStructure, setFileStructure] = React.useState<FileStructure[]>([]);
-  const [selectedFile, setSelectedFile] = React.useState<FileStructure | null>(
-    null
-  );
-
+  const { theme } = useTheme();
+  const [selectedFile, setSelectedFile] = React.useState<FileStructure | null>(null);
 
   const renderFileTree = (items?: FileStructure[]) => {
     return items?.map((item) => (
       <div key={item.name} className="pl-4">
-        {item.type === "folder" ? (
+        {item.type === 'folder' ? (
           <div>
             <div className="flex items-center py-1">
               <Folder className="mr-2 h-4 w-4" />
@@ -62,19 +60,15 @@ export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
         </div>
         <div className="flex-1 flex flex-col">
           <div className="p-4 border-b">
-            <h3 className="font-semibold">
-              {selectedFile ? selectedFile.name : "No file selected"}
-            </h3>
+            <h3 className="font-semibold">{selectedFile ? selectedFile.name : 'No file selected'}</h3>
           </div>
           <ScrollArea className="flex-1">
             <SyntaxHighlighter
-              language={selectedFile?.name.includes(".rs") ? "rust" : "toml"}
-              style={a11yDark}
+              language={selectedFile?.name.includes('.rs') ? 'rust' : 'toml'}
+              style={theme === 'dark' ? a11yDark : a11yLight}
               wrapLongLines
             >
-              {selectedFile
-                ? selectedFile.content!
-                : "Select a file to view its content"}
+              {selectedFile ? selectedFile.content! : 'Select a file to view its content'}
             </SyntaxHighlighter>
           </ScrollArea>
         </div>

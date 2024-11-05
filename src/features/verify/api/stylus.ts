@@ -1,40 +1,43 @@
-import { baseUrl } from ".";
+import { arbitrumArmBaseUrl, arbitrumX86BaseUrl } from '.';
 
-type ArbitrumNetwork = "ARBITRUM_ONE" | "ARBITRUM_SEPOLIA";
+type ArbitrumNetwork = 'ARBITRUM_ONE' | 'ARBITRUM_SEPOLIA';
 
 export interface StylusVerificationSrcUploadReqDto {
   network: ArbitrumNetwork;
   contractAddress: string;
   srcZipFile: File;
   compilerVersion: string;
+  os: 'x86' | 'arm';
 }
 export interface StylusVerificationSrcUploadResultDto {
   srcFileId: string;
 }
 
 export const postStylusSourceCode = async (
-  request: StylusVerificationSrcUploadReqDto
+  request: StylusVerificationSrcUploadReqDto,
 ): Promise<StylusVerificationSrcUploadResultDto> => {
   const formData = new FormData();
-  formData.append("network", request.network);
-  formData.append("contractAddress", request.contractAddress);
-  formData.append("srcZipFile", request.srcZipFile);
-  formData.append("compilerVersion", request.compilerVersion);
+  formData.append('network', request.network);
+  formData.append('contractAddress', request.contractAddress);
+  formData.append('srcZipFile', request.srcZipFile);
+  formData.append('compilerVersion', request.compilerVersion);
   try {
-    const response = await fetch(`${baseUrl}/arbitrum/verifications/sources`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "multipart/form-data",
+    const response = await fetch(
+      `${request.os === 'arm' ? arbitrumArmBaseUrl : arbitrumX86BaseUrl}/arbitrum/verifications/sources`,
+      {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+        },
+        body: formData,
       },
-      body: formData,
-    });
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return (await response.json()).data;
+    return await response.json();
   } catch (error) {
-    throw new Error("Failed to upload source code");
+    throw new Error('Failed to upload source code');
   }
 };
 
@@ -43,6 +46,7 @@ export interface StylusVerificationReqDto {
   contractAddress: string;
   srcFileId?: string;
   cliVersion: string;
+  os: 'x86' | 'arm';
 }
 
 export interface StylusVerificationResultDto {
@@ -54,23 +58,24 @@ export interface StylusVerificationResultDto {
   errMsg?: string;
 }
 
-export const verifyStylus = async (
-  request: StylusVerificationReqDto
-): Promise<StylusVerificationResultDto> => {
+export const verifyStylus = async (request: StylusVerificationReqDto): Promise<StylusVerificationResultDto> => {
   try {
-    const response = await fetch(`${baseUrl}/arbitrum/verifications`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${request.os === 'arm' ? arbitrumArmBaseUrl : arbitrumX86BaseUrl}/arbitrum/verifications`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
       },
-      body: JSON.stringify(request),
-    });
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
   } catch (error) {
-    throw new Error("Failed to verify contract");
+    throw new Error('Failed to verify contract');
   }
 };
 
@@ -88,18 +93,18 @@ export interface StylusVerificationCheckResultDto {
 
 export const getStylusVerificationResult = async (
   network: ArbitrumNetwork,
-  contractAddress: string
+  contractAddress: string,
 ): Promise<StylusVerificationCheckResultDto> => {
   try {
     const response = await fetch(
-      `${baseUrl}/arbitrum/verifications?network=${network}&contractAddress=${contractAddress}`,
-      { headers: { "Cache-Control": "no-cache" } }
+      `${arbitrumX86BaseUrl}/arbitrum/verifications?network=${network}&contractAddress=${contractAddress}`,
+      { headers: { 'Cache-Control': 'no-cache' } },
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
   } catch (error) {
-    throw new Error("Failed to get verification result");
+    throw new Error('Failed to get verification result');
   }
 };

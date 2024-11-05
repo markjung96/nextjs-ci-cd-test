@@ -1,5 +1,5 @@
-import React from "react";
-import { StepperContext } from "../ui/context";
+import React from 'react';
+import { StepperContext } from '../ui/context';
 
 function usePrevious<T>(value: T): T | undefined {
   const ref = React.useRef<T>();
@@ -15,7 +15,7 @@ export function useStepper() {
   const context = React.useContext(StepperContext);
 
   if (context === undefined) {
-    throw new Error("useStepper must be used within a StepperProvider");
+    throw new Error('useStepper must be used within a StepperProvider');
   }
 
   const { setStep, nextStep, children, className, ...rest } = context;
