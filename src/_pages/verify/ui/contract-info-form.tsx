@@ -43,7 +43,7 @@ const solidityCompilerVersions = solidityVersion.builds
   .reverse()
   .filter((build) => !build.longVersion.includes('nightly'))
   .map((build) => `v${build.version}+${build.build}`);
-const stylusCompilerVersions = ['0.5.1', '0.5.3'];
+const stylusCompilerVersions = ['0.5.1', '0.5.2', '0.5.3', '0.5.4', '0.5.5'];
 const cairoCompilerVersions = [
   '2.3.0',
   '2.3.1',
