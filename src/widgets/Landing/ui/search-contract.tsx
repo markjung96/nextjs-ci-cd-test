@@ -3,11 +3,9 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -18,7 +16,7 @@ import { Input } from "@/src/shared/ui";
 import { getBytecode, createConfig } from "@wagmi/core";
 import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, ChangeEventHandler, useMemo } from "react";
+import React, { ChangeEvent, useMemo } from "react";
 import {
   http,
   WagmiProvider,
@@ -26,6 +24,7 @@ import {
 } from "wagmi";
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
 import _ from "lodash";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -66,11 +65,11 @@ const getSuggestionsList = async (address: string) => {
     const networks = [
       {
         network: "mainnet",
-        url: process.env.NEXT_PUBLIC_STARKNET_MAINNET_URL
+        url: process.env.NEXT_PUBLIC_STARKNET_MAINNET_URL,
       },
       {
         network: "sepolia",
-        url: process.env.NEXT_PUBLIC_STARKNET_SEPOLIA_URL
+        url: process.env.NEXT_PUBLIC_STARKNET_SEPOLIA_URL,
       },
     ];
     const starknetSuggestion = await Promise.all(
@@ -161,6 +160,7 @@ const getSuggestionsList = async (address: string) => {
 
 export function SearchContract() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const [suggestions, setSuggestions] = React.useState<
     {
@@ -175,20 +175,18 @@ export function SearchContract() {
   const debouncedSearch = useMemo(
     () =>
       _.debounce(async (address) => {
+        setIsLoading(true);
         const suggestions = await getSuggestionsList(address);
         setSuggestions(suggestions);
+        setIsLoading(false);
       }, 300),
     []
   );
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    // if (event.key === "Enter") {
     setIsOpen(true);
     const address = event.currentTarget.value;
     debouncedSearch(address);
-    // const suggestions = await getSuggestionsList(address);
-    setSuggestions(suggestions);
-    // }
   };
 
   const handleClickSuggestion = (suggestion: {
@@ -222,7 +220,15 @@ export function SearchContract() {
       <PopoverContent className="w-[480px] p-0">
         <Command>
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>
+              {isLoading ? (
+                <div className="flex justify-center">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                "No results found."
+              )}
+            </CommandEmpty>
             <CommandGroup heading="Suggestions">
               {suggestions.map((suggestion, index) => (
                 <CommandItem
@@ -235,11 +241,6 @@ export function SearchContract() {
               ))}
             </CommandGroup>
             <CommandSeparator />
-            {/* <CommandGroup heading="Verify">
-              <CommandItem>
-                <span>Verifiy</span>
-              </CommandItem>
-            </CommandGroup> */}
           </CommandList>
         </Command>
       </PopoverContent>
