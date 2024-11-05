@@ -1,8 +1,8 @@
-import { FC } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/shared/ui";
-import { CodeExplorer } from "./code-explorer";
-import { ContractInteract } from "./contract-interact";
-import { ContractInteractStarknet } from "./contract-interact-starknet";
+import { FC } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/shared/ui';
+import { CodeExplorer } from './code-explorer';
+import { ContractInteract } from './contract-interact';
+import { ContractInteractStarknet } from './contract-interact-starknet';
 
 interface VerifiedInfoProps {
   chain: string;
@@ -22,12 +22,10 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
   return (
     <>
       <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-        <p className="block sm:inline">
-          Contract {contractAddress} has been verified
-        </p>
+        <p className="block sm:inline">Contract {contractAddress} has been verified</p>
         <br />
         <p className="block sm:inline">
-          You can download the verified source code{" "}
+          You can download the verified source code{' '}
           <a href={verifiedSrcUrl} className="text-blue-600" download>
             here
           </a>
@@ -44,7 +42,7 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
         <TabsContent value="interact">
           {outFileUrl && (
             <>
-              {chain === "starknet" ? (
+              {chain === 'starknet' ? (
                 <ContractInteractStarknet
                   chain={chain}
                   network={network}

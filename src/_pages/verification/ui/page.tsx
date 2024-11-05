@@ -1,4 +1,4 @@
-import VerificationStepper from "./verification-stepper";
+import VerificationStepper from './verification-stepper';
 
 export const VerificationPage = () => {
   return (

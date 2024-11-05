@@ -1,3 +1,3 @@
-import { VerifiyPage } from "@/src/_pages/verify";
+import { VerifiyPage } from '@/src/_pages/verify';
 
 export default VerifiyPage;

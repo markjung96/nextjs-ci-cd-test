@@ -1,10 +1,10 @@
-"use client";
-import { useForm, UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+'use client';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Step, type StepItem, Stepper, useStepper } from "@/src/widgets/Stpper";
-import { Button, FormDescription, Input, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from "@/src/shared/ui";
+import { Step, type StepItem, Stepper, useStepper } from '@/src/widgets/Stpper';
+import { Button, FormDescription, Input, Tabs, TabsContent, TabsList, TabsTrigger, Textarea } from '@/src/shared/ui';
 import {
   Select,
   SelectContent,
@@ -13,21 +13,21 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/src/shared/ui";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/src/shared/ui";
+} from '@/src/shared/ui';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/shared/ui';
 import {
   aptosAddressSchema,
   suiAddressSchema,
   neutronAddressSchema,
   multerFileSchema,
-} from "@/src/shared/lib/zod-schema";
+} from '@/src/shared/lib/zod-schema';
 
-import { protocols } from "../const/protocol";
-import { fileToMulterFile } from "@/src/shared/lib/utils";
-import { Loader } from "@/src/widgets/Loader";
-import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from "react";
-import { getSuiVerification } from "@/src/entities/verifications";
-import { isSuiNetwork } from "@/src/entities/verifications/model/types";
+import { protocols } from '../const/protocol';
+import { fileToMulterFile } from '@/src/shared/lib/utils';
+import { Loader } from '@/src/widgets/Loader';
+import { BaseSyntheticEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { getSuiVerification } from '@/src/entities/verifications';
+import { isSuiNetwork } from '@/src/entities/verifications/model/types';
 
 const formSchema = z
   .object({
@@ -42,30 +42,30 @@ const formSchema = z
     if (address.length > 0) {
       let isValid = false;
       switch (protocol.toLowerCase()) {
-        case "sui":
+        case 'sui':
           isValid = suiAddressSchema.safeParse(address).success;
           break;
-        case "aptos":
+        case 'aptos':
           isValid = aptosAddressSchema.safeParse(address).success;
           break;
-        case "neutron":
+        case 'neutron':
           isValid = neutronAddressSchema.safeParse(address).success;
           break;
         default:
           isValid = false;
       }
       if (!isValid) {
-        ctx.addIssue({ path: ["address"], message: "Invalid address", code: z.ZodIssueCode.custom });
+        ctx.addIssue({ path: ['address'], message: 'Invalid address', code: z.ZodIssueCode.custom });
         return;
       }
     }
   });
 
 const steps = [
-  { label: "Select protocol and network" },
-  { label: "Input contract address" },
-  { label: "Upload codes" },
-  { label: "Verify codes" },
+  { label: 'Select protocol and network' },
+  { label: 'Input contract address' },
+  { label: 'Upload codes' },
+  { label: 'Verify codes' },
 ] satisfies StepItem[];
 
 type FormValues = z.infer<typeof formSchema>;
@@ -74,11 +74,11 @@ const VerificationStepper = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      protocol: "",
-      network: "",
-      moduleName: "",
-      address: "",
-      sourceCode: "",
+      protocol: '',
+      network: '',
+      moduleName: '',
+      address: '',
+      sourceCode: '',
       files: [],
     },
   });
@@ -96,7 +96,7 @@ const VerificationStepper = () => {
             orientation="vertical"
             initialStep={0}
             steps={steps}
-            state={loading ? "loading" : undefined}
+            state={loading ? 'loading' : undefined}
             scrollTracking
           >
             {steps.map((stepProps, index) => {
@@ -124,7 +124,7 @@ const FirstStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
   const isDisabledNext = () => {
     const { protocol, network } = form.getValues();
     if (!protocol || !network) return true;
-    else if (protocol.toLowerCase() === "aptos" && !form.getValues("moduleName")) return true;
+    else if (protocol.toLowerCase() === 'aptos' && !form.getValues('moduleName')) return true;
     return false;
   };
 
@@ -140,10 +140,10 @@ const FirstStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
                 <FormLabel>Protocol</FormLabel>
                 <FormControl>
                   <Select
-                    value={form.watch("protocol")}
+                    value={form.watch('protocol')}
                     onValueChange={(protocol) => {
                       form.reset();
-                      form.setValue("protocol", protocol);
+                      form.setValue('protocol', protocol);
                     }}
                   >
                     <SelectTrigger>
@@ -176,10 +176,10 @@ const FirstStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
                 <FormLabel>Network</FormLabel>
                 <FormControl>
                   <Select
-                    disabled={!form.watch("protocol")}
-                    value={form.watch("network")}
+                    disabled={!form.watch('protocol')}
+                    value={form.watch('network')}
                     onValueChange={(network) => {
-                      form.setValue("network", network);
+                      form.setValue('network', network);
                     }}
                   >
                     <SelectTrigger>
@@ -189,7 +189,7 @@ const FirstStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
                       <SelectGroup>
                         <SelectLabel>Networks</SelectLabel>
                         {protocols
-                          .find((item) => item.protocol.toLowerCase() === form.watch("protocol"))
+                          .find((item) => item.protocol.toLowerCase() === form.watch('protocol'))
                           ?.network.map((network) => (
                             <SelectItem key={network} value={network.toLowerCase()}>
                               {network}
@@ -204,7 +204,7 @@ const FirstStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
           }}
         />
       </div>
-      {getValues("protocol")?.toLowerCase() === "aptos" && (
+      {getValues('protocol')?.toLowerCase() === 'aptos' && (
         <FormField
           control={form.control}
           name="moduleName"
@@ -244,21 +244,21 @@ const SecondStep = ({
   const { prevStep, nextStep, setStep } = useStepper();
   const { watch, control } = form;
   const { protocol, network, address } = watch();
-  const addressState = control.getFieldState("address");
+  const addressState = control.getFieldState('address');
 
-  const [description, setDescription] = useState<string>("");
+  const [description, setDescription] = useState<string>('');
 
   useEffect(() => {
     const handleAddressChange = async () => {
       if (addressState.invalid || !addressState.isTouched) return;
-      if (protocol.toLowerCase() === "sui" && isSuiNetwork(network)) {
+      if (protocol.toLowerCase() === 'sui' && isSuiNetwork(network)) {
         setLoading(true);
         const response = await getSuiVerification({ packageId: address, network });
         if (!response) return;
         if (response.isVerified) {
-          setDescription("This contract already has been verified");
+          setDescription('This contract already has been verified');
         } else if (!response.isRemixSrcUploaded) {
-          setDescription("Before verification, you need to upload the source code to remix");
+          setDescription('Before verification, you need to upload the source code to remix');
         }
         setLoading(false);
       }
@@ -291,12 +291,12 @@ const SecondStep = ({
               <Button
                 size="sm"
                 onClick={() => {
-                  if (description.includes("verified")) setStep(steps.length);
+                  if (description.includes('verified')) setStep(steps.length);
                   else nextStep();
                 }}
-                disabled={!form.getValues("address")}
+                disabled={!form.getValues('address')}
               >
-                {loading ? <Loader /> : "Next"}
+                {loading ? <Loader /> : 'Next'}
               </Button>
             </div>
           </div>
@@ -308,13 +308,13 @@ const SecondStep = ({
 
 const ThirdStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
   const { prevStep, nextStep, setStep } = useStepper();
-  const protocol = form.getValues("protocol");
+  const protocol = form.getValues('protocol');
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const filePromises = Array.from(event.target.files).map(fileToMulterFile);
       const filesArray = await Promise.all(filePromises);
-      form.setValue("files", filesArray);
+      form.setValue('files', filesArray);
     }
   };
 
@@ -322,7 +322,7 @@ const ThirdStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
     <div className="flex flex-col mx-2 my-4">
       <Tabs defaultValue="sourceCode">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="sourceCode" disabled={protocol.toLowerCase() === "sui"}>
+          <TabsTrigger value="sourceCode" disabled={protocol.toLowerCase() === 'sui'}>
             Source Code
           </TabsTrigger>
           <TabsTrigger value="files">Files</TabsTrigger>
@@ -365,7 +365,7 @@ const ThirdStep = ({ form }: { form: UseFormReturn<FormValues> }) => {
         <Button onClick={prevStep} size="sm" variant="outline">
           Prev
         </Button>
-        <Button size="sm" onClick={nextStep} disabled={!form.getValues("address")}>
+        <Button size="sm" onClick={nextStep} disabled={!form.getValues('address')}>
           Next
         </Button>
       </div>
@@ -394,17 +394,17 @@ const ForthStep = ({
   return (
     <div className="flex flex-col mx-2 my-4">
       <div className="p-4 border rounded-md">
-        <ul>Protocol: {form.getValues("protocol")}</ul>
-        <ul>Network: {form.getValues("network")}</ul>
-        <ul>Address: {form.getValues("address")}</ul>
-        <ul>Source Code: {form.getValues("sourceCode")}</ul>
+        <ul>Protocol: {form.getValues('protocol')}</ul>
+        <ul>Network: {form.getValues('network')}</ul>
+        <ul>Address: {form.getValues('address')}</ul>
+        <ul>Source Code: {form.getValues('sourceCode')}</ul>
       </div>
       <div className="w-full flex justify-end gap-2 my-4">
         <Button onClick={prevStep} size="sm" variant="outline">
           Prev
         </Button>
         <Button size="sm" onClick={form.handleSubmit(onSubmit)}>
-          {loading ? <Loader /> : "Verify code"}
+          {loading ? <Loader /> : 'Verify code'}
         </Button>
       </div>
     </div>

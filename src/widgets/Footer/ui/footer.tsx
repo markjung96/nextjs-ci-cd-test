@@ -3,7 +3,7 @@ export function Footer(props: Props) {
   return (
     <footer className="w-full py-4 text-center text-gray-500">
       <p>
-        Blockscan © 2024 (A1) | Made with <span className="text-red-500">❤️</span> by the team behind{" "}
+        Blockscan © 2024 (A1) | Made with <span className="text-red-500">❤️</span> by the team behind{' '}
         <a href="#" className="text-blue-500">
           Etherscan
         </a>

@@ -1,4 +1,4 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Button,
   Input,
@@ -9,11 +9,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/src/shared/ui";
-import { useStepper } from "@/src/widgets/Stpper";
-import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
-import { ContractInfo, SupportedChain } from "./page";
-import solidityVersion from "@/src/shared/lib/solidity-version.json";
+} from '@/src/shared/ui';
+import { useStepper } from '@/src/widgets/Stpper';
+import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
+import { ContractInfo, SupportedChain } from './page';
+import solidityVersion from '@/src/shared/lib/solidity-version.json';
 
 type ChainInfo = {
   chainName: string;
@@ -23,51 +23,51 @@ type ChainInfo = {
 
 const chainInfos: ChainInfo[] = [
   {
-    chainName: "ethereum",
-    networks: ["mainnet", "sepolia"],
-    compilers: ["solidity"],
+    chainName: 'ethereum',
+    networks: ['mainnet', 'sepolia'],
+    compilers: ['solidity'],
   },
   {
-    chainName: "arbitrum",
-    networks: ["one", "sepolia"],
-    compilers: ["solidity", "stylus"],
+    chainName: 'arbitrum',
+    networks: ['one', 'sepolia'],
+    compilers: ['solidity', 'stylus'],
   },
   {
-    chainName: "starknet",
-    networks: ["mainnet", "sepolia"],
-    compilers: ["cairo"],
+    chainName: 'starknet',
+    networks: ['mainnet', 'sepolia'],
+    compilers: ['cairo'],
   },
 ];
 
 const solidityCompilerVersions = solidityVersion.builds
   .reverse()
-  .filter((build) => !build.longVersion.includes("nightly"))
+  .filter((build) => !build.longVersion.includes('nightly'))
   .map((build) => `v${build.version}+${build.build}`);
-const stylusCompilerVersions = ["0.5.1", "0.5.3"];
+const stylusCompilerVersions = ['0.5.1', '0.5.3'];
 const cairoCompilerVersions = [
-  "2.3.0",
-  "2.3.1",
-  "2.4.0",
-  "2.4.1",
-  "2.4.2",
-  "2.4.3",
-  "2.4.4",
-  "2.5.0",
-  "2.5.1",
-  "2.5.2",
-  "2.5.3",
-  "2.5.4",
-  "2.6.0",
-  "2.6.1",
-  "2.6.2",
-  "2.6.3",
-  "2.6.4",
-  "2.6.5",
-  "2.7.0",
-  "2.7.1",
-  "2.8.0",
-  "2.8.1",
-  "2.8.2",
+  '2.3.0',
+  '2.3.1',
+  '2.4.0',
+  '2.4.1',
+  '2.4.2',
+  '2.4.3',
+  '2.4.4',
+  '2.5.0',
+  '2.5.1',
+  '2.5.2',
+  '2.5.3',
+  '2.5.4',
+  '2.6.0',
+  '2.6.1',
+  '2.6.2',
+  '2.6.3',
+  '2.6.4',
+  '2.6.5',
+  '2.7.0',
+  '2.7.1',
+  '2.8.0',
+  '2.8.1',
+  '2.8.2',
 ];
 
 interface ContractInfoProps {
@@ -78,15 +78,15 @@ interface ContractInfoProps {
 export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContractInfo }) => {
   const { nextStep } = useStepper();
   const [selectedChain, setSelectedChain] = useState<ChainInfo>(
-    chainInfos.filter((chainInfo) => contractInfo.chain === chainInfo.chainName)[0]
+    chainInfos.filter((chainInfo) => contractInfo.chain === chainInfo.chainName)[0],
   );
 
   const compilerVersions = useMemo(() => {
-    if (contractInfo.compilerType === "solidity") {
+    if (contractInfo.compilerType === 'solidity') {
       return solidityCompilerVersions;
-    } else if (contractInfo.compilerType === "stylus") {
+    } else if (contractInfo.compilerType === 'stylus') {
       return stylusCompilerVersions;
-    } else if (contractInfo.compilerType === "cairo") {
+    } else if (contractInfo.compilerType === 'cairo') {
       return cairoCompilerVersions;
     }
     return [];
@@ -112,7 +112,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           }
         />
       </div>
-      {contractInfo.chain === "starknet" && (
+      {contractInfo.chain === 'starknet' && (
         <div>
           <Label htmlFor="contract-address" className="block text-sm font-medium ">
             Please enter the Declare Transaction Hash
@@ -147,7 +147,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                     ...prevValue,
                     chain: item,
                     network: chainInfos.filter((chainInfo) => chainInfo.chainName === item)[0].networks[0],
-                  } as ContractInfo)
+                  }) as ContractInfo,
               );
             }}
           >
@@ -177,7 +177,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                   ({
                     ...prevValue,
                     network: network,
-                  } as ContractInfo)
+                  }) as ContractInfo,
               )
             }
           >
@@ -209,7 +209,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                   ({
                     ...prevValue,
                     compilerType: compiler,
-                  } as ContractInfo)
+                  }) as ContractInfo,
               )
             }
           >
@@ -247,10 +247,10 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             Please Select Compiler Version
           </Label>
           <Select
-            defaultValue={contractInfo.chain === "starknet" ? contractInfo.scarbVersion : contractInfo.compilerVersion}
+            defaultValue={contractInfo.chain === 'starknet' ? contractInfo.scarbVersion : contractInfo.compilerVersion}
             onValueChange={(version) =>
               setContractInfo((prevValue) => {
-                if (contractInfo.chain === "starknet") {
+                if (contractInfo.chain === 'starknet') {
                   return {
                     ...prevValue,
                     scarbVersion: version,
@@ -321,7 +321,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
               <option>[Please Select]</option>
             </Select>
           </div> */}
-      {contractInfo.compilerType === "stylus" && (
+      {contractInfo.compilerType === 'stylus' && (
         <div>
           <Label htmlFor="building-env" className="block text-sm font-medium ">
             Please Select Building Environment
@@ -334,7 +334,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                 onClick={() => {
                   setContractInfo((prevValue) => ({
                     ...prevValue,
-                    os: "x86",
+                    os: 'x86',
                   }));
                 }}
               />
@@ -347,7 +347,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                 onClick={() => {
                   setContractInfo((prevValue) => ({
                     ...prevValue,
-                    os: "arm",
+                    os: 'arm',
                   }));
                 }}
               />
@@ -365,7 +365,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           defaultChecked
         />
         <Label htmlFor="terms" className="ml-2 text-sm ">
-          I agree to the{" "}
+          I agree to the{' '}
           <a href="#" className="text-blue-600">
             terms of service
           </a>

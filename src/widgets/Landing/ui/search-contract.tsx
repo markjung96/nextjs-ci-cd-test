@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Command,
   CommandEmpty,
@@ -8,16 +8,16 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Input } from "@/src/shared/ui";
-import { getBytecode, createConfig } from "@wagmi/core";
-import { SearchIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { ChangeEvent, ChangeEventHandler, useMemo } from "react";
-import { http, WagmiProvider, createConfig as createConfigGeneral } from "wagmi";
-import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
-import _ from "lodash";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/src/shared/ui';
+import { getBytecode, createConfig } from '@wagmi/core';
+import { SearchIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { ChangeEvent, ChangeEventHandler, useMemo } from 'react';
+import { http, WagmiProvider, createConfig as createConfigGeneral } from 'wagmi';
+import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
+import _ from 'lodash';
 
 export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -108,43 +108,43 @@ const getSuggestionsList = async (address: string) => {
           chainId,
           address: address as `0x${string}`,
         });
-      })
+      }),
     );
 
     return suggestions
       .map((suggestion, index) => {
-        let chainName = "";
-        let networkName = "";
+        let chainName = '';
+        let networkName = '';
         // TODO: Add other chains here
         switch (chainIds[index]) {
           case mainnet.id:
-            chainName = "Ethereum";
-            networkName = "Mainnet";
+            chainName = 'Ethereum';
+            networkName = 'Mainnet';
             break;
           case sepolia.id:
-            chainName = "Ethereum";
-            networkName = "Sepolia";
+            chainName = 'Ethereum';
+            networkName = 'Sepolia';
             break;
           case arbitrum.id:
-            chainName = "Arbitrum";
-            networkName = "One";
+            chainName = 'Arbitrum';
+            networkName = 'One';
             break;
           case arbitrumSepolia.id:
-            chainName = "Arbitrum";
-            networkName = "Sepolia";
+            chainName = 'Arbitrum';
+            networkName = 'Sepolia';
             break;
         }
         return {
           chainName,
           networkName,
-          isContract: suggestion !== undefined && suggestion !== "0x",
+          isContract: suggestion !== undefined && suggestion !== '0x',
           address,
           // suggestion,
         };
       })
       .filter((suggestion) => suggestion.isContract);
   } catch (error) {
-    console.error("Error getting suggestions", error);
+    console.error('Error getting suggestions', error);
     return [];
   }
 };
@@ -168,7 +168,7 @@ export function SearchContract() {
         const suggestions = await getSuggestionsList(address);
         setSuggestions(suggestions);
       }, 300),
-    []
+    [],
   );
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -190,7 +190,7 @@ export function SearchContract() {
     router.push(
       `/verify?chain=${suggestion.chainName.toLowerCase()}&network=${suggestion.networkName.toLowerCase()}&contractAddress=${
         suggestion.address
-      }`
+      }`,
     );
     setIsOpen(false);
   };

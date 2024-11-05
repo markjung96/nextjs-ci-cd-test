@@ -1,6 +1,6 @@
-import { Input, Label } from "@/src/shared/ui";
-import { Dispatch, FC, SetStateAction } from "react";
-import { ContractInfo } from "./page";
+import { Input, Label } from '@/src/shared/ui';
+import { Dispatch, FC, SetStateAction } from 'react';
+import { ContractInfo } from './page';
 
 type Props = {
   contractInfo: ContractInfo;

@@ -2,41 +2,41 @@ import {
   getSolidityVerificationResult,
   getStylusVerificationResult,
   getCairoVerificationResult,
-} from "@/src/features/verify/api";
-import { VerifyStepper } from "./verify-stepper";
-import { VerifiedInfo } from "./verified-info";
-import { Suspense } from "react";
+} from '@/src/features/verify/api';
+import { VerifyStepper } from './verify-stepper';
+import { VerifiedInfo } from './verified-info';
+import { Suspense } from 'react';
 
-export type SupportedChain = "ethereum" | "arbitrum" | "starknet";
-export type SupportedNetwork = "mainnet" | "sepolia" | "goerli" | "one";
-export type SupportedCompilerType = "solidity" | "stylus" | "cairo";
+export type SupportedChain = 'ethereum' | 'arbitrum' | 'starknet';
+export type SupportedNetwork = 'mainnet' | 'sepolia' | 'goerli' | 'one';
+export type SupportedCompilerType = 'solidity' | 'stylus' | 'cairo';
 
 export type EthereumContractInfo = {
-  chain: "ethereum";
-  network: "mainnet" | "sepolia" | "goerli";
+  chain: 'ethereum';
+  network: 'mainnet' | 'sepolia' | 'goerli';
   contractAddress: string;
-  compilerType: "solidity";
+  compilerType: 'solidity';
   compilerVersion: string;
   sourceFile: File | null;
 };
 
 export type ArbitrumContractInfo = {
-  chain: "arbitrum";
-  network: "one" | "sepolia";
+  chain: 'arbitrum';
+  network: 'one' | 'sepolia';
   contractAddress: string;
-  compilerType: "stylus";
+  compilerType: 'stylus';
   compilerVersion: string;
   sourceFile: File | null;
-  os: "x86" | "arm";
+  os: 'x86' | 'arm';
 };
 
 export type StarknetContractInfo = {
-  chain: "starknet";
-  network: "mainnet" | "sepolia";
+  chain: 'starknet';
+  network: 'mainnet' | 'sepolia';
   contractAddress: string;
   declareTxHash: string;
   scarbVersion: string;
-  compilerType: "cairo";
+  compilerType: 'cairo';
   compilerVersion: string;
   sourceFile: File | null;
 };
@@ -55,27 +55,27 @@ export const VerifiyPage = async ({ searchParams }: { searchParams?: { [key: str
   let result = null;
 
   if (contractAddress) {
-    if (chain === "ethereum" && network !== undefined) {
+    if (chain === 'ethereum' && network !== undefined) {
       result = await getSolidityVerificationResult(
-        "ethereum",
-        network.toLowerCase() === "mainnet" ? "0x1" : "0xaa36a7",
-        contractAddress
+        'ethereum',
+        network.toLowerCase() === 'mainnet' ? '0x1' : '0xaa36a7',
+        contractAddress,
       );
     }
-    if (chain === "arbitrum" && network !== undefined) {
+    if (chain === 'arbitrum' && network !== undefined) {
       result = await getStylusVerificationResult(
-        network.toLowerCase() === "one" ? "ARBITRUM_ONE" : "ARBITRUM_SEPOLIA",
-        contractAddress
+        network.toLowerCase() === 'one' ? 'ARBITRUM_ONE' : 'ARBITRUM_SEPOLIA',
+        contractAddress,
       );
       // 리믹스에 소스코드가 업로드 되었을 때
       if (result?.isRemixSrcUploaded) {
         initialStep = 1;
       }
     }
-    if (chain === "starknet" && network !== undefined) {
+    if (chain === 'starknet' && network !== undefined) {
       result = await getCairoVerificationResult(
-        network.toLowerCase() === "mainnet" ? "0x534e5f4d41494e" : "0x534e5f5345504f4c4941",
-        contractAddress
+        network.toLowerCase() === 'mainnet' ? '0x534e5f4d41494e' : '0x534e5f5345504f4c4941',
+        contractAddress,
       );
     }
 

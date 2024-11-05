@@ -1,8 +1,8 @@
-import { Button, Label } from "@/src/shared/ui";
-import { useStepper } from "@/src/widgets/Stpper";
-import { Dispatch, FC, SetStateAction } from "react";
-import { ContractInfo } from "./page";
-import { InputFile } from "./input-file";
+import { Button, Label } from '@/src/shared/ui';
+import { useStepper } from '@/src/widgets/Stpper';
+import { Dispatch, FC, SetStateAction } from 'react';
+import { ContractInfo } from './page';
+import { InputFile } from './input-file';
 
 interface ContractInfoProps {
   contractInfo: ContractInfo;
@@ -10,19 +10,15 @@ interface ContractInfoProps {
   isRemixSrcUploaded?: boolean;
 }
 
-export const ContractVerifyForm: FC<ContractInfoProps> = ({
-  contractInfo,
-  setContractInfo,
-  isRemixSrcUploaded,
-}) => {
+export const ContractVerifyForm: FC<ContractInfoProps> = ({ contractInfo, setContractInfo, isRemixSrcUploaded }) => {
   const { prevStep, nextStep } = useStepper();
   return (
     <form className="space-y-4">
       <div>
         <ol className="my-6 ml-6 list-disc [&>li]:mt-2">
           <li>
-            Does not support external libraries, constructor arguments,
-            optimization settings or speficic compiler versions.
+            Does not support external libraries, constructor arguments, optimization settings or speficic compiler
+            versions.
           </li>
           <li>Source code should be in zip file.</li>
         </ol>
@@ -32,7 +28,7 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
           <li>Chain : {contractInfo.chain}</li>
           <li>Network : {contractInfo.network}</li>
           <li>Contract Address: {contractInfo.contractAddress}</li>
-          {contractInfo.chain === "starknet" ? (
+          {contractInfo.chain === 'starknet' ? (
             <>
               <li>Declare TxHash: {contractInfo.declareTxHash}</li>
               <li>Scarb Version: {contractInfo.scarbVersion}</li>
@@ -50,25 +46,16 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({
           </Label>
         ) : (
           <>
-            <Label
-              htmlFor="compiler-type"
-              className="block text-sm font-medium "
-            >
+            <Label htmlFor="compiler-type" className="block text-sm font-medium ">
               Enter the contract {contractInfo.compilerType} Source Zip file
             </Label>
-            <InputFile
-              contractInfo={contractInfo}
-              setContractInfo={setContractInfo}
-            />
+            <InputFile contractInfo={contractInfo} setContractInfo={setContractInfo} />
           </>
         )}
       </div>
 
       <div className="flex justify-end space-x-4">
-        <Button
-          className="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-300"
-          onClick={() => prevStep()}
-        >
+        <Button className="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-300" onClick={() => prevStep()}>
           prev
         </Button>
         <Button

@@ -1,28 +1,22 @@
-"use client";
-import "@rainbow-me/rainbowkit/styles.css";
-import { Dispatch, FC, SetStateAction, useState } from "react";
-import JSZip from "jszip";
-import { useEffect } from "react";
-import * as React from "react";
-import { Button, Input, Label } from "@/src/shared/ui";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/src/components/ui/accordion";
-import { Abi, AbiFunction, AbiParameter } from "viem";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Contract, RpcProvider } from "starknet"; // v6.10.0 min
-import { StarknetProvider, useStarknetProvider } from "./starknet-provider";
+'use client';
+import '@rainbow-me/rainbowkit/styles.css';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
+import JSZip from 'jszip';
+import { useEffect } from 'react';
+import * as React from 'react';
+import { Button, Input, Label } from '@/src/shared/ui';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/src/components/ui/accordion';
+import { Abi, AbiFunction, AbiParameter } from 'viem';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Contract, RpcProvider } from 'starknet'; // v6.10.0 min
+import { StarknetProvider, useStarknetProvider } from './starknet-provider';
 
 type File = {
   name: string;
   content: string;
 };
 
-const isFunctionFragment = (abi: AbiFunction | Abi): abi is AbiFunction =>
-  (abi as AbiFunction).type === "function";
+const isFunctionFragment = (abi: AbiFunction | Abi): abi is AbiFunction => (abi as AbiFunction).type === 'function';
 
 interface ContractInteractProps {
   chain: string;
@@ -46,7 +40,7 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
 
     unzipped.forEach((relativePath: any, file: any) => {
       if (!file.dir) {
-        const filePromise = file.async("text").then((content: any) => {
+        const filePromise = file.async('text').then((content: any) => {
           return { name: file.name, content: content };
         });
         filePromises.push(filePromise);
@@ -60,30 +54,26 @@ export const ContractInteractStarknet: FC<ContractInteractProps> = ({
   const fetchZip = async (url: string) => {
     const zipFile = await fetch(url);
     const arrayBuffer = await zipFile.arrayBuffer();
-    const zipBlob = new Blob([arrayBuffer], { type: "application/zip" });
+    const zipBlob = new Blob([arrayBuffer], { type: 'application/zip' });
     const zip = new JSZip();
     const unzippedFiles = await zip.loadAsync(zipBlob);
     const files: File[] = await processFiles(unzippedFiles);
     // const abiFile = files.find((file) => file.name === "output/abi.json");
-    const abiFile = files.find((file) => file.name.includes("abi.json"));
+    const abiFile = files.find((file) => file.name.includes('abi.json'));
     if (abiFile) {
       const totalAbi = JSON.parse(abiFile.content)
-        .filter((abiItem: any) => abiItem.type === "interface")[0]
+        .filter((abiItem: any) => abiItem.type === 'interface')[0]
         .items.map((item: any) => ({
           ...item,
           stateMutability: item.state_mutability,
         }));
       const readAbi = totalAbi.filter(
         (abiItem: Abi) =>
-          isFunctionFragment(abiItem) &&
-          (abiItem.stateMutability === "view" ||
-            abiItem.stateMutability === "pure")
+          isFunctionFragment(abiItem) && (abiItem.stateMutability === 'view' || abiItem.stateMutability === 'pure'),
       );
       const writeAbi = totalAbi.filter(
         (abiItem: Abi) =>
-          isFunctionFragment(abiItem) &&
-          abiItem.stateMutability !== "view" &&
-          abiItem.stateMutability !== "pure"
+          isFunctionFragment(abiItem) && abiItem.stateMutability !== 'view' && abiItem.stateMutability !== 'pure',
       );
       setAbi(totalAbi);
       setReadAbiFragments(readAbi);
@@ -159,17 +149,14 @@ interface ConnectButtonWrapperProps {
   network: string;
 }
 
-const ConnectButtonWrapper = ({
-  chain,
-  network,
-}: ConnectButtonWrapperProps) => {
+const ConnectButtonWrapper = ({ chain, network }: ConnectButtonWrapperProps) => {
   const { connectWallet, walletAccount } = useStarknetProvider();
   const handleClickConnect = async () => {
-    await connectWallet(network === "mainnet" ? "mainnet" : "sepolia");
+    await connectWallet(network === 'mainnet' ? 'mainnet' : 'sepolia');
   };
   const address = React.useMemo(async () => {
     if (!walletAccount) {
-      return "";
+      return '';
     }
     // sleep 0.1s
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -196,39 +183,32 @@ interface AccordionCardProps {
   index: number;
   contractAddress: string;
 }
-const AccordionCard = ({
-  chain,
-  network,
-  abi,
-  abiFragment,
-  index,
-  contractAddress,
-}: AccordionCardProps) => {
+const AccordionCard = ({ chain, network, abi, abiFragment, index, contractAddress }: AccordionCardProps) => {
   const { provider, walletAccount } = useStarknetProvider();
-  const [hash, setHash] = useState<string>("");
-  const [value, setValue] = useState<string>("");
+  const [hash, setHash] = useState<string>('');
+  const [value, setValue] = useState<string>('');
   const [args, setArgs] = useState<{ [key: string]: string }>({});
   const isRightNetwork = true;
 
-  const getButtonVariant = (state: string = ""): string => {
+  const getButtonVariant = (state: string = ''): string => {
     switch (state) {
-      case "view":
-      case "pure":
-        return "primary";
-      case "nonpayable":
-        return "warning";
-      case "payable":
-        return "danger";
+      case 'view':
+      case 'pure':
+        return 'primary';
+      case 'nonpayable':
+        return 'warning';
+      case 'payable':
+        return 'danger';
       default:
         break;
     }
-    return "";
+    return '';
   };
 
   const handleCallOnClick = async () => {
     const { abi: realAbi } = await provider.getClassAt(contractAddress);
     if (realAbi === undefined) {
-      throw new Error("no abi.");
+      throw new Error('no abi.');
     }
     const contract = new Contract(realAbi, contractAddress, provider);
 
@@ -239,8 +219,8 @@ const AccordionCard = ({
 
     try {
       const result = await contract[abiFragment.name](...parms);
-      let _value = "";
-      if (abiFragment.outputs[0].type.includes("integer")) {
+      let _value = '';
+      if (abiFragment.outputs[0].type.includes('integer')) {
         _value = result.toString();
       }
       setValue(_value);
@@ -254,7 +234,7 @@ const AccordionCard = ({
 
   const handleTransactOnClick = async () => {
     if (walletAccount === null) {
-      throw new Error("walletAccount is null.");
+      throw new Error('walletAccount is null.');
     }
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {
@@ -262,7 +242,7 @@ const AccordionCard = ({
     });
     const { abi: realAbi } = await provider.getClassAt(contractAddress);
     if (realAbi === undefined) {
-      throw new Error("no abi.");
+      throw new Error('no abi.');
     }
 
     try {
@@ -281,40 +261,31 @@ const AccordionCard = ({
   };
 
   const tranactionViewUrl = (hash: string) => {
-    return network === "mainnet"
-      ? `https://starkscan.co/tx/${hash}`
-      : `https://sepolia.starkscan.co/tx/${hash}`;
+    return network === 'mainnet' ? `https://starkscan.co/tx/${hash}` : `https://sepolia.starkscan.co/tx/${hash}`;
   };
 
   useEffect(() => {
     const temp: { [key: string]: string } = {};
     abiFragment.inputs?.forEach((element) => {
-      temp[element.name!] = "";
+      temp[element.name!] = '';
     });
     setArgs(temp);
   }, [abiFragment.inputs]);
 
   return (
-    <AccordionItem
-      key={`Methods_A_${index}`}
-      value={abiFragment.name + abiFragment.inputs.length}
-    >
-      <div style={{ padding: "0" }}>
+    <AccordionItem key={`Methods_A_${index}`} value={abiFragment.name + abiFragment.inputs.length}>
+      <div style={{ padding: '0' }}>
         <AccordionTrigger>{abiFragment.name}</AccordionTrigger>
         <AccordionContent>
           <div className="space-y-4">
             <Method abi={abiFragment} setArgs={setArgs} />
             <div className="mb-3">
-              {getButtonVariant(abiFragment.stateMutability) === "primary" ? (
+              {getButtonVariant(abiFragment.stateMutability) === 'primary' ? (
                 <Button size="sm" onClick={handleCallOnClick}>
                   query
                 </Button>
               ) : (
-                <Button
-                  size="sm"
-                  disabled={!walletAccount || !isRightNetwork}
-                  onClick={handleTransactOnClick}
-                >
+                <Button size="sm" disabled={!walletAccount || !isRightNetwork} onClick={handleTransactOnClick}>
                   transact
                 </Button>
               )}
@@ -335,12 +306,7 @@ const AccordionCard = ({
                     readOnly
                     size={10}
                     placeholder="result"
-                    hidden={
-                      !(
-                        abiFragment.stateMutability === "view" ||
-                        abiFragment.stateMutability === "pure"
-                      )
-                    }
+                    hidden={!(abiFragment.stateMutability === 'view' || abiFragment.stateMutability === 'pure')}
                   />
                 </div>
               )}
@@ -366,10 +332,7 @@ const Method = ({ abi, setArgs }: MethodProps) => {
   return (
     <div className="Method">
       {inputs.map((item, index) => (
-        <div
-          key={index.toString()}
-          className="grid w-full items-center gap-1.5"
-        >
+        <div key={index.toString()} className="grid w-full items-center gap-1.5">
           <Label htmlFor="text">{item.name}</Label>
           <Input
             type="text"
@@ -377,7 +340,7 @@ const Method = ({ abi, setArgs }: MethodProps) => {
             name={item.name}
             placeholder={item.type}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              if (event.target.value[0] === "[") {
+              if (event.target.value[0] === '[') {
                 setArgs((prev) => ({
                   ...prev,
                   [event.target.name]: JSON.parse(event.target.value),
