@@ -11,6 +11,8 @@ import {
   postCairoSourceCode,
   verifyCairo,
 } from "@/src/features/verify/api";
+import { Button } from "@/src/shared/ui";
+import { useRouter } from "next/navigation";
 
 interface ResultVerifyProps {
   contractInfo: ContractInfo;
@@ -23,6 +25,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
   contractInfo,
   isRemixSrcUploaded,
 }) => {
+  const router = useRouter();
   const { hasCompletedAllSteps } = useStepper();
   const [uploadStatus, setUploadStatus] = useState<Status>("not_started");
   const [verifyStatus, setVerifyStatus] = useState<Status>("not_started");
@@ -160,6 +163,12 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
     [contractInfo]
   );
 
+  const handleClickViewVerified = () => {
+    // refresh page to show verified info
+    const url = `/verify?chain=${contractInfo.chain}&network=${contractInfo.network}&contractAddress=${contractInfo.contractAddress}`;
+    router.push(url);
+  };
+
   useEffect(() => {
     if (hasCompletedAllSteps) {
       (async () => {
@@ -197,6 +206,11 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
           </div>
           {verifyStatus === "error" && (
             <p className="text-red-500 text-sm">{verifyErrorMsg}</p>
+          )}
+          {verifyStatus === "done" && (
+            <Button className="w-1/4" onClick={handleClickViewVerified}>
+              View Verified Info
+            </Button>
           )}
         </div>
       )}
