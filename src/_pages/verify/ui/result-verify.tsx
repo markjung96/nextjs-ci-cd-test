@@ -73,6 +73,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
           compilerVersion: contractInfo.compilerVersion,
+          os: contractInfo.os,
         });
         setUploadStatus('done');
         return result;
@@ -116,6 +117,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
             contractAddress: contractInfo.contractAddress,
             srcFileId,
             cliVersion: contractInfo.compilerVersion,
+            os: contractInfo.os,
           });
         } else if (contractInfo.chain === 'starknet') {
           result = await verifyCairo({

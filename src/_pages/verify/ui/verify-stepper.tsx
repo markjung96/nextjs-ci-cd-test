@@ -70,6 +70,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
         compilerType: (compilerType as ArbitrumContractInfo['compilerType']) || 'stylus',
         compilerVersion: compilerVersion || '0.5.3',
         sourceFile: null,
+        os: 'x86',
       };
 
       break;
@@ -92,6 +93,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
 
   const [contractInfo, setContractInfo] = useState<ContractInfo>(_contractInfo);
   const [loading, setLoading] = useState(false);
+
   return (
     <Stepper initialStep={initialStep} steps={steps} state={loading ? 'loading' : undefined} scrollTracking>
       {steps.map((stepProps, index) => {
