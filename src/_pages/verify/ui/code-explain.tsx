@@ -3,9 +3,7 @@ import { FC } from "react";
 import { useEffect } from "react";
 import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import ReactMarkdown from "react-markdown";
+import { MarkdownPreview } from "./mark-down-preview";
 
 interface CodeExplainProps {
   content: string;
@@ -49,13 +47,7 @@ export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
           </div>
         ) : (
           <ScrollArea className="flex-1">
-            <SyntaxHighlighter
-              language="markdown"
-              wrapLongLines
-              style={a11yDark}
-            >
-              {explainContent || ""}
-            </SyntaxHighlighter>
+            <MarkdownPreview markdown={explainContent || ""} />
           </ScrollArea>
         )}
       </div>

@@ -13,6 +13,7 @@ import { Button } from "@/src/shared/ui";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { MarkdownPreview } from "./mark-down-preview";
 
 interface FunctionExplainModalProps {
   code?: string;
@@ -84,14 +85,7 @@ export default function FunctionExplainModal({
             <div className="h-1/2">
               <h3 className="text-lg font-semibold mb-2">Explanation</h3>
               <ScrollArea className="h-[calc(100%-2rem)] rounded border p-4">
-                <SyntaxHighlighter
-                  language="markdown"
-                  wrapLongLines
-                  style={a11yDark}
-                  className="text-sm"
-                >
-                  {explanation}
-                </SyntaxHighlighter>
+                <MarkdownPreview markdown={explanation} />
               </ScrollArea>
             </div>
           )}
