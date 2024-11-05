@@ -100,7 +100,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
         // TODO: 다른 chain 지원
         if (contractInfo.chain === 'ethereum') {
           result = await verifySolidity({
-            optimize: '0',
+            optimize: contractInfo.optimize,
             optimizeRuns: '200',
             evmVersion: 'default',
             compilerVersion: contractInfo.compilerVersion,

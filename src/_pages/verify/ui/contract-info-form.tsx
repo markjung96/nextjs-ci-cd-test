@@ -12,7 +12,7 @@ import {
 } from '@/src/shared/ui';
 import { useStepper } from '@/src/widgets/Stpper';
 import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
-import { ContractInfo, SupportedChain } from './page';
+import { ContractInfo, EthereumContractInfo, SupportedChain } from './page';
 import solidityVersion from '@/src/shared/lib/solidity-version.json';
 
 type ChainInfo = {
@@ -147,7 +147,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                     ...prevValue,
                     chain: item,
                     network: chainInfos.filter((chainInfo) => chainInfo.chainName === item)[0].networks[0],
-                  }) as ContractInfo,
+                  } as ContractInfo),
               );
             }}
           >
@@ -177,7 +177,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                   ({
                     ...prevValue,
                     network: network,
-                  }) as ContractInfo,
+                  } as ContractInfo),
               )
             }
           >
@@ -209,7 +209,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                   ({
                     ...prevValue,
                     compilerType: compiler,
-                  }) as ContractInfo,
+                  } as ContractInfo),
               )
             }
           >
@@ -321,6 +321,33 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
               <option>[Please Select]</option>
             </Select>
           </div> */}
+      {contractInfo.compilerType === 'solidity' && (
+        <div>
+          <Label htmlFor="building-env" className="block text-sm font-medium ">
+            Please Select Optimization Option
+          </Label>
+          <RadioGroup
+            defaultValue="No"
+            className="flex row mt-2"
+            id="building-env"
+            onValueChange={(value) =>
+              setContractInfo((prev) => ({
+                ...prev,
+                optimize: value === 'Yes' ? '1' : '0',
+              }))
+            }
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="Yes" id="r1" />
+              <Label htmlFor="r1">Yes</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="No" id="r2" />
+              <Label htmlFor="r2">No</Label>
+            </div>
+          </RadioGroup>
+        </div>
+      )}
       {contractInfo.compilerType === 'stylus' && (
         <div>
           <Label htmlFor="building-env" className="block text-sm font-medium ">
