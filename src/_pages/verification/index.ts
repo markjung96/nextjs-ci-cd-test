@@ -1,1 +1,1 @@
-export { VerificationPage } from "./ui/page";
+export { VerificationPage } from './ui/page';

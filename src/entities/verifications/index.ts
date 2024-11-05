@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 import type {
   GetSuiVerificationModuleSourceQueryRequestDto,
   GetSuiVerificationModuleSourceQueryResponseDto,
@@ -10,8 +10,8 @@ import type {
   PostSuiVerificationResponseBodyDto,
   PostSuiVerificationSourceRequestBodyDto,
   PostSuiVerificationSourceResponseDto,
-} from "./api/types";
-import { multerFileToBlob } from "@/src/shared/utils/multerFileToBlob";
+} from './api/types';
+import { multerFileToBlob } from '@/src/shared/utils/multerFileToBlob';
 
 // TODO: 추후 API URL을 env 파일로 분리해야 함
 
@@ -19,7 +19,7 @@ export const getAptosVerification = async () => {};
 export const postAptosVerification = async () => {};
 
 export const getSuiVerification = async (
-  params: GetSuiVerificationRequestDto
+  params: GetSuiVerificationRequestDto,
 ): Promise<GetSuiVerificationResponseDto | null> => {
   const { network, packageId } = params;
   try {
@@ -27,9 +27,9 @@ export const getSuiVerification = async (
       `https://verify.welldonestudio.io/sui/verifications?network=${network}&packageId=${packageId}`,
       {
         headers: {
-          accept: "application/json",
+          accept: 'application/json',
         },
-      }
+      },
     );
     if (response.status === 200) {
       return response.data;
@@ -40,12 +40,12 @@ export const getSuiVerification = async (
   }
 };
 export const postSuiModuleVerification = async (
-  params: PostSuiVerificationRequestBodyDto
+  params: PostSuiVerificationRequestBodyDto,
 ): Promise<PostSuiVerificationResponseBodyDto | null> => {
   const { network, packageId, srcFileId } = params;
   try {
     const response = await axios.post(
-      "https://verify.welldonestudio.io/sui/verifications",
+      'https://verify.welldonestudio.io/sui/verifications',
       {
         network,
         packageId,
@@ -53,10 +53,10 @@ export const postSuiModuleVerification = async (
       },
       {
         headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
+          accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-      }
+      },
     );
 
     if (response.status === 200) {
@@ -68,7 +68,7 @@ export const postSuiModuleVerification = async (
   }
 };
 export const getSuiSourceVerification = async (
-  params: GetSuiVerificationSourceQueryRequestDto
+  params: GetSuiVerificationSourceQueryRequestDto,
 ): Promise<GetSuiVerificationSourceQueryResponseDto | null> => {
   const { chainId, packageId } = params;
   try {
@@ -76,9 +76,9 @@ export const getSuiSourceVerification = async (
       `https://verify.welldonestudio.io/sui/verifications/sources/${chainId}/${packageId}`,
       {
         headers: {
-          accept: "application/json",
+          accept: 'application/json',
         },
-      }
+      },
     );
     if (response.status === 200) {
       return response.data;
@@ -89,7 +89,7 @@ export const getSuiSourceVerification = async (
   }
 };
 export const getSuiModuleSourceVerification = async (
-  params: GetSuiVerificationModuleSourceQueryRequestDto
+  params: GetSuiVerificationModuleSourceQueryRequestDto,
 ): Promise<GetSuiVerificationModuleSourceQueryResponseDto | null> => {
   const { chainId, packageId } = params;
   try {
@@ -97,9 +97,9 @@ export const getSuiModuleSourceVerification = async (
       `https://verify.welldonestudio.io/sui/verifications/module-sources/${chainId}/${packageId}`,
       {
         headers: {
-          accept: "application/json",
+          accept: 'application/json',
         },
-      }
+      },
     );
     if (response.status === 200) {
       return response.data;
@@ -110,20 +110,20 @@ export const getSuiModuleSourceVerification = async (
   }
 };
 export const postSuiSourceVerification = async (
-  params: PostSuiVerificationSourceRequestBodyDto
+  params: PostSuiVerificationSourceRequestBodyDto,
 ): Promise<PostSuiVerificationSourceResponseDto | null> => {
   const { network, packageId, srcZipFile, srcFileId } = params;
   try {
     const formData = new FormData();
-    formData.append("network", network);
-    formData.append("packageId", packageId);
-    formData.append("srcZipFile", multerFileToBlob(srcZipFile), srcZipFile.originalname);
-    formData.append("srcFileId", srcFileId);
+    formData.append('network', network);
+    formData.append('packageId', packageId);
+    formData.append('srcZipFile', multerFileToBlob(srcZipFile), srcZipFile.originalname);
+    formData.append('srcFileId', srcFileId);
 
-    const response = await axios.post("https://verify.welldonestudio.io/sui/verifications/sources", formData, {
+    const response = await axios.post('https://verify.welldonestudio.io/sui/verifications/sources', formData, {
       headers: {
-        accept: "application/json",
-        "Content-Type": "multipart/form-data",
+        accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
       },
     });
 

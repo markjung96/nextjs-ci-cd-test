@@ -10,7 +10,7 @@ import type {
   SuiSourceCode,
   SuiVerificationModule,
   VerificationStatus,
-} from "../model/types";
+} from '../model/types';
 
 // aptos/verifications?network=testnet&account=0xfd7c9c35a48cfcb4cefb9c7ebfa6ecf15d5d0ff53404ad06df321a330cbfa34a&moduleName=message
 export type GetAptosVerificationRequestDto = {

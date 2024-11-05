@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ui:add": "pnpx shadcn-ui@latest add -p ./src/shared/ui"
+    "ui:add": "pnpx shadcn-ui@latest add -p ./src/shared/ui",
+    "prettier": "prettier --write --config ./.prettierrc.json './**/*.tsx' && prettier --write --config ./.prettierrc.json './**/*.ts'"
   },
   "dependencies": {
     "@cosmjs/encoding": "^0.32.4",

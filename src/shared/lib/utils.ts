@@ -1,8 +1,8 @@
-import { Buffer } from "buffer";
-import { Readable } from "stream";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import JSZip from "jszip";
+import { Buffer } from 'buffer';
+import { Readable } from 'stream';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import JSZip from 'jszip';
 
 const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -15,14 +15,14 @@ const fileToMulterFile = async (file: File): Promise<Express.Multer.File> => {
   return {
     fieldname: file.name,
     originalname: file.name,
-    encoding: "7bit",
+    encoding: '7bit',
     mimetype: file.type,
     size: file.size,
     buffer: buffer,
     stream: Readable.from(buffer),
-    destination: "",
+    destination: '',
     filename: file.name,
-    path: "",
+    path: '',
   };
 };
 
@@ -36,7 +36,7 @@ const processFiles = async (unzipped: any) => {
 
   unzipped.forEach((relativePath: any, file: any) => {
     if (!file.dir) {
-      const filePromise = file.async("text").then((content: any) => {
+      const filePromise = file.async('text').then((content: any) => {
         return { name: file.name, content: content };
       });
       filePromises.push(filePromise);
@@ -50,7 +50,7 @@ const processFiles = async (unzipped: any) => {
 const fetchZip = async (url: string) => {
   const zipFile = await fetch(url);
   const arrayBuffer = await zipFile.arrayBuffer();
-  const zipBlob = new Blob([arrayBuffer], { type: "application/zip" });
+  const zipBlob = new Blob([arrayBuffer], { type: 'application/zip' });
   const zip = new JSZip();
   const unzippedFiles = await zip.loadAsync(zipBlob);
   const files: FileFormat[] = await processFiles(unzippedFiles);

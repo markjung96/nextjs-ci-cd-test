@@ -1,8 +1,8 @@
-import { cn } from "@/src/shared/lib/utils";
-import { useStepper } from "@/src/widgets/Stpper";
-import { Loader2, CircleCheck, Circle, CircleX } from "lucide-react";
-import { ContractInfo } from "./page";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { cn } from '@/src/shared/lib/utils';
+import { useStepper } from '@/src/widgets/Stpper';
+import { Loader2, CircleCheck, Circle, CircleX } from 'lucide-react';
+import { ContractInfo } from './page';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   postStylusSourceCode,
   verifyStylus,
@@ -10,157 +10,136 @@ import {
   verifySolidity,
   postCairoSourceCode,
   verifyCairo,
-} from "@/src/features/verify/api";
-import { Button } from "@/src/shared/ui";
-import { useRouter } from "next/navigation";
+} from '@/src/features/verify/api';
+import { Button } from '@/src/shared/ui';
+import { useRouter } from 'next/navigation';
 
 interface ResultVerifyProps {
   contractInfo: ContractInfo;
   isRemixSrcUploaded?: boolean;
 }
 
-type Status = "not_started" | "loading" | "done" | "error";
+type Status = 'not_started' | 'loading' | 'done' | 'error';
 
-export const ResultVerify: FC<ResultVerifyProps> = ({
-  contractInfo,
-  isRemixSrcUploaded,
-}) => {
+export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUploaded }) => {
   const router = useRouter();
   const { hasCompletedAllSteps } = useStepper();
-  const [uploadStatus, setUploadStatus] = useState<Status>("not_started");
-  const [verifyStatus, setVerifyStatus] = useState<Status>("not_started");
+  const [uploadStatus, setUploadStatus] = useState<Status>('not_started');
+  const [verifyStatus, setVerifyStatus] = useState<Status>('not_started');
   const [verifyErrorMsg, setVerifyErrorMsg] = useState<string | null>(null);
 
   const uploadStatusIcon = useMemo(() => {
     switch (uploadStatus) {
-      case "not_started":
+      case 'not_started':
         return <Circle />;
-      case "loading":
-        return <Loader2 className={cn("animate-spin")} />;
-      case "done":
+      case 'loading':
+        return <Loader2 className={cn('animate-spin')} />;
+      case 'done':
         return <CircleCheck color="green" />;
-      case "error":
+      case 'error':
         return <CircleX color="red" />;
     }
   }, [uploadStatus]);
 
   const verifyStatusIcon = useMemo(() => {
     switch (verifyStatus) {
-      case "not_started":
+      case 'not_started':
         return <Circle />;
-      case "loading":
-        return <Loader2 className={cn("animate-spin")} />;
-      case "done":
+      case 'loading':
+        return <Loader2 className={cn('animate-spin')} />;
+      case 'done':
         return <CircleCheck color="green" />;
-      case "error":
+      case 'error':
         return <CircleX color="red" />;
     }
   }, [verifyStatus]);
 
   const uploadSourceFiles = useCallback(async () => {
-    setUploadStatus("loading");
+    setUploadStatus('loading');
     try {
       // TODO: 다른 chain 지원
-      if (contractInfo.chain === "ethereum") {
+      if (contractInfo.chain === 'ethereum') {
         const result = await postSoliditySourceCode({
-          protocol: contractInfo.chain.toLowerCase() as "ethereum" | "arbitrum",
-          chainId:
-            contractInfo.network.toLowerCase() === "mainnet"
-              ? "0x1"
-              : "0xaa36a7",
+          protocol: contractInfo.chain.toLowerCase() as 'ethereum' | 'arbitrum',
+          chainId: contractInfo.network.toLowerCase() === 'mainnet' ? '0x1' : '0xaa36a7',
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
         });
-        setUploadStatus("done");
+        setUploadStatus('done');
         return result;
-      } else if (contractInfo.chain === "arbitrum") {
+      } else if (contractInfo.chain === 'arbitrum') {
         const result = await postStylusSourceCode({
-          network:
-            contractInfo.network === "one"
-              ? "ARBITRUM_ONE"
-              : "ARBITRUM_SEPOLIA",
+          network: contractInfo.network === 'one' ? 'ARBITRUM_ONE' : 'ARBITRUM_SEPOLIA',
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
           compilerVersion: contractInfo.compilerVersion,
         });
-        setUploadStatus("done");
+        setUploadStatus('done');
         return result;
-      } else if (contractInfo.chain === "starknet") {
+      } else if (contractInfo.chain === 'starknet') {
         const result = await postCairoSourceCode({
-          chainId:
-            contractInfo.network === "mainnet"
-              ? "0x534e5f4d41494e"
-              : "0x534e5f5345504f4c4941",
+          chainId: contractInfo.network === 'mainnet' ? '0x534e5f4d41494e' : '0x534e5f5345504f4c4941',
           contractAddress: contractInfo.contractAddress,
           srcZipFile: contractInfo.sourceFile!,
         });
-        setUploadStatus("done");
+        setUploadStatus('done');
         return result;
       } else {
-        throw new Error("Unsupported chain");
+        throw new Error('Unsupported chain');
       }
     } catch (error) {
-      setUploadStatus("error");
+      setUploadStatus('error');
     }
   }, [contractInfo]);
 
   const verifyContract = useCallback(
     async (srcFileId?: string) => {
-      setVerifyStatus("loading");
+      setVerifyStatus('loading');
       try {
         let result = null;
         // TODO: 다른 chain 지원
-        if (contractInfo.chain === "ethereum") {
+        if (contractInfo.chain === 'ethereum') {
           result = await verifySolidity({
             optimize: contractInfo.optimize,
-            optimizeRuns: "200",
-            evmVersion: "default",
+            optimizeRuns: '200',
+            evmVersion: 'default',
             compilerVersion: contractInfo.compilerVersion,
             contractAddress: contractInfo.contractAddress,
-            protocol: "ethereum",
-            chainId:
-              contractInfo.network.toLowerCase() === "mainnet"
-                ? "0x1"
-                : "0xaa36a7",
+            protocol: 'ethereum',
+            chainId: contractInfo.network.toLowerCase() === 'mainnet' ? '0x1' : '0xaa36a7',
             srcFileId: srcFileId!,
-            contractName: contractInfo.sourceFile!.name.split(".")[0],
+            contractName: contractInfo.sourceFile!.name.split('.')[0],
           });
-        } else if (contractInfo.chain === "arbitrum") {
+        } else if (contractInfo.chain === 'arbitrum') {
           result = await verifyStylus({
-            network:
-              contractInfo.network === "one"
-                ? "ARBITRUM_ONE"
-                : "ARBITRUM_SEPOLIA",
+            network: contractInfo.network === 'one' ? 'ARBITRUM_ONE' : 'ARBITRUM_SEPOLIA',
             contractAddress: contractInfo.contractAddress,
             srcFileId,
             cliVersion: contractInfo.compilerVersion,
           });
-        } else if (contractInfo.chain === "starknet") {
+        } else if (contractInfo.chain === 'starknet') {
           result = await verifyCairo({
-            chainId:
-              contractInfo.network === "mainnet"
-                ? "0x534e5f4d41494e"
-                : "0x534e5f5345504f4c4941",
+            chainId: contractInfo.network === 'mainnet' ? '0x534e5f4d41494e' : '0x534e5f5345504f4c4941',
             contractAddress: contractInfo.contractAddress,
             declareTxHash: contractInfo.declareTxHash,
             scarbVersion: contractInfo.scarbVersion,
             srcFileId: srcFileId!,
           });
         } else {
-          throw new Error("Unsupported chain");
+          throw new Error('Unsupported chain');
         }
-        setVerifyStatus("done");
+        setVerifyStatus('done');
         if (result && result.verifiedSrcUrl) {
           return result;
         } else {
-          setVerifyErrorMsg(result.errMsg || "");
-          setVerifyStatus("error");
+          setVerifyErrorMsg(result.errMsg || '');
+          setVerifyStatus('error');
         }
       } catch (error) {
-        setVerifyStatus("error");
+        setVerifyStatus('error');
       }
     },
-    [contractInfo]
+    [contractInfo],
   );
 
   const handleClickViewVerified = () => {
@@ -182,13 +161,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
         }
       })();
     }
-  }, [
-    hasCompletedAllSteps,
-    contractInfo,
-    uploadSourceFiles,
-    verifyContract,
-    isRemixSrcUploaded,
-  ]);
+  }, [hasCompletedAllSteps, contractInfo, uploadSourceFiles, verifyContract, isRemixSrcUploaded]);
 
   return (
     <>
@@ -204,10 +177,8 @@ export const ResultVerify: FC<ResultVerifyProps> = ({
             {verifyStatusIcon}
             <p>Verifing</p>
           </div>
-          {verifyStatus === "error" && (
-            <p className="text-red-500 text-sm">{verifyErrorMsg}</p>
-          )}
-          {verifyStatus === "done" && (
+          {verifyStatus === 'error' && <p className="text-red-500 text-sm">{verifyErrorMsg}</p>}
+          {verifyStatus === 'done' && (
             <Button className="w-1/4" onClick={handleClickViewVerified}>
               View Verified Info
             </Button>

@@ -1,9 +1,9 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { createConfig, http, WagmiProvider } from "wagmi";
-import { arbitrum, arbitrumSepolia, mainnet, sepolia } from "viem/chains";
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { createConfig, http, WagmiProvider } from 'wagmi';
+import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
 
-const chains = ["Ethereum", "Arbitrum", "Starknet"];
+const chains = ['Ethereum', 'Arbitrum', 'Starknet'];
 // TODO: add ["SUI", "Aptos", "Neutron"];
 
 export const config = createConfig({
@@ -41,12 +41,8 @@ export default function ProductTitle() {
 
   return (
     <h1 className="w-[660px] flex gap-4 text-4xl font-bold">
-      Multichain Verificator for{" "}
-      <div
-        className={`text-blue-500 transition-all duration-500 ${
-          animation ? "fade-out-up" : "fade-in-down"
-        }`}
-      >
+      Multichain Verificator for{' '}
+      <div className={`text-blue-500 transition-all duration-500 ${animation ? 'fade-out-up' : 'fade-in-down'}`}>
         {chain}
       </div>
     </h1>

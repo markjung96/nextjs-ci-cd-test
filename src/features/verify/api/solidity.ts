@@ -1,8 +1,8 @@
-import { baseUrl } from ".";
+import { baseUrl } from '.';
 
 export interface EthereumVerificationSrcUploadReqDto {
-  protocol: "ethereum" | "arbitrum";
-  chainId: "0x1" | "0xaa36a7" | "0x4268";
+  protocol: 'ethereum' | 'arbitrum';
+  chainId: '0x1' | '0xaa36a7' | '0x4268';
   contractAddress: string;
   srcZipFile: File;
 }
@@ -11,16 +11,16 @@ export interface EthereumVerificationSrcUploadResultDto {
 }
 
 export const postSoliditySourceCode = async (
-  request: EthereumVerificationSrcUploadReqDto
+  request: EthereumVerificationSrcUploadReqDto,
 ): Promise<EthereumVerificationSrcUploadResultDto> => {
   const formData = new FormData();
-  formData.append("protocol", "ethereum");
-  formData.append("chainId", request.chainId);
-  formData.append("contractAddress", request.contractAddress);
-  formData.append("srcZipFile", request.srcZipFile);
+  formData.append('protocol', 'ethereum');
+  formData.append('chainId', request.chainId);
+  formData.append('contractAddress', request.contractAddress);
+  formData.append('srcZipFile', request.srcZipFile);
   try {
     const response = await fetch(`${baseUrl}/evm/verifications/sources`, {
-      method: "POST",
+      method: 'POST',
       // headers: {
       //   accept: "application/json",
       //   "Content-Type": "multipart/form-data",
@@ -32,7 +32,7 @@ export const postSoliditySourceCode = async (
     }
     return await response.json();
   } catch (error) {
-    throw new Error("Failed to upload source code");
+    throw new Error('Failed to upload source code');
   }
 };
 
@@ -57,14 +57,12 @@ export interface EvmVerificationResultDto {
   outFileUrl?: string;
 }
 
-export const verifySolidity = async (
-  request: EvmVerificationReqDto
-): Promise<EvmVerificationResultDto> => {
+export const verifySolidity = async (request: EvmVerificationReqDto): Promise<EvmVerificationResultDto> => {
   try {
     const response = await fetch(`${baseUrl}/evm/verifications`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -73,25 +71,25 @@ export const verifySolidity = async (
     }
     return await response.json();
   } catch (error) {
-    throw new Error("Failed to verify contract");
+    throw new Error('Failed to verify contract');
   }
 };
 
 export const getSolidityVerificationResult = async (
-  protocol: "ethereum" | "arbitrum",
-  chainId: "0x1" | "0xaa36a7" | "0x4268",
-  contractAddress: string
+  protocol: 'ethereum' | 'arbitrum',
+  chainId: '0x1' | '0xaa36a7' | '0x4268',
+  contractAddress: string,
 ): Promise<EvmVerificationResultDto> => {
   try {
     const response = await fetch(
       `${baseUrl}/evm/verifications?protocol=${protocol}&chainId=${chainId}&contractAddress=${contractAddress}`,
-      { headers: { "Cache-Control": "no-cache" } }
+      { headers: { 'Cache-Control': 'no-cache' } },
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
   } catch (error) {
-    throw new Error("Failed to get verification result");
+    throw new Error('Failed to get verification result');
   }
 };

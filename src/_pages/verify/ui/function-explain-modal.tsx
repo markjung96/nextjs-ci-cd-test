@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,35 +8,30 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/src/shared/ui";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import {
-  a11yDark,
-  a11yLight,
-} from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { MarkdownPreview } from "./mark-down-preview";
-import { useTheme } from "next-themes";
+} from '@/components/ui/dialog';
+import { Button } from '@/src/shared/ui';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { a11yDark, a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { MarkdownPreview } from './mark-down-preview';
+import { useTheme } from 'next-themes';
 
 interface FunctionExplainModalProps {
   code?: string;
 }
 
-export default function FunctionExplainModal({
-  code,
-}: FunctionExplainModalProps) {
+export default function FunctionExplainModal({ code }: FunctionExplainModalProps) {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [explanation, setExplanation] = useState("");
+  const [explanation, setExplanation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const getExplanationByApi = async (code: string) => {
     setIsLoading(true);
-    const result = await fetch("api/chat", {
-      method: "POST",
+    const result = await fetch('api/chat', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ content: code }),
     });
@@ -74,9 +69,9 @@ export default function FunctionExplainModal({
                   language="solidity"
                   wrapLongLines
                   className="text-sm"
-                  style={theme === "dark" ? a11yDark : a11yLight}
+                  style={theme === 'dark' ? a11yDark : a11yLight}
                 >
-                  {code || ""}
+                  {code || ''}
                 </SyntaxHighlighter>
               </ScrollArea>
             </pre>

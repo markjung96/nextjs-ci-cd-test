@@ -1,9 +1,9 @@
-"use client";
-import { Step, type StepItem, Stepper } from "@/src/widgets/Stpper";
-import { ContractInfoForm } from "./contract-info-form";
-import { ContractVerifyForm } from "./contract-verify-form";
-import { ResultVerify } from "./result-verify";
-import { FC, useState } from "react";
+'use client';
+import { Step, type StepItem, Stepper } from '@/src/widgets/Stpper';
+import { ContractInfoForm } from './contract-info-form';
+import { ContractVerifyForm } from './contract-verify-form';
+import { ResultVerify } from './result-verify';
+import { FC, useState } from 'react';
 import {
   ArbitrumContractInfo,
   ContractInfo,
@@ -11,17 +11,14 @@ import {
   StarknetContractInfo,
   SupportedChain,
   SupportedCompilerType,
-} from "./page";
+} from './page';
 import {
   EvmVerificationResultDto,
   StylusVerificationCheckResultDto,
   CairoVerificationResultDto,
-} from "@/src/features/verify/api";
+} from '@/src/features/verify/api';
 
-const steps = [
-  { label: "Enter Contract Details" },
-  { label: "Verify & Publish" },
-] satisfies StepItem[];
+const steps = [{ label: 'Enter Contract Details' }, { label: 'Verify & Publish' }] satisfies StepItem[];
 
 interface VerifyStepperProps {
   initialStep: number;
@@ -30,10 +27,7 @@ interface VerifyStepperProps {
   contractAddress?: string;
   compilerType?: SupportedCompilerType;
   compilerVersion?: string;
-  checkResult?:
-    | EvmVerificationResultDto
-    | StylusVerificationCheckResultDto
-    | CairoVerificationResultDto;
+  checkResult?: EvmVerificationResultDto | StylusVerificationCheckResultDto | CairoVerificationResultDto;
 }
 
 export const VerifyStepper: FC<VerifyStepperProps> = ({
@@ -47,50 +41,47 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
 }) => {
   // 사용자가 verify 페이지에 직접 접근했을 때, 초기값 설정
   let _contractInfo: ContractInfo = {
-    chain: "ethereum",
-    network: "mainnet",
-    contractAddress: "",
-    compilerType: "solidity",
-    compilerVersion: "v0.8.26+commit.8a97fa7a",
+    chain: 'ethereum',
+    network: 'mainnet',
+    contractAddress: '',
+    compilerType: 'solidity',
+    compilerVersion: 'v0.8.26+commit.8a97fa7a',
     sourceFile: null,
-    optimize: "0",
+    optimize: '0',
   };
   switch (chain) {
     case undefined:
-    case "ethereum":
+    case 'ethereum':
       _contractInfo = {
-        chain: chain || "ethereum",
-        network: (network as EthereumContractInfo["network"]) || "mainnet",
-        contractAddress: contractAddress || "",
-        compilerType:
-          (compilerType as EthereumContractInfo["compilerType"]) || "solidity",
-        compilerVersion: compilerVersion || "v0.8.26+commit.8a97fa7a",
+        chain: chain || 'ethereum',
+        network: (network as EthereumContractInfo['network']) || 'mainnet',
+        contractAddress: contractAddress || '',
+        compilerType: (compilerType as EthereumContractInfo['compilerType']) || 'solidity',
+        compilerVersion: compilerVersion || 'v0.8.26+commit.8a97fa7a',
         sourceFile: null,
-        optimize: "0",
+        optimize: '0',
       };
       break;
-    case "arbitrum":
+    case 'arbitrum':
       _contractInfo = {
         chain: chain,
-        network: (network as ArbitrumContractInfo["network"]) || "mainnet",
-        contractAddress: contractAddress || "",
-        compilerType:
-          (compilerType as ArbitrumContractInfo["compilerType"]) || "stylus",
-        compilerVersion: compilerVersion || "0.5.3",
+        network: (network as ArbitrumContractInfo['network']) || 'mainnet',
+        contractAddress: contractAddress || '',
+        compilerType: (compilerType as ArbitrumContractInfo['compilerType']) || 'stylus',
+        compilerVersion: compilerVersion || '0.5.3',
         sourceFile: null,
       };
 
       break;
-    case "starknet":
+    case 'starknet':
       _contractInfo = {
         chain: chain,
-        network: (network as StarknetContractInfo["network"]) || "mainnet",
-        contractAddress: contractAddress || "",
-        declareTxHash: "",
-        compilerType:
-          (compilerType as StarknetContractInfo["compilerType"]) || "cairo",
-        compilerVersion: compilerVersion || "2.8.2",
-        scarbVersion: compilerVersion || "2.8.2",
+        network: (network as StarknetContractInfo['network']) || 'mainnet',
+        contractAddress: contractAddress || '',
+        declareTxHash: '',
+        compilerType: (compilerType as StarknetContractInfo['compilerType']) || 'cairo',
+        compilerVersion: compilerVersion || '2.8.2',
+        scarbVersion: compilerVersion || '2.8.2',
         sourceFile: null,
       };
       break;
@@ -102,30 +93,17 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
   const [contractInfo, setContractInfo] = useState<ContractInfo>(_contractInfo);
   const [loading, setLoading] = useState(false);
   return (
-    <Stepper
-      initialStep={initialStep}
-      steps={steps}
-      state={loading ? "loading" : undefined}
-      scrollTracking
-    >
+    <Stepper initialStep={initialStep} steps={steps} state={loading ? 'loading' : undefined} scrollTracking>
       {steps.map((stepProps, index) => {
         return (
           <Step key={stepProps.label} {...stepProps}>
-            {index === 0 && (
-              <ContractInfoForm
-                contractInfo={contractInfo}
-                setContractInfo={setContractInfo}
-              />
-            )}
+            {index === 0 && <ContractInfoForm contractInfo={contractInfo} setContractInfo={setContractInfo} />}
             {index === 1 && (
               <ContractVerifyForm
                 contractInfo={contractInfo}
                 setContractInfo={setContractInfo}
                 isRemixSrcUploaded={
-                  chain === "arbitrum"
-                    ? (checkResult as StylusVerificationCheckResultDto)
-                        .isRemixSrcUploaded
-                    : false
+                  chain === 'arbitrum' ? (checkResult as StylusVerificationCheckResultDto).isRemixSrcUploaded : false
                 }
               />
             )}
@@ -135,10 +113,7 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
       <ResultVerify
         contractInfo={contractInfo}
         isRemixSrcUploaded={
-          chain === "arbitrum"
-            ? (checkResult as StylusVerificationCheckResultDto)
-                .isRemixSrcUploaded
-            : false
+          chain === 'arbitrum' ? (checkResult as StylusVerificationCheckResultDto).isRemixSrcUploaded : false
         }
       />
     </Stepper>

@@ -1,8 +1,8 @@
-import React from "react";
-import { HorizontalStep } from "./horizontal-step";
-import { VerticalStep } from "./vertical-step";
-import { useStepper } from "../lib/use-stepper";
-import type { StepProps } from "./types";
+import React from 'react';
+import { HorizontalStep } from './horizontal-step';
+import { VerticalStep } from './vertical-step';
+import { useStepper } from '../lib/use-stepper';
+import type { StepProps } from './types';
 
 // Props which shouldn't be passed to to the Step component from the user
 interface StepInternalConfig {
@@ -69,6 +69,6 @@ const Step = React.forwardRef<HTMLLIElement, StepProps>((props, ref: React.Ref<a
 
   return renderStep();
 });
-Step.displayName = "Step";
+Step.displayName = 'Step';
 
 export { Step };
