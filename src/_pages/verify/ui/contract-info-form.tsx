@@ -378,11 +378,17 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         </div>
       )}
 
-      <div className="flex items-center">
+      <div>
+        <div className="flex items-center gap-1">
+          <Label htmlFor="user-account" className="block text-sm font-medium ">
+            Enter your Ethereum Account to get NFT
+          </Label>
+          <NFTModal />
+        </div>
         <Input
           id="user-account"
           type="text"
-          className="block mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-1/2 block mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           placeholder="0x"
           value={'0x'} //contractInfo.userAccount}
           onChange={(e) =>
@@ -392,7 +398,6 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             }))
           }
         />
-        <NFTModal />
       </div>
 
       <div className="flex items-center">
