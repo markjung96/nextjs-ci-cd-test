@@ -149,6 +149,7 @@ const getSuggestionsList = async (address: string) => {
 export function SearchContract() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null); // Input을 참조하기 위한 ref
+  const commandRef = useRef<HTMLDivElement>(null); // PopoverContent를 참조하기 위한 ref
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -206,6 +207,14 @@ export function SearchContract() {
     setIsOpen(false);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Tab' || event.key === 'Enter') {
+      event.preventDefault(); // 기본 동작 방지
+
+      commandRef.current?.focus();
+    }
+  };
+
   const handleOpenPopover = () => {
     setIsOpen(true); // Popover를 열고
     setTimeout(() => {
@@ -226,11 +235,12 @@ export function SearchContract() {
               valid ? '' : 'border-red-500'
             }`}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
           />
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-[480px] p-0">
-        <Command>
+        <Command ref={commandRef}>
           <CommandList>
             <CommandEmpty>
               {isLoading ? (
@@ -240,12 +250,7 @@ export function SearchContract() {
               ) : valid ? (
                 'No results found.'
               ) : (
-                <p
-                  key={valid ? 'valid' : 'invalid'} // key 변경으로 리렌더링 유도
-                  className={`text-red-500 ${valid ? '' : 'shake'}`}
-                >
-                  Invalid address
-                </p>
+                <p className={`text-red-500 ${valid ? '' : 'shake'}`}>Invalid address</p>
               )}
             </CommandEmpty>
             <CommandGroup heading="Suggestions">
