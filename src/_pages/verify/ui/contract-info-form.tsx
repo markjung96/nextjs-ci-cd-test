@@ -14,6 +14,7 @@ import { useStepper } from '@/src/widgets/Stpper';
 import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
 import { ContractInfo, EthereumContractInfo, isOsType, SupportedChain } from './page';
 import solidityVersion from '@/src/shared/const/solidity-version.json';
+import NFTModal from './nft-modal';
 
 type ChainInfo = {
   chainName: string;
@@ -376,6 +377,28 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           </RadioGroup>
         </div>
       )}
+
+      <div>
+        <div className="flex items-center gap-1">
+          <Label htmlFor="user-account" className="block text-sm font-medium ">
+            Enter your Ethereum Account to get NFT
+          </Label>
+          <NFTModal />
+        </div>
+        <Input
+          id="user-account"
+          type="text"
+          className="w-1/2 block mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          placeholder="0x"
+          value={'0x'} //contractInfo.userAccount}
+          onChange={(e) =>
+            setContractInfo((prevValue) => ({
+              ...prevValue,
+              userAccount: e.target.value,
+            }))
+          }
+        />
+      </div>
 
       <div className="flex items-center">
         <Input

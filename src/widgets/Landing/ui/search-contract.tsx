@@ -230,7 +230,7 @@ export function SearchContract() {
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search by Address, Transaction, Token"
+            placeholder="Search by Contract Address"
             className={`pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0 ${
               valid ? '' : 'border-red-500'
             }`}
