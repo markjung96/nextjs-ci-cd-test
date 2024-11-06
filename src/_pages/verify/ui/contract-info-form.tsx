@@ -13,7 +13,7 @@ import {
 import { useStepper } from '@/src/widgets/Stpper';
 import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
 import { ContractInfo, EthereumContractInfo, isOsType, SupportedChain } from './page';
-import solidityVersion from '@/src/shared/lib/solidity-version.json';
+import solidityVersion from '@/src/shared/const/solidity-version.json';
 
 type ChainInfo = {
   chainName: string;
