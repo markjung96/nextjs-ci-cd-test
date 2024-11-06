@@ -12,11 +12,12 @@ import { Input } from '@/src/shared/ui';
 import { getBytecode, createConfig } from '@wagmi/core';
 import { SearchIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { ChangeEvent, useMemo } from 'react';
+import React, { ChangeEvent, useMemo, useRef } from 'react';
 import { http, WagmiProvider, createConfig as createConfigGeneral } from 'wagmi';
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
 import _ from 'lodash';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
 
 export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -147,8 +148,11 @@ const getSuggestionsList = async (address: string) => {
 
 export function SearchContract() {
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null); // Input을 참조하기 위한 ref
+
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [valid, setValid] = React.useState(true);
   const [suggestions, setSuggestions] = React.useState<
     {
       chainName: string;
@@ -172,7 +176,19 @@ export function SearchContract() {
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsOpen(true);
+    setValid(true);
     const address = event.currentTarget.value;
+    if (address.length !== 42 && address.length !== 64) return;
+
+    if (address.length === 64 && !isStarknetAddress(address)) {
+      setValid(false);
+      return;
+    }
+    if (address.length === 42 && !isEthAddress(address)) {
+      setValid(false);
+      return;
+    }
+
     debouncedSearch(address);
   };
 
@@ -190,17 +206,26 @@ export function SearchContract() {
     setIsOpen(false);
   };
 
+  const handleOpenPopover = () => {
+    setIsOpen(true); // Popover를 열고
+    setTimeout(() => {
+      inputRef.current?.focus(); // Popover가 열린 직후에 Input으로 포커스를 다시 설정
+    }, 0);
+  };
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen} defaultOpen>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div onClick={(event) => event.preventDefault()}>
+        <div onClick={handleOpenPopover}>
           <SearchIcon className="absolute left-3 top-[50%] translate-y-[-50%] h-5 w-5" />
           <Input
+            ref={inputRef}
             type="text"
             placeholder="Search by Address, Transaction, Token"
-            className="pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0"
+            className={`pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0 ${
+              valid ? '' : 'border-red-500'
+            }`}
             onChange={handleChange}
-            onClick={() => setIsOpen(true)}
           />
         </div>
       </PopoverTrigger>
@@ -212,8 +237,15 @@ export function SearchContract() {
                 <div className="flex justify-center">
                   <LoadingSpinner />
                 </div>
-              ) : (
+              ) : valid ? (
                 'No results found.'
+              ) : (
+                <p
+                  key={valid ? 'valid' : 'invalid'} // key 변경으로 리렌더링 유도
+                  className={`text-red-500 ${valid ? '' : 'shake'}`}
+                >
+                  Invalid address
+                </p>
               )}
             </CommandEmpty>
             <CommandGroup heading="Suggestions">
