@@ -19,32 +19,32 @@ export default async function Tools() {
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead></TableHead>
+            <TableHead className="font-bold text-primary">Veriwell</TableHead>
             <TableHead className="text-lg font-bold text-primary">
-              <LinkButton value="blockscout" href="https://vera.blockscout.com/" imgSrc={blockscoutFavicon} />
+              <LinkButton value="Blockscout" href="https://vera.blockscout.com/" imgSrc={blockscoutFavicon} />
             </TableHead>
             <TableHead className="text-lg font-bold text-primary">
-              <LinkButton value="sourcify" href="https://sourcify.dev/#/" imgSrc={sourcifyFavicon} />
+              <LinkButton value="Sourcify" href="https://sourcify.dev/#/" imgSrc={sourcifyFavicon} />
             </TableHead>
-            <TableHead className="font-bold text-primary">veriwell</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {[
             {
-              tool: 'solidity',
+              tool: 'Solidity',
               blockscout: true,
               sourcify: true,
               veriwell: true,
             },
-            { tool: 'vyper', blockscout: true, sourcify: true, veriwell: null },
+            { tool: 'Vyper', blockscout: true, sourcify: true, veriwell: null },
             {
-              tool: 'stylus',
+              tool: 'Stylus',
               blockscout: false,
               sourcify: false,
               veriwell: true,
             },
             {
-              tool: 'cairo',
+              tool: 'Cairo',
               blockscout: false,
               sourcify: false,
               veriwell: true,
@@ -53,13 +53,13 @@ export default async function Tools() {
             <TableRow key={row.tool} className="border-b border-gray-200 hover:bg-transparent">
               <TableCell className="font-medium">{row.tool}</TableCell>
               <TableCell>
+                <div className="flex justify-center">{row.veriwell ? <Circle size={20} color="green" /> : null}</div>
+              </TableCell>
+              <TableCell>
                 <div className="flex justify-center">{row.blockscout ? <Circle size={20} color="green" /> : null}</div>
               </TableCell>
               <TableCell>
                 <div className="flex justify-center">{row.sourcify ? <Circle size={20} color="green" /> : null}</div>
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-center">{row.veriwell ? <Circle size={20} color="green" /> : null}</div>
               </TableCell>
             </TableRow>
           ))}

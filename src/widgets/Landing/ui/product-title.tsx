@@ -41,7 +41,7 @@ export default function ProductTitle() {
 
   return (
     <h1 className="w-[660px] flex gap-4 text-4xl font-bold">
-      Multichain Verificator for{' '}
+      Contract Verification for{' '}
       <div className={`text-blue-500 transition-all duration-500 ${animation ? 'fade-out-up' : 'fade-in-down'}`}>
         {chain}
       </div>

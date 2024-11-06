@@ -2,19 +2,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
-import LogoBlackIcon from '@/public/images/Logo-b-default.svg';
-import LogoWhiteIcon from '@/public/images/Logo-w-default.svg';
+import LogoBlackIcon from '@/public/images/veriwell-logo-black.png';
+import LogoWhiteIcon from '@/public/images/veriwell-logo-white.png';
 
 export const Logo = () => {
   const { theme } = useTheme();
   return (
     <Link href="/">
-      <Image
-        src={theme === 'dark' ? LogoWhiteIcon : LogoBlackIcon}
-        alt="Logo"
-        className="w-[128px] h-[32px]"
-        priority
-      />
+      <Image src={theme === 'dark' ? LogoWhiteIcon : LogoBlackIcon} alt="Logo" width={128} priority />
     </Link>
   );
 };
