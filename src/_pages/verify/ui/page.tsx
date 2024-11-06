@@ -96,7 +96,7 @@ export const VerifiyPage = async ({ searchParams }: { searchParams?: { [key: str
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-4 w-4/5">
-      <div className="max-w-7xl w-full p-6 rounded-lg shadow-md">
+      <div className="max-w-4xl w-full p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">Verify & Publish Contract Source Code</h1>
         <p className="text-center  mb-6">
           Source code verification provides transparency for users interacting with smart contracts.
