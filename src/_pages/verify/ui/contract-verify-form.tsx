@@ -55,7 +55,7 @@ export const ContractVerifyForm: FC<ContractInfoProps> = ({ contractInfo, setCon
       </div>
 
       <div className="flex justify-end space-x-4">
-        <Button className="px-4 py-2 text-sm font-medium rounded-md hover:bg-gray-300" onClick={() => prevStep()}>
+        <Button variant="outline" className="px-4 py-2 text-sm font-medium rounded-md" onClick={() => prevStep()}>
           prev
         </Button>
         <Button
