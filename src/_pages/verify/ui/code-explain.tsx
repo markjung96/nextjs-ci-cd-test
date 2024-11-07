@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import * as React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MarkdownPreview } from './mark-down-preview';
+import { Loader } from '@/src/widgets/Loader';
 
 interface CodeExplainProps {
   content: string;
@@ -39,7 +40,7 @@ export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
         </div>
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+            <Loader size={32} />
           </div>
         ) : (
           <ScrollArea className="flex-1">

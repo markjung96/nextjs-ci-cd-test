@@ -9,7 +9,7 @@ export const Logo = () => {
   const { theme } = useTheme();
   return (
     <Link href="/">
-      <Image src={theme === 'dark' ? LogoWhiteIcon : LogoBlackIcon} alt="Logo" width={128} priority />
+      <Image src={theme === 'dark' ? LogoWhiteIcon : LogoBlackIcon} alt="Logo" width={200} priority />
     </Link>
   );
 };
