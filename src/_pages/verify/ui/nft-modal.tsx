@@ -1,5 +1,5 @@
 'use client';
-import { MouseEventHandler, useState } from 'react';
+import { MouseEventHandler, useEffect, useMemo, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,27 +12,70 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Info } from 'lucide-react';
 import React from 'react';
-import NFTEthereumFront from '@/public/images/veriwell-branding-08.jpg';
-import NFTEthereumBack from '@/public/images/veriwell-branding-14.jpg';
+import EthFrontImage from '@/public/images/nfts/veriwell-nft-eth.jpg';
+import EthBack1Image from '@/public/images/nfts/veriwell-nft-eth-1.jpg';
+import EthBack2Image from '@/public/images/nfts/veriwell-nft-eth-2.jpg';
+import ArbitrumFrontImage from '@/public/images/nfts/veriwell-nft-arbitrum.jpg';
+import ArbitrumBack1Image from '@/public/images/nfts/veriwell-nft-arbitrum-1.jpg';
+import ArbitrumBack2Image from '@/public/images/nfts/veriwell-nft-arbitrum-2.jpg';
+import StarknetFrontImage from '@/public/images/nfts/veriwell-nft-starknet.jpg';
+import StarknetBack1Image from '@/public/images/nfts/veriwell-nft-starknet-1.jpg';
+import StarknetBack2Image from '@/public/images/nfts/veriwell-nft-starknet-2.jpg';
 
-export default function NFTModal() {
+interface NFTModalProps {
+  chain: 'ethereum' | 'arbitrum' | 'starknet';
+}
+
+export default function NFTModal({ chain }: NFTModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const overRayRef = React.useRef<HTMLDivElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const x = e.nativeEvent.offsetX;
-    const y = e.nativeEvent.offsetY;
-    const rotateX = (4 / 30) * y - 20;
-    const rotateY = (-1 / 5) * x + 20;
-    const calculatedRotateY = isFlipped ? 180 - rotateY : rotateY;
-    if (containerRef.current) {
-      containerRef.current.style.transform = `perspective(350px) rotateX(${rotateX}deg) rotateY(${calculatedRotateY}deg)`;
+  const frontImage = useMemo(() => {
+    switch (chain) {
+      case 'ethereum':
+        return EthFrontImage;
+      case 'arbitrum':
+        return ArbitrumFrontImage;
+      case 'starknet':
+        return StarknetFrontImage;
     }
-    if (overRayRef.current) {
-      overRayRef.current.style.backgroundPosition = `${x / 5 + y / 5}%`;
-      overRayRef.current.style.filter = `opacity(${x / 200}) brightness(1.2)`;
+  }, [chain]);
+
+  const backImage = useMemo(() => {
+    const random = Math.random();
+    switch (chain) {
+      case 'ethereum':
+        return random > 0.5 ? EthBack1Image : EthBack2Image;
+      case 'arbitrum':
+        return random > 0.5 ? ArbitrumBack1Image : ArbitrumBack2Image;
+      case 'starknet':
+        return random > 0.5 ? StarknetBack1Image : StarknetBack2Image;
+    }
+  }, [chain]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsFlipped(false);
+    }
+  }, [isOpen]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const rotateX = (4 / 30) * y - 20;
+      const rotateY = (-1 / 5) * x + 20;
+
+      const calculatedRotateY = isFlipped ? 180 + rotateY : rotateY;
+      containerRef.current.style.transform = `perspective(350px) rotateX(${rotateX}deg) rotateY(${calculatedRotateY}deg)`;
+      if (overRayRef.current) {
+        overRayRef.current.style.backgroundPosition = `${x / 5 + y / 5}%`;
+        overRayRef.current.style.filter = `opacity(${x / 200}) brightness(1.2)`;
+      }
     }
   };
 
@@ -74,6 +117,7 @@ export default function NFTModal() {
                   width: '320px',
                   height: '457px',
                   transformStyle: 'preserve-3d',
+                  opacity: 0,
                 }}
               >
                 <div
@@ -93,7 +137,7 @@ export default function NFTModal() {
                   }}
                 />
                 <Image
-                  src={NFTEthereumFront}
+                  src={frontImage}
                   alt="NFT 이미지"
                   width={320}
                   height={457}
@@ -102,9 +146,14 @@ export default function NFTModal() {
                     position: 'absolute',
                     backfaceVisibility: 'hidden',
                   }}
+                  onLoadingComplete={() => {
+                    if (containerRef.current) {
+                      containerRef.current.style.opacity = '1';
+                    }
+                  }}
                 />
                 <Image
-                  src={NFTEthereumBack}
+                  src={backImage}
                   alt="NFT 이미지"
                   width={320}
                   height={457}

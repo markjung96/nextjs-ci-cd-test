@@ -12,11 +12,12 @@ import { Input } from '@/src/shared/ui';
 import { getBytecode, createConfig } from '@wagmi/core';
 import { SearchIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { ChangeEvent, useMemo } from 'react';
+import React, { ChangeEvent, useMemo, useRef } from 'react';
 import { http, WagmiProvider, createConfig as createConfigGeneral } from 'wagmi';
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
 import _ from 'lodash';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
 
 export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -147,8 +148,12 @@ const getSuggestionsList = async (address: string) => {
 
 export function SearchContract() {
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null); // Input을 참조하기 위한 ref
+  const commandRef = useRef<HTMLDivElement>(null); // PopoverContent를 참조하기 위한 ref
+
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [valid, setValid] = React.useState(true);
   const [suggestions, setSuggestions] = React.useState<
     {
       chainName: string;
@@ -173,6 +178,19 @@ export function SearchContract() {
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsOpen(true);
     const address = event.currentTarget.value;
+
+    if (
+      (address.length !== 42 && address.length !== 64) ||
+      (address.length === 64 && !isStarknetAddress(address)) ||
+      (address.length === 42 && !isEthAddress(address))
+    ) {
+      setValid(false);
+      setSuggestions([]);
+      return;
+    } else {
+      setValid(true);
+    }
+
     debouncedSearch(address);
   };
 
@@ -190,30 +208,50 @@ export function SearchContract() {
     setIsOpen(false);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Tab' || event.key === 'Enter') {
+      event.preventDefault(); // 기본 동작 방지
+
+      commandRef.current?.focus();
+    }
+  };
+
+  const handleOpenPopover = () => {
+    setIsOpen(true); // Popover를 열고
+    setTimeout(() => {
+      inputRef.current?.focus(); // Popover가 열린 직후에 Input으로 포커스를 다시 설정
+    }, 0);
+  };
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen} defaultOpen>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div onClick={(event) => event.preventDefault()}>
+        <div onClick={handleOpenPopover}>
           <SearchIcon className="absolute left-3 top-[50%] translate-y-[-50%] h-5 w-5" />
           <Input
+            ref={inputRef}
             type="text"
             placeholder="Search by Contract Address"
-            className="pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0"
+            className={`pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0 border-black dark:border-white border-2 ${
+              valid ? '' : 'border-red-500'
+            }`}
             onChange={handleChange}
-            onClick={() => setIsOpen(true)}
+            onKeyDown={handleKeyDown}
           />
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-[480px] p-0">
-        <Command>
+        <Command ref={commandRef}>
           <CommandList>
             <CommandEmpty>
               {isLoading ? (
                 <div className="flex justify-center">
                   <LoadingSpinner />
                 </div>
-              ) : (
+              ) : valid ? (
                 'No results found.'
+              ) : (
+                <p className={`text-red-500 ${valid ? '' : 'shake'}`}>Invalid address</p>
               )}
             </CommandEmpty>
             <CommandGroup heading="Suggestions">

@@ -15,6 +15,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { a11yDark, a11yLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { MarkdownPreview } from './mark-down-preview';
 import { useTheme } from 'next-themes';
+import { Loader } from '@/src/widgets/Loader';
 
 interface FunctionExplainModalProps {
   code?: string;
@@ -77,7 +78,7 @@ export default function FunctionExplainModal({ code }: FunctionExplainModalProps
           </div>
           {isLoading ? (
             <div className="flex-1 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+              <Loader size={32} />
             </div>
           ) : (
             <div>

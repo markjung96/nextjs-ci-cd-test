@@ -415,7 +415,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           <Label htmlFor="user-account" className="block text-sm font-medium ">
             Enter your Ethereum Account to get NFT
           </Label>
-          <NFTModal />
+          <NFTModal chain={contractInfo.chain} />
         </div>
         <Input
           id="user-account"
