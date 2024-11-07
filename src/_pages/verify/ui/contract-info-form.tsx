@@ -20,7 +20,7 @@ import {
   isStarknetContractInfo,
   SupportedChain,
 } from './page';
-import solidityVersion from '@/src/shared/lib/solidity-version.json';
+import solidityVersion from '@/src/shared/const/solidity-version.json';
 import NFTModal from './nft-modal';
 import { Checkbox } from '@/components/ui/checkbox';
 import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
