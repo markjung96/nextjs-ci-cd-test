@@ -103,41 +103,39 @@ export const VerifiyPage = async ({ searchParams }: { searchParams?: { [key: str
   }
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4 w-4/5">
-      <div className="max-w-4xl w-full p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-2">Verify & Publish Contract Source Code</h1>
-        <p className="text-center  mb-6">
-          Source code verification provides transparency for users interacting with smart contracts.
-        </p>
-        <div className="flex w-full flex-col justify-center gap-4">
-          <Suspense
-            fallback={
-              <div className="flex justify-center">
-                <LoadingSpinner />
-              </div>
-            }
-          >
-            {verifiedSrcUrl ? (
-              <VerifiedInfo
-                chain={chain}
-                network={network!}
-                contractAddress={contractAddress!}
-                verifiedSrcUrl={verifiedSrcUrl}
-                outFileUrl={outFileUrl ? outFileUrl : undefined}
-              />
-            ) : (
-              <VerifyStepper
-                initialStep={initialStep}
-                chain={chain}
-                network={network}
-                contractAddress={contractAddress}
-                compilerType={compilerType}
-                compilerVersion={compilerVersion}
-                checkResult={result || undefined}
-              />
-            )}
-          </Suspense>
-        </div>
+    <div className="max-w-4xl w-full p-6 rounded-lg border-black dark:border-white border-[3px]">
+      <h1 className="text-2xl font-bold text-center mb-2">Verify & Publish Contract Source Code</h1>
+      <p className="text-center  mb-6">
+        Source code verification provides transparency for users interacting with smart contracts.
+      </p>
+      <div className="flex w-full flex-col justify-center gap-4">
+        <Suspense
+          fallback={
+            <div className="flex justify-center">
+              <LoadingSpinner />
+            </div>
+          }
+        >
+          {verifiedSrcUrl ? (
+            <VerifiedInfo
+              chain={chain}
+              network={network!}
+              contractAddress={contractAddress!}
+              verifiedSrcUrl={verifiedSrcUrl}
+              outFileUrl={outFileUrl ? outFileUrl : undefined}
+            />
+          ) : (
+            <VerifyStepper
+              initialStep={initialStep}
+              chain={chain}
+              network={network}
+              contractAddress={contractAddress}
+              compilerType={compilerType}
+              compilerVersion={compilerVersion}
+              checkResult={result || undefined}
+            />
+          )}
+        </Suspense>
       </div>
     </div>
   );
