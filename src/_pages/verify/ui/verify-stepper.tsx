@@ -94,6 +94,8 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
   const [contractInfo, setContractInfo] = useState<ContractInfo>(_contractInfo);
   const [loading, setLoading] = useState(false);
 
+  console.log('contractInfo', contractInfo);
+
   return (
     <Stepper initialStep={initialStep} steps={steps} state={loading ? 'loading' : undefined} scrollTracking>
       {steps.map((stepProps, index) => {

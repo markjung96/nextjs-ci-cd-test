@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/src/shared/ui';
 import { useStepper } from '@/src/widgets/Stpper';
-import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ContractInfo,
   isArbitrumContractInfo,
@@ -29,6 +29,11 @@ type ChainInfo = {
   chainName: string;
   networks: string[];
   compilers: string[];
+};
+
+type ErrorMessage = {
+  contractAddress: null | string;
+  declareTxHash: null | string;
 };
 
 const chainInfos: ChainInfo[] = [
@@ -86,17 +91,18 @@ interface ContractInfoProps {
 }
 
 export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContractInfo }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const { nextStep } = useStepper();
   const [selectedChain, setSelectedChain] = useState<ChainInfo>(
     chainInfos.filter((chainInfo) => contractInfo.chain === chainInfo.chainName)[0],
   );
-  const [errorMessage, setErrorMessage] = useState<{
-    contractAddress: null | string;
-  }>({
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
     contractAddress: null,
+    declareTxHash: null,
   });
 
   const compilerVersions = useMemo(() => {
+    console.log('useMemo', contractInfo.compilerType);
     if (contractInfo.compilerType === 'solidity') {
       return solidityCompilerVersions;
     } else if (contractInfo.compilerType === 'stylus') {
@@ -107,6 +113,12 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
     return [];
   }, [contractInfo.compilerType]);
 
+  console.log('compilerVersions', compilerVersions, contractInfo.compilerVersion, (contractInfo as any).scarbVersion);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   return (
     <form className="space-y-6">
       <div className="relative grid grid-cols-1 gap-2">
@@ -114,15 +126,16 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           Please enter the Contract Address you would like to verify
         </Label>
         <Input
+          ref={inputRef}
           type="text"
           id="contract-address"
-          className={`block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-            errorMessage.contractAddress ? 'dark:border-red-700 border-red-400' : ''
+          className={`block w-full mt-1 rounded-md shadow-sm sm:text-sm ${
+            errorMessage.contractAddress ? 'ring-red-500' : ''
           }`}
           placeholder="0x"
           value={contractInfo.contractAddress}
           onChange={(e) => {
-            setErrorMessage({ contractAddress: null });
+            setErrorMessage((prev) => ({ ...prev, contractAddress: null }));
             setContractInfo((prevValue) => ({
               ...prevValue,
               contractAddress: e.target.value,
@@ -131,7 +144,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         />
         {errorMessage.contractAddress && (
           <p
-            className={`absolute top-[76px] dark:text-red-700 text-red-400 text-xs ${
+            className={`absolute top-[78px] text-red-500 text-xs ${
               errorMessage.contractAddress ? 'animate-shake' : ''
             }`}
           >
@@ -140,24 +153,35 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         )}
       </div>
       {contractInfo.chain === 'starknet' && (
-        <div className="relative">
+        <div className="relative grid grid-cols-1 gap-2">
           <Label htmlFor="contract-address" className="block text-sm font-medium ">
             Please enter the Declare Transaction Hash
           </Label>
           <Input
             type="text"
             id="contract-address"
-            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className={`block w-full mt-1 rounded-md shadow-sm sm:text-sm ${
+              errorMessage.declareTxHash ? 'ring-red-500' : ''
+            }`}
             placeholder="0x"
             value={contractInfo.declareTxHash}
-            onChange={(e) =>
+            onChange={(e) => {
+              setErrorMessage((prev) => ({ ...prev, declareTxHash: null }));
               setContractInfo((prevValue) => ({
                 ...prevValue,
                 declareTxHash: e.target.value,
-              }))
-            }
+              }));
+            }}
           />
-          {errorMessage.contractAddress && <p className="text-red-700">{errorMessage.contractAddress}</p>}
+          {errorMessage.declareTxHash && (
+            <p
+              className={`absolute top-[78px] text-red-500 text-xs ${
+                errorMessage.declareTxHash ? 'animate-shake' : ''
+              }`}
+            >
+              {errorMessage.declareTxHash}
+            </p>
+          )}
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -168,18 +192,53 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           <Select
             defaultValue={selectedChain.chainName}
             onValueChange={(item: SupportedChain) => {
-              setSelectedChain(chainInfos.filter((chainInfo) => chainInfo.chainName === item)[0]);
+              console.log('chain onValueChange');
+              const targetChainInfo = chainInfos.find((chainInfo) => chainInfo.chainName === item);
+              if (!targetChainInfo) return;
+
+              let chainDefault = {};
+              switch (item) {
+                case 'arbitrum': {
+                  chainDefault = {
+                    chain: item,
+                    network: targetChainInfo.networks[0],
+                    compilerType: 'stylus',
+                    compilerVersion: '0.5.5',
+                    os: 'x86',
+                  };
+                  break;
+                }
+                case 'ethereum': {
+                  chainDefault = {
+                    chain: item,
+                    network: targetChainInfo.networks[0],
+                    compilerType: 'solidity',
+                    compilerVersion: 'v0.8.26+commit.8a97fa7a',
+                  };
+                  break;
+                }
+                case 'starknet': {
+                  chainDefault = {
+                    chain: item,
+                    network: targetChainInfo.networks[0],
+                    compilerType: 'cairo',
+                    scarbVersion: '2.8.2',
+                  };
+                  break;
+                }
+              }
+              console.log(chainDefault);
+              setSelectedChain(targetChainInfo);
               setContractInfo(
                 (prevValue) =>
                   ({
                     ...prevValue,
-                    chain: item,
-                    network: chainInfos.filter((chainInfo) => chainInfo.chainName === item)[0].networks[0],
+                    ...chainDefault,
                   } as ContractInfo),
               );
             }}
           >
-            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select a Protocol" />
             </SelectTrigger>
             <SelectContent>
@@ -211,7 +270,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
               );
             }}
           >
-            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select a Protocol" />
             </SelectTrigger>
             <SelectContent>
@@ -232,18 +291,19 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           </Label>
           <Select
             value={contractInfo.compilerType}
-            onValueChange={(compiler) =>
+            onValueChange={(compiler) => {
+              if (compiler === '') return;
               setContractInfo(
                 (prevValue) =>
                   ({
                     ...prevValue,
                     compilerType: compiler,
                   } as ContractInfo),
-              )
-            }
+              );
+            }}
           >
-            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
-              <SelectValue placeholder="Select a Protocol" />
+            <SelectTrigger className="w-full mt-1">
+              <SelectValue placeholder="Select a Compiler Type" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -262,8 +322,10 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             Please Select Compiler Version
           </Label>
           <Select
-            defaultValue={contractInfo.chain === 'starknet' ? contractInfo.scarbVersion : contractInfo.compilerVersion}
-            onValueChange={(version) =>
+            value={contractInfo.chain === 'starknet' ? contractInfo.scarbVersion : contractInfo.compilerVersion}
+            onValueChange={(version) => {
+              console.log('version onValueChange');
+              if (version === '') return;
               setContractInfo((prevValue) => {
                 if (contractInfo.chain === 'starknet') {
                   return {
@@ -275,10 +337,10 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                   ...prevValue,
                   compilerVersion: version,
                 };
-              })
-            }
+              });
+            }}
           >
-            <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+            <SelectTrigger className="w-full mt-1">
               <SelectValue placeholder="Select a compiler version" />
             </SelectTrigger>
             <SelectContent>
@@ -361,7 +423,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         <Input
           id="user-account"
           type="text"
-          className="w-1/2 block mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className="w-1/2 block mt-1 rounded-md shadow-sm sm:text-sm"
           placeholder="0x"
           value={'0x'} //contractInfo.userAccount}
           onChange={(e) =>
@@ -399,7 +461,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
 type ContinueButtonProps = {
   nextStep: () => void;
   contractInfo: ContractInfo;
-  setErrorMessage: Dispatch<SetStateAction<{ contractAddress: null | string }>>;
+  setErrorMessage: Dispatch<SetStateAction<ErrorMessage>>;
 };
 const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueButtonProps) => {
   const checkContinueButtonDisable = (contractInfo: ContractInfo) => {
@@ -417,8 +479,8 @@ const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueBut
     }
 
     if (isArbitrumContractInfo(contractInfo)) {
-      const { os } = contractInfo;
-      if (os === undefined) return true;
+      const { compilerType, os } = contractInfo;
+      if (compilerType === 'stylus' && os === undefined) return true;
     }
 
     if (isStarknetContractInfo(contractInfo)) {
@@ -429,21 +491,35 @@ const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueBut
     return false;
   };
 
+  const handleContinueButtonOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+
+    if (
+      !isEthAddress(contractInfo.contractAddress) ||
+      !isStarknetAddress(contractInfo.contractAddress) ||
+      (isStarknetContractInfo(contractInfo) && !isStarknetAddress(contractInfo.declareTxHash))
+    ) {
+      if (!isEthAddress(contractInfo.contractAddress) || !isStarknetAddress(contractInfo.contractAddress)) {
+        setErrorMessage((prev) => ({ ...prev, contractAddress: 'Invalid Address' }));
+      }
+
+      if (isStarknetContractInfo(contractInfo) && !isStarknetAddress(contractInfo.declareTxHash)) {
+        setErrorMessage((prev) => ({ ...prev, declareTxHash: 'Invalid Transaction Hash' }));
+      }
+
+      return;
+    }
+
+    nextStep();
+  };
+
   return (
     <div className="flex justify-end space-x-4">
       <Button
         type="submit"
         className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
         disabled={checkContinueButtonDisable(contractInfo)}
-        onClick={(event) => {
-          event.preventDefault();
-          if (!isEthAddress(contractInfo.contractAddress) && !isStarknetAddress(contractInfo.contractAddress)) {
-            setErrorMessage({ contractAddress: 'Invalid Ethereum Address' });
-            return;
-          }
-
-          nextStep();
-        }}
+        onClick={handleContinueButtonOnClick}
       >
         Continue
       </Button>
