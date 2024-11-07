@@ -48,42 +48,42 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
     compilerVersion: 'v0.8.26+commit.8a97fa7a',
     sourceFile: null,
     optimize: '0',
+    agreeTerm: true,
   };
   switch (chain) {
     case undefined:
     case 'ethereum':
       _contractInfo = {
+        ..._contractInfo,
         chain: chain || 'ethereum',
         network: (network as EthereumContractInfo['network']) || 'mainnet',
         contractAddress: contractAddress || '',
         compilerType: (compilerType as EthereumContractInfo['compilerType']) || 'solidity',
         compilerVersion: compilerVersion || 'v0.8.26+commit.8a97fa7a',
-        sourceFile: null,
-        optimize: '0',
       };
       break;
     case 'arbitrum':
       _contractInfo = {
-        chain: chain,
+        ..._contractInfo,
+        chain,
         network: (network as ArbitrumContractInfo['network']) || 'mainnet',
         contractAddress: contractAddress || '',
         compilerType: (compilerType as ArbitrumContractInfo['compilerType']) || 'stylus',
-        compilerVersion: compilerVersion || '0.5.3',
-        sourceFile: null,
+        compilerVersion: compilerVersion || '0.5.5',
         os: 'x86',
       };
 
       break;
     case 'starknet':
       _contractInfo = {
-        chain: chain,
+        ..._contractInfo,
+        chain,
         network: (network as StarknetContractInfo['network']) || 'mainnet',
         contractAddress: contractAddress || '',
         declareTxHash: '',
         compilerType: (compilerType as StarknetContractInfo['compilerType']) || 'cairo',
         compilerVersion: compilerVersion || '2.8.2',
         scarbVersion: compilerVersion || '2.8.2',
-        sourceFile: null,
       };
       break;
 

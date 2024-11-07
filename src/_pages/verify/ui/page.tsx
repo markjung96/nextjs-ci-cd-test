@@ -12,42 +12,50 @@ export type SupportedChain = 'ethereum' | 'arbitrum' | 'starknet';
 export type SupportedNetwork = 'mainnet' | 'sepolia' | 'goerli' | 'one';
 export type SupportedCompilerType = 'solidity' | 'stylus' | 'cairo';
 
-export type EthereumContractInfo = {
-  chain: 'ethereum';
-  network: 'mainnet' | 'sepolia' | 'goerli';
+type BaseContractType = {
+  chain: SupportedChain;
+  network: SupportedNetwork;
   contractAddress: string;
-  compilerType: 'solidity';
+  compilerType: SupportedCompilerType;
   compilerVersion: string;
   sourceFile: File | null;
+  agreeTerm: boolean;
+};
+
+export type EthereumContractInfo = BaseContractType & {
+  chain: Extract<SupportedChain, 'ethereum'>;
+  network: Exclude<SupportedNetwork, 'one'>;
+  compilerType: Extract<SupportedCompilerType, 'solidity'>;
   optimize: '0' | '1';
   optimizeRuns?: string | '200';
   evmVersion?: string | 'default';
 };
+export const isEthereumContractInfo = (value: any): value is EthereumContractInfo =>
+  (value as EthereumContractInfo)?.chain === 'ethereum';
+
+export type ArbitrumContractInfo = BaseContractType & {
+  chain: Extract<SupportedChain, 'arbitrum'>;
+  network: Exclude<SupportedNetwork, 'mainnet' | 'goerli'>;
+  compilerType: Extract<SupportedCompilerType, 'stylus'>;
+  os: 'x86' | 'arm';
+};
+export const isArbitrumContractInfo = (value: any): value is ArbitrumContractInfo =>
+  (value as ArbitrumContractInfo)?.chain === 'arbitrum';
+
+export type StarknetContractInfo = BaseContractType & {
+  chain: Extract<SupportedChain, 'starknet'>;
+  network: Exclude<SupportedNetwork, 'goerli' | 'one'>;
+  compilerType: Extract<SupportedCompilerType, 'cairo'>;
+  declareTxHash: string;
+  scarbVersion: string;
+};
+export const isStarknetContractInfo = (value: any): value is StarknetContractInfo =>
+  (value as StarknetContractInfo)?.chain === 'starknet';
+
+export type ContractInfo = EthereumContractInfo | ArbitrumContractInfo | StarknetContractInfo;
 
 type OsType = 'x86' | 'arm';
 export const isOsType = (value: string): value is OsType => value === 'x86' || value === 'arm';
-export type ArbitrumContractInfo = {
-  chain: 'arbitrum';
-  network: 'one' | 'sepolia';
-  contractAddress: string;
-  compilerType: 'stylus';
-  compilerVersion: string;
-  sourceFile: File | null;
-  os: 'x86' | 'arm';
-};
-
-export type StarknetContractInfo = {
-  chain: 'starknet';
-  network: 'mainnet' | 'sepolia';
-  contractAddress: string;
-  declareTxHash: string;
-  scarbVersion: string;
-  compilerType: 'cairo';
-  compilerVersion: string;
-  sourceFile: File | null;
-};
-
-export type ContractInfo = EthereumContractInfo | ArbitrumContractInfo | StarknetContractInfo;
 
 export const VerifiyPage = async ({ searchParams }: { searchParams?: { [key: string]: string | undefined } }) => {
   const chain = searchParams?.chain as SupportedChain;
