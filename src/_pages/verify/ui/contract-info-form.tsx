@@ -11,10 +11,9 @@ import {
   SelectValue,
 } from '@/src/shared/ui';
 import { useStepper } from '@/src/widgets/Stpper';
-import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
 import {
   ContractInfo,
-  EthereumContractInfo,
   isArbitrumContractInfo,
   isEthereumContractInfo,
   isOsType,
@@ -108,33 +107,37 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
     return [];
   }, [contractInfo.compilerType]);
 
-  useEffect(() => {
-    console.log('contractInfo', contractInfo);
-  }, [contractInfo]);
-
-  useEffect(() => {
-    console.log('selectedChain', selectedChain);
-  }, [selectedChain]);
-
   return (
-    <form className="space-y-4">
-      <div className="grid grid-cols-1 gap-2">
+    <form className="space-y-6">
+      <div className="relative grid grid-cols-1 gap-2">
         <Label htmlFor="contract-address" className="block text-sm font-medium ">
           Please enter the Contract Address you would like to verify
         </Label>
         <Input
           type="text"
           id="contract-address"
-          className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          className={`block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
+            errorMessage.contractAddress ? 'dark:border-red-700 border-red-400' : ''
+          }`}
           placeholder="0x"
           value={contractInfo.contractAddress}
-          onChange={(e) =>
+          onChange={(e) => {
+            setErrorMessage({ contractAddress: null });
             setContractInfo((prevValue) => ({
               ...prevValue,
               contractAddress: e.target.value,
-            }))
-          }
+            }));
+          }}
         />
+        {errorMessage.contractAddress && (
+          <p
+            className={`absolute top-[76px] dark:text-red-700 text-red-400 text-xs ${
+              errorMessage.contractAddress ? 'animate-shake' : ''
+            }`}
+          >
+            {errorMessage.contractAddress}
+          </p>
+        )}
       </div>
       {contractInfo.chain === 'starknet' && (
         <div className="relative">
@@ -157,7 +160,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           {errorMessage.contractAddress && <p className="text-red-700">{errorMessage.contractAddress}</p>}
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="compiler-type" className="block text-sm font-medium ">
             Please Select Chain
@@ -403,16 +406,8 @@ const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueBut
     const isNotEmpty = (value: string | boolean | undefined | null): value is string =>
       value !== '' && value !== undefined && value !== null;
 
-    for (const [key, value] of Object.entries(contractInfo)) {
+    for (const [, value] of Object.entries(contractInfo)) {
       if (typeof value === 'object') continue;
-      if (key === 'contractAddress ' && isNotEmpty(value)) {
-        if (isEthAddress(value) || isStarknetAddress(value)) return false;
-        else {
-          if (value.length === 42) setErrorMessage({ contractAddress: 'Invalid Ethereum Address' });
-          if (value.length === 64) setErrorMessage({ contractAddress: 'Invalid Starknet Address' });
-        }
-        return true;
-      }
       if (!isNotEmpty(value)) return true;
     }
 
@@ -440,7 +435,15 @@ const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueBut
         type="submit"
         className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
         disabled={checkContinueButtonDisable(contractInfo)}
-        onClick={nextStep}
+        onClick={(event) => {
+          event.preventDefault();
+          if (!isEthAddress(contractInfo.contractAddress) && !isStarknetAddress(contractInfo.contractAddress)) {
+            setErrorMessage({ contractAddress: 'Invalid Ethereum Address' });
+            return;
+          }
+
+          nextStep();
+        }}
       >
         Continue
       </Button>
