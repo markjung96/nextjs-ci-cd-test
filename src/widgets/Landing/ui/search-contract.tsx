@@ -177,19 +177,15 @@ export function SearchContract() {
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsOpen(true);
-    setValid(true);
+    let _valid = true;
     const address = event.currentTarget.value;
     if (address.length !== 42 && address.length !== 64) return;
 
-    if (address.length === 64 && !isStarknetAddress(address)) {
-      setValid(false);
-      return;
-    }
-    if (address.length === 42 && !isEthAddress(address)) {
-      setValid(false);
-      return;
+    if ((address.length === 64 && !isStarknetAddress(address)) || (address.length === 42 && !isEthAddress(address))) {
+      _valid = false;
     }
 
+    setValid(_valid);
     debouncedSearch(address);
   };
 
