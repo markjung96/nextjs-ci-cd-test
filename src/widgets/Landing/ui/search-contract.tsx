@@ -177,15 +177,20 @@ export function SearchContract() {
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsOpen(true);
-    let _valid = true;
     const address = event.currentTarget.value;
-    if (address.length !== 42 && address.length !== 64) return;
 
-    if ((address.length === 64 && !isStarknetAddress(address)) || (address.length === 42 && !isEthAddress(address))) {
-      _valid = false;
+    if (
+      (address.length !== 42 && address.length !== 64) ||
+      (address.length === 64 && !isStarknetAddress(address)) ||
+      (address.length === 42 && !isEthAddress(address))
+    ) {
+      setValid(false);
+      setSuggestions([]);
+      return;
+    } else {
+      setValid(true);
     }
 
-    setValid(_valid);
     debouncedSearch(address);
   };
 
@@ -227,7 +232,7 @@ export function SearchContract() {
             ref={inputRef}
             type="text"
             placeholder="Search by Contract Address"
-            className={`pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0 ${
+            className={`pl-10 pr-10 py-2 w-[480px] rounded-tl-md rounded-bl-md focus-visible:ring-0 focus-visible:ring-offset-0 border-black dark:border-white border-2 ${
               valid ? '' : 'border-red-500'
             }`}
             onChange={handleChange}
