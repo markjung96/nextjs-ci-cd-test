@@ -102,7 +102,6 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
   });
 
   const compilerVersions = useMemo(() => {
-    console.log('useMemo', contractInfo.compilerType);
     if (contractInfo.compilerType === 'solidity') {
       return solidityCompilerVersions;
     } else if (contractInfo.compilerType === 'stylus') {
@@ -113,14 +112,12 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
     return [];
   }, [contractInfo.compilerType]);
 
-  console.log('compilerVersions', compilerVersions, contractInfo.compilerVersion, (contractInfo as any).scarbVersion);
-
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
   return (
-    <form className="space-y-6">
+    <form className="space-y-6 mx-1">
       <div className="relative grid grid-cols-1 gap-2">
         <Label htmlFor="contract-address" className="block text-sm font-medium ">
           Please enter the Contract Address you would like to verify
@@ -494,18 +491,15 @@ const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueBut
   const handleContinueButtonOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
 
-    if (
-      !isEthAddress(contractInfo.contractAddress) ||
-      !isStarknetAddress(contractInfo.contractAddress) ||
-      (isStarknetContractInfo(contractInfo) && !isStarknetAddress(contractInfo.declareTxHash))
-    ) {
-      if (!isEthAddress(contractInfo.contractAddress) || !isStarknetAddress(contractInfo.contractAddress)) {
-        setErrorMessage((prev) => ({ ...prev, contractAddress: 'Invalid Address' }));
-      }
+    const isInvalidEthOrStarknetAddress =
+      !isEthAddress(contractInfo.contractAddress) && !isStarknetAddress(contractInfo.contractAddress);
+    const isInvalidStarknetDeclareTxHash =
+      isStarknetContractInfo(contractInfo) && !isStarknetAddress(contractInfo.declareTxHash);
 
-      if (isStarknetContractInfo(contractInfo) && !isStarknetAddress(contractInfo.declareTxHash)) {
+    if (isInvalidEthOrStarknetAddress || isInvalidStarknetDeclareTxHash) {
+      if (isInvalidEthOrStarknetAddress) setErrorMessage((prev) => ({ ...prev, contractAddress: 'Invalid Address' }));
+      if (isInvalidStarknetDeclareTxHash)
         setErrorMessage((prev) => ({ ...prev, declareTxHash: 'Invalid Transaction Hash' }));
-      }
 
       return;
     }
