@@ -11,10 +11,20 @@ import {
   SelectValue,
 } from '@/src/shared/ui';
 import { useStepper } from '@/src/widgets/Stpper';
-import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
-import { ContractInfo, EthereumContractInfo, isOsType, SupportedChain } from './page';
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+  ContractInfo,
+  EthereumContractInfo,
+  isArbitrumContractInfo,
+  isEthereumContractInfo,
+  isOsType,
+  isStarknetContractInfo,
+  SupportedChain,
+} from './page';
 import solidityVersion from '@/src/shared/lib/solidity-version.json';
 import NFTModal from './nft-modal';
+import { Checkbox } from '@/components/ui/checkbox';
+import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
 
 type ChainInfo = {
   chainName: string;
@@ -81,6 +91,11 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
   const [selectedChain, setSelectedChain] = useState<ChainInfo>(
     chainInfos.filter((chainInfo) => contractInfo.chain === chainInfo.chainName)[0],
   );
+  const [errorMessage, setErrorMessage] = useState<{
+    contractAddress: null | string;
+  }>({
+    contractAddress: null,
+  });
 
   const compilerVersions = useMemo(() => {
     if (contractInfo.compilerType === 'solidity') {
@@ -93,9 +108,17 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
     return [];
   }, [contractInfo.compilerType]);
 
+  useEffect(() => {
+    console.log('contractInfo', contractInfo);
+  }, [contractInfo]);
+
+  useEffect(() => {
+    console.log('selectedChain', selectedChain);
+  }, [selectedChain]);
+
   return (
     <form className="space-y-4">
-      <div>
+      <div className="grid grid-cols-1 gap-2">
         <Label htmlFor="contract-address" className="block text-sm font-medium ">
           Please enter the Contract Address you would like to verify
         </Label>
@@ -114,7 +137,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         />
       </div>
       {contractInfo.chain === 'starknet' && (
-        <div>
+        <div className="relative">
           <Label htmlFor="contract-address" className="block text-sm font-medium ">
             Please enter the Declare Transaction Hash
           </Label>
@@ -131,10 +154,11 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
               }))
             }
           />
+          {errorMessage.contractAddress && <p className="text-red-700">{errorMessage.contractAddress}</p>}
         </div>
       )}
-      <div className="flex row w-full gap-10 padding-4">
-        <div className="flex-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
           <Label htmlFor="compiler-type" className="block text-sm font-medium ">
             Please Select Chain
           </Label>
@@ -166,21 +190,23 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             </SelectContent>
           </Select>
         </div>
-        <div className="flex-1">
+
+        <div className="space-y-2">
           <Label htmlFor="compiler-type" className="block text-sm font-medium ">
             Please Select Network
           </Label>
           <Select
             value={contractInfo.network}
-            onValueChange={(network) =>
+            onValueChange={(network) => {
+              if (network === '') return;
               setContractInfo(
                 (prevValue) =>
                   ({
                     ...prevValue,
                     network: network,
                   } as ContractInfo),
-              )
-            }
+              );
+            }}
           >
             <SelectTrigger className="w-full mt-1 border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               <SelectValue placeholder="Select a Protocol" />
@@ -196,9 +222,8 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             </SelectContent>
           </Select>
         </div>
-      </div>
-      <div className="flex row w-full gap-10">
-        <div className="flex-1">
+
+        <div className="space-y-2">
           <Label htmlFor="compiler-type" className="block text-sm font-medium ">
             Please Select Compiler Type
           </Label>
@@ -220,22 +245,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             <SelectContent>
               <SelectGroup>
                 {selectedChain.compilers.map((item) => (
-                  <SelectItem
-                    key={item}
-                    value={item.toLowerCase()}
-                    // onClick={() =>
-                    //   setValue((prevValue) => ({
-                    //     ...prevValue,
-                    //     protocol: item.toLowerCase(),
-                    //   }))
-                    // }
-                    // onKeyDown={() =>
-                    //   setValue((prevValue) => ({
-                    //     ...prevValue,
-                    //     protocol: item.toLowerCase(),
-                    //   }))
-                    // }
-                  >
+                  <SelectItem key={item} value={item.toLowerCase()}>
                     {item}
                   </SelectItem>
                 ))}
@@ -243,7 +253,8 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             </SelectContent>
           </Select>
         </div>
-        <div className="flex-1">
+
+        <div className="space-y-2">
           <Label htmlFor="compiler-version" className="block text-sm font-medium ">
             Please Select Compiler Version
           </Label>
@@ -270,22 +281,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
             <SelectContent>
               <SelectGroup>
                 {compilerVersions.map((item) => (
-                  <SelectItem
-                    key={item}
-                    value={item.toLowerCase()}
-                    // onClick={() =>
-                    //   setValue((prevValue) => ({
-                    //     ...prevValue,
-                    //     protocol: item.toLowerCase(),
-                    //   }))
-                    // }
-                    // onKeyDown={() =>
-                    //   setValue((prevValue) => ({
-                    //     ...prevValue,
-                    //     protocol: item.toLowerCase(),
-                    //   }))
-                    // }
-                  >
+                  <SelectItem key={item} value={item.toLowerCase()}>
                     {item}
                   </SelectItem>
                 ))}
@@ -294,36 +290,9 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           </Select>
         </div>
       </div>
-      {/* <div className="flex items-center">
-            <Input
-              id="nightly-commits"
-              type="checkbox"
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <Label
-              htmlFor="nightly-commits"
-              className="ml-2 text-sm "
-            >
-              Uncheck to show all nightly commits
-            </Label>
-          </div> */}
-      {/* <div>
-            <Label
-              htmlFor="license-type"
-              className="block text-sm font-medium "
-            >
-              Please Select Open Source License Type{" "}
-              <InfoIcon className="inline-block w-4 h-4 text-gray-400" />
-            </Label>
-            <Select
-              id="license-type"
-              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option>[Please Select]</option>
-            </Select>
-          </div> */}
+
       {contractInfo.compilerType === 'solidity' && (
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="building-env" className="block text-sm font-medium ">
             Please Select Optimization Option
           </Label>
@@ -349,8 +318,9 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           </RadioGroup>
         </div>
       )}
+
       {contractInfo.compilerType === 'stylus' && (
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="building-env" className="block text-sm font-medium ">
             Please Select Building Environment
           </Label>
@@ -378,7 +348,7 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         </div>
       )}
 
-      <div>
+      <div className="space-y-2">
         <div className="flex items-center gap-1">
           <Label htmlFor="user-account" className="block text-sm font-medium ">
             Enter your Ethereum Account to get NFT
@@ -399,13 +369,16 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           }
         />
       </div>
-
       <div className="flex items-center">
-        <Input
+        <Checkbox
           id="terms"
-          type="checkbox"
-          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-          defaultChecked
+          checked={contractInfo.agreeTerm}
+          onChange={() =>
+            setContractInfo((prevValue) => ({
+              ...prevValue,
+              agreeTerm: !prevValue.agreeTerm,
+            }))
+          }
         />
         <Label htmlFor="terms" className="ml-2 text-sm ">
           I agree to the{' '}
@@ -415,18 +388,62 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         </Label>
       </div>
 
-      <div className="flex justify-end space-x-4">
-        <Button type="reset" className="px-4 py-2 text-sm font-medium  bg-gray-200 rounded-md hover:bg-gray-300">
-          Reset
-        </Button>
-        <Button
-          type="submit"
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          onClick={() => nextStep()}
-        >
-          Continue
-        </Button>
-      </div>
+      <ContinueButton nextStep={nextStep} contractInfo={contractInfo} setErrorMessage={setErrorMessage} />
     </form>
+  );
+};
+
+type ContinueButtonProps = {
+  nextStep: () => void;
+  contractInfo: ContractInfo;
+  setErrorMessage: Dispatch<SetStateAction<{ contractAddress: null | string }>>;
+};
+const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueButtonProps) => {
+  const checkContinueButtonDisable = (contractInfo: ContractInfo) => {
+    const isNotEmpty = (value: string | boolean | undefined | null): value is string =>
+      value !== '' && value !== undefined && value !== null;
+
+    for (const [key, value] of Object.entries(contractInfo)) {
+      if (typeof value === 'object') continue;
+      if (key === 'contractAddress ' && isNotEmpty(value)) {
+        if (isEthAddress(value) || isStarknetAddress(value)) return false;
+        else {
+          if (value.length === 42) setErrorMessage({ contractAddress: 'Invalid Ethereum Address' });
+          if (value.length === 64) setErrorMessage({ contractAddress: 'Invalid Starknet Address' });
+        }
+        return true;
+      }
+      if (!isNotEmpty(value)) return true;
+    }
+
+    if (isEthereumContractInfo(contractInfo)) {
+      const { optimize } = contractInfo;
+      if (optimize === undefined) return true;
+    }
+
+    if (isArbitrumContractInfo(contractInfo)) {
+      const { os } = contractInfo;
+      if (os === undefined) return true;
+    }
+
+    if (isStarknetContractInfo(contractInfo)) {
+      const { declareTxHash } = contractInfo;
+      if (declareTxHash === undefined) return true;
+    }
+
+    return false;
+  };
+
+  return (
+    <div className="flex justify-end space-x-4">
+      <Button
+        type="submit"
+        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        disabled={checkContinueButtonDisable(contractInfo)}
+        onClick={nextStep}
+      >
+        Continue
+      </Button>
+    </div>
   );
 };
