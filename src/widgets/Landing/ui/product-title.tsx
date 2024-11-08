@@ -54,11 +54,11 @@ export default function ProductTitle() {
 
   return (
     <div className="flex flex-col justify-center items-center gap-4">
-      <h1 className="flex gap-4 text-3xl font-bold">Multi-language, Open Source, Verify Well for </h1>
-      <h1 className="flex gap-4 justify-center items-center text-3xl font-bold h-[80px]">
+      <h1 className="flex gap-4 text-4xl font-bold">Multi-language, Open Source, Verify Well for </h1>
+      <h1 className="flex gap-4 justify-center items-center text-4xl font-bold h-[80px]">
         {'{'}
         <div className={`text-blue-500 transition-all duration-500 ${animation ? 'fade-out-up' : 'fade-in-down'}`}>
-          <Image width={200} src={theme === 'dark' ? chain.dark : chain.light} alt="chain" />
+          <Image width={240} src={theme === 'dark' ? chain.dark : chain.light} alt="chain" />
         </div>
         {'}'}
       </h1>
