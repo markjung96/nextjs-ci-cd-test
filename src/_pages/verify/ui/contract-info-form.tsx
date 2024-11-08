@@ -189,7 +189,6 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           <Select
             defaultValue={selectedChain.chainName}
             onValueChange={(item: SupportedChain) => {
-              console.log('chain onValueChange');
               const targetChainInfo = chainInfos.find((chainInfo) => chainInfo.chainName === item);
               if (!targetChainInfo) return;
 
@@ -224,7 +223,6 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
                   break;
                 }
               }
-              console.log(chainDefault);
               setSelectedChain(targetChainInfo);
               setContractInfo(
                 (prevValue) =>
@@ -321,7 +319,6 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
           <Select
             value={contractInfo.chain === 'starknet' ? contractInfo.scarbVersion : contractInfo.compilerVersion}
             onValueChange={(version) => {
-              console.log('version onValueChange');
               if (version === '') return;
               setContractInfo((prevValue) => {
                 if (contractInfo.chain === 'starknet') {
