@@ -21,8 +21,8 @@ const chains = [
 export const config = createConfig({
   chains: [arbitrum, arbitrumSepolia],
   transports: {
-    [arbitrum.id]: http(),
-    [arbitrumSepolia.id]: http(),
+    [arbitrum.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_ONE_URL),
+    [arbitrumSepolia.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_URL),
   },
 });
 

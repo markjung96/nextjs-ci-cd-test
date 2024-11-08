@@ -23,10 +23,10 @@ export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
   ssr: true,
   transports: {
-    [mainnet.id]: http(),
+    [mainnet.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_MAINNET_URL),
     [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
-    [arbitrum.id]: http(),
-    [arbitrumSepolia.id]: http(),
+    [arbitrum.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_ONE_URL),
+    [arbitrumSepolia.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_URL),
   },
 });
 
@@ -34,10 +34,10 @@ export const config = createConfig({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
   ssr: true,
   transports: {
-    [mainnet.id]: http(),
+    [mainnet.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_MAINNET_URL),
     [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
-    [arbitrum.id]: http(),
-    [arbitrumSepolia.id]: http(),
+    [arbitrum.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_ONE_URL),
+    [arbitrumSepolia.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_URL),
   },
 });
 
@@ -81,7 +81,7 @@ const getSuggestionsList = async (address: string) => {
         });
         const starknetSuggestions = await starknetSuggestionsRaw.json();
         if (starknetSuggestions.error) {
-          console.error('Error getting starknet suggestions', starknetSuggestions);
+          // console.error('Error getting starknet suggestions', starknetSuggestions);
           return null;
         } else {
           return {
@@ -178,10 +178,9 @@ export function SearchContract() {
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     setIsOpen(true);
     const address = event.currentTarget.value;
-
     if (
-      (address.length !== 42 && address.length !== 64) ||
-      (address.length === 64 && !isStarknetAddress(address)) ||
+      (address.length !== 42 && address.length !== 66) ||
+      (address.length === 66 && !isStarknetAddress(address)) ||
       (address.length === 42 && !isEthAddress(address))
     ) {
       setValid(false);
