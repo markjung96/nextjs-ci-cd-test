@@ -10,7 +10,11 @@ export function Header(props: Props) {
       <div className="flex gap-6 h-12 items-center">
         <Logo />
         <Link href="/verify" className="font-bold">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full border-2 border-black dark:border-white font-extrabold"
+          >
             Verify
           </Button>
         </Link>
