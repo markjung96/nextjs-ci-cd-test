@@ -16,6 +16,7 @@ import { getDefaultConfig, RainbowKitProvider, ConnectButton } from '@rainbow-me
 import { fetchZip } from '@/src/shared/lib/utils';
 import { FileStructure } from './code-explorer';
 import FunctionExplainModal from './function-explain-modal';
+import { Loader } from '@/src/widgets/Loader';
 
 const configViem = createConfig({
   chains: [mainnet, sepolia, arbitrumSepolia, arbitrum],
@@ -316,10 +317,11 @@ const AccordionCard = ({
   contractAddress,
   functionMap,
 }: AccordionCardProps) => {
-  const { data: hash, writeContract } = useWriteContract();
+  const { data: hash, writeContractAsync } = useWriteContract();
   const { isConnected, chainId } = useAccount();
   const [value, setValue] = useState<string>('');
   const [args, setArgs] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
   const isRightNetwork = React.useMemo(() => {
     if (chain === 'ethereum' && network === 'mainnet') {
       return chainId === mainnet.id;
@@ -352,6 +354,7 @@ const AccordionCard = ({
   };
 
   const handleCallOnClick = async () => {
+    setIsLoading(true);
     let chainId;
     switch (`${chain}/${network}`) {
       case 'ethereum/mainnet':
@@ -405,18 +408,20 @@ const AccordionCard = ({
     } catch (e: any) {
       console.error(e);
     } finally {
-      // setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const handleTransactOnClick = async () => {
+    console.log('handleTransactOnClick');
+    setIsLoading(true);
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {
       parms.push(args[item.name!]);
     });
 
     try {
-      writeContract({
+      await writeContractAsync({
         address: contractAddress as `0x${string}`,
         abi,
         functionName: abiFragment.name,
@@ -426,7 +431,7 @@ const AccordionCard = ({
     } catch (e: any) {
       console.error(e);
     } finally {
-      // setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -464,14 +469,14 @@ const AccordionCard = ({
               {getButtonVariant(abiFragment.stateMutability) === 'primary' ? (
                 <div className="flex gap-1">
                   <Button size="sm" onClick={handleCallOnClick}>
-                    query
+                    {isLoading ? <Loader /> : 'query'}
                   </Button>
                   <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
                 </div>
               ) : (
                 <div className="flex gap-1">
                   <Button size="sm" disabled={!isConnected || !isRightNetwork} onClick={handleTransactOnClick}>
-                    transact
+                    {isLoading ? <Loader /> : 'transact'}
                   </Button>
                   <FunctionExplainModal code={functionMap?.[abiFragment.name]} />
                 </div>
