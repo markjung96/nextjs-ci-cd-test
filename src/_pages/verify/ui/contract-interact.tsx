@@ -21,10 +21,10 @@ const configViem = createConfig({
   chains: [mainnet, sepolia, arbitrumSepolia, arbitrum],
   ssr: true,
   transports: {
-    [mainnet.id]: http(),
+    [mainnet.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_MAINNET_URL),
     [sepolia.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_URL),
-    [arbitrumSepolia.id]: http(),
-    [arbitrum.id]: http(),
+    [arbitrum.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_ONE_URL),
+    [arbitrumSepolia.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_URL),
   },
 });
 
@@ -35,7 +35,7 @@ const getConfig = (chain: string, network: string) => {
     case 'ethereum/mainnet':
       chains = [mainnet];
       transports = {
-        [mainnet.id]: http(),
+        [mainnet.id]: http(process.env.NEXT_PUBLIC_ETHEREUM_MAINNET_URL),
       };
       break;
     case 'ethereum/sepolia':
@@ -47,13 +47,13 @@ const getConfig = (chain: string, network: string) => {
     case 'arbitrum/one':
       chains = [arbitrum];
       transports = {
-        [arbitrum.id]: http(),
+        [arbitrum.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_ONE_URL),
       };
       break;
     case 'arbitrum/sepolia':
       chains = [arbitrumSepolia];
       transports = {
-        [arbitrumSepolia.id]: http(),
+        [arbitrumSepolia.id]: http(process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_URL),
       };
       break;
 
