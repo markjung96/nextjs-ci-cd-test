@@ -21,9 +21,11 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
   verifiedSrcUrl,
   outFileUrl,
 }) => {
+  const [isLoading, setLoading] = useState(false);
   const [fileStructure, setFileStructure] = useState<FileStructure[]>([]);
 
   const getFiles = async (url: string) => {
+    setLoading(true);
     const files = await fetchZip(url);
     const structedFiles = files.reduce((acc: FileStructure[], file) => {
       const path = file.name.split('/');
@@ -47,6 +49,7 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
       return acc;
     }, []);
     setFileStructure(structedFiles);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -67,8 +70,12 @@ export const VerifiedInfo: FC<VerifiedInfoProps> = ({
       </div>
       <Tabs defaultValue="code">
         <TabsList>
-          <TabsTrigger value="code">Code</TabsTrigger>
-          <TabsTrigger value="interact">Interact</TabsTrigger>
+          <TabsTrigger disabled={isLoading} value="code">
+            Code
+          </TabsTrigger>
+          <TabsTrigger disabled={isLoading} value="interact">
+            Interact
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="code">
           <CodeExplorer url={verifiedSrcUrl} fileStructure={fileStructure} />
