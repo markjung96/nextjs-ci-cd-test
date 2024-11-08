@@ -20,17 +20,17 @@ const getFavicon = async (url: string) => {
 };
 
 export default function Tools() {
-  const { theme } = useTheme();
-  const veriwellFavicon = theme === 'dark' ? VeriwellLogoWhite : VeriwellLogoBlack;
-  const blockscoutFavicon = theme === 'dark' ? BlockscoutLogoWhite : BlockscoutLogoBlack;
-  const sourcifyFavicon = theme === 'dark' ? SourcifyLogoWhite : SourcifyLogoBlack;
-  const Verified = theme === 'dark' ? VerifiedWhite : VerifiedBlack;
+  const { resolvedTheme } = useTheme();
+  const veriwellFavicon = resolvedTheme === 'dark' ? VeriwellLogoWhite : VeriwellLogoBlack;
+  const blockscoutFavicon = resolvedTheme === 'dark' ? BlockscoutLogoWhite : BlockscoutLogoBlack;
+  const sourcifyFavicon = resolvedTheme === 'dark' ? SourcifyLogoWhite : SourcifyLogoBlack;
+  const Verified = resolvedTheme === 'dark' ? VerifiedWhite : VerifiedBlack;
   return (
     <>
       <div className="rounded-full border-2 border-primary p-1 dark:bg-white dark:text-black bg-black text-white">
         <Label className="text-lg font-semibold">Open Source Verification Tools</Label>
       </div>
-      <Table className="w-full max-w-2xl rounded-lg shadow-lg w-[480px]">
+      <Table className="max-w-2xl rounded-lg shadow-lg w-[480px]">
         <TableHeader>
           <TableRow className="!border-b-4 border-black dark:border-white hover:bg-transparent !p-0">
             <TableHead></TableHead>

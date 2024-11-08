@@ -20,7 +20,7 @@ interface CodeExplorerProps {
 }
 
 export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [selectedFile, setSelectedFile] = React.useState<FileStructure | null>(null);
 
   const renderFileTree = (items?: FileStructure[]) => {
@@ -65,7 +65,7 @@ export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
           <ScrollArea className="flex-1">
             <SyntaxHighlighter
               language={selectedFile?.name.includes('.rs') ? 'rust' : 'toml'}
-              style={theme === 'dark' ? a11yDark : a11yLight}
+              style={resolvedTheme === 'dark' ? a11yDark : a11yLight}
               wrapLongLines
             >
               {selectedFile ? selectedFile.content! : 'Select a file to view its content'}

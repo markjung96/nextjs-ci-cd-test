@@ -7,13 +7,13 @@ type MarkdownRendererProps = {
 };
 
 export function MarkdownPreview({ markdown }: MarkdownRendererProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   return (
     <MarkdownPost
       source={markdown}
       className="p-4"
       wrapperElement={{
-        'data-color-mode': theme === 'dark' ? 'dark' : 'light',
+        'data-color-mode': resolvedTheme === 'dark' ? 'dark' : 'light',
       }}
     />
   );

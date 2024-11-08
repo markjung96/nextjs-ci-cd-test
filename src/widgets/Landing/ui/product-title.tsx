@@ -27,7 +27,7 @@ export const config = createConfig({
 });
 
 export default function ProductTitle() {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [chain, setChain] = useState<{ dark: StaticImageData; light: StaticImageData }>(chains[0]);
   const [animation, setAnimation] = useState(false);
 
@@ -58,7 +58,7 @@ export default function ProductTitle() {
       <h1 className="flex gap-4 justify-center items-center text-4xl font-bold h-[80px]">
         {'{'}
         <div className={`text-blue-500 transition-all duration-500 ${animation ? 'fade-out-up' : 'fade-in-down'}`}>
-          <Image width={240} src={theme === 'dark' ? chain.dark : chain.light} alt="chain" />
+          <Image width={240} src={resolvedTheme === 'dark' ? chain.dark : chain.light} alt="chain" />
         </div>
         {'}'}
       </h1>
