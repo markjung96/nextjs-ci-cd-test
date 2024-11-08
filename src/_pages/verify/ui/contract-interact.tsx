@@ -413,7 +413,6 @@ const AccordionCard = ({
   };
 
   const handleTransactOnClick = async () => {
-    console.log('handleTransactOnClick');
     setIsLoading(true);
     const parms: string[] = [];
     abiFragment.inputs?.forEach((item) => {

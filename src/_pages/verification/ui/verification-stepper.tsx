@@ -84,14 +84,10 @@ const VerificationStepper = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-  };
-
   return (
     <div className="flex w-full flex-col justify-center gap-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form>
           <Stepper
             orientation="vertical"
             initialStep={0}
@@ -388,7 +384,6 @@ const ForthStep = ({
     setLoading(true);
     await sleep(1000);
     setLoading(false);
-    console.log(values);
   };
 
   return (
