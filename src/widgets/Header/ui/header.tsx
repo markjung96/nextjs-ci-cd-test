@@ -13,7 +13,7 @@ export function Header(props: Props) {
           <Button
             variant="outline"
             size="sm"
-            className="rounded-full border-2 border-black dark:border-white bg-transparent dark:text-white text-black font-extrabold"
+            className="rounded-full border-2 border-black dark:border-white font-extrabold"
           >
             Verify
           </Button>

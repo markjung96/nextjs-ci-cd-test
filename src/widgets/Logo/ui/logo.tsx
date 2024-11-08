@@ -6,10 +6,10 @@ import LogoBlackIcon from '@/public/images/platforms/veriwell-logo-black.png';
 import LogoWhiteIcon from '@/public/images/platforms/veriwell-logo-white.png';
 
 export const Logo = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   return (
     <Link href="/">
-      <Image src={theme === 'dark' ? LogoWhiteIcon : LogoBlackIcon} alt="Logo" width={190} priority />
+      <Image src={resolvedTheme === 'dark' ? LogoWhiteIcon : LogoBlackIcon} alt="Logo" width={190} priority />
     </Link>
   );
 };

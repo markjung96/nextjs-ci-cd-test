@@ -22,7 +22,7 @@ interface FunctionExplainModalProps {
 }
 
 export default function FunctionExplainModal({ code }: FunctionExplainModalProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [explanation, setExplanation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +69,7 @@ export default function FunctionExplainModal({ code }: FunctionExplainModalProps
                   language="solidity"
                   wrapLongLines
                   className="text-sm"
-                  style={theme === 'dark' ? a11yDark : a11yLight}
+                  style={resolvedTheme === 'dark' ? a11yDark : a11yLight}
                 >
                   {code || ''}
                 </SyntaxHighlighter>

@@ -20,7 +20,7 @@ interface CodeExplorerProps {
 }
 
 export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [selectedFile, setSelectedFile] = React.useState<FileStructure | null>(null);
 
   const renderFileTree = (items?: FileStructure[]) => {
@@ -47,6 +47,18 @@ export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
     ));
   };
 
+  // Ensure fileContent is always a string
+  const fileContent: string = (() => {
+    if (selectedFile?.name.endsWith('.json')) {
+      try {
+        return JSON.stringify(JSON.parse(selectedFile.content!), null, 2);
+      } catch (error) {
+        return 'Invalid JSON content'; // Fallback if JSON parsing fails
+      }
+    }
+    return selectedFile?.content || 'Select a file to view its content';
+  })();
+
   return (
     <>
       <div className="border rounded-lg shadow-sm h-[600px] flex">
@@ -64,11 +76,14 @@ export const CodeExplorer: FC<CodeExplorerProps> = ({ url, fileStructure }) => {
           </div>
           <ScrollArea className="flex-1">
             <SyntaxHighlighter
-              language={selectedFile?.name.includes('.rs') ? 'rust' : 'toml'}
-              style={theme === 'dark' ? a11yDark : a11yLight}
+              language={
+                selectedFile?.name.includes('.rs') ? 'rust' : selectedFile?.name.endsWith('.json') ? 'json' : 'toml'
+              }
+              style={resolvedTheme === 'dark' ? a11yDark : a11yLight}
               wrapLongLines
+              customStyle={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}
             >
-              {selectedFile ? selectedFile.content! : 'Select a file to view its content'}
+              {fileContent}
             </SyntaxHighlighter>
           </ScrollArea>
         </div>
