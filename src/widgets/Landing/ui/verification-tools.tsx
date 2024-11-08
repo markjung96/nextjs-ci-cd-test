@@ -3,12 +3,12 @@ import { Button, Label } from '@/src/shared/ui';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/ui/table';
 import { Circle, Link } from 'lucide-react';
 import { LinkButton } from './link-button';
-import VeriwellLogoBlack from '@/public/images/veriwell-logo-black.png';
-import VeriwellLogoWhite from '@/public/images/veriwell-logo-white.png';
-import BlockscoutLogoBlack from '@/public/images/logo-blockscout-black.png';
-import BlockscoutLogoWhite from '@/public/images/logo-blockscout-white.png';
-import SourcifyLogoBlack from '@/public/images/logo-sourcify-black.png';
-import SourcifyLogoWhite from '@/public/images/logo-sourcify-white.png';
+import VeriwellLogoBlack from '@/public/images/platforms/veriwell-logo-black.png';
+import VeriwellLogoWhite from '@/public/images/platforms/veriwell-logo-white.png';
+import BlockscoutLogoBlack from '@/public/images/platforms/blockscout-B.svg';
+import BlockscoutLogoWhite from '@/public/images/platforms/blockscout-W.svg';
+import SourcifyLogoBlack from '@/public/images/platforms/sourcify-B.svg';
+import SourcifyLogoWhite from '@/public/images/platforms/sourcify-W.svg';
 import VerifiedBlack from '@/public/images/verified-black.png';
 import VerifiedWhite from '@/public/images/verified-white.png';
 import { useTheme } from 'next-themes';
@@ -41,7 +41,7 @@ export default function Tools() {
               <LinkButton value="" href="https://vera.blockscout.com/" imgSrc={blockscoutFavicon} />
             </TableHead>
             <TableHead className="text-lg font-bold text-primary">
-              <LinkButton value="" height={80} href="https://sourcify.dev/#/" imgSrc={sourcifyFavicon} />
+              <LinkButton value="" height={100} href="https://sourcify.dev/#/" imgSrc={sourcifyFavicon} />
             </TableHead>
           </TableRow>
         </TableHeader>

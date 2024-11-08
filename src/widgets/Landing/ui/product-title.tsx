@@ -4,7 +4,7 @@ import { createConfig, http, WagmiProvider } from 'wagmi';
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
 import EthereumLogo from '@/public/images/chainLogos/ethereum.png';
 import ArbitrumLogo from '@/public/images/chainLogos/arbitrum.png';
-import StarknetLogo from '@/public/images/chainLogos/starknet.png';
+import StarknetLogo from '@/public/images/chainLogos/starknet.svg';
 import Image, { StaticImageData } from 'next/image';
 
 const chains = [EthereumLogo, ArbitrumLogo, StarknetLogo];
