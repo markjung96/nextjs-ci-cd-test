@@ -98,7 +98,7 @@ const config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'collapsible-down': 'collapsible-down 0.2s ease-out',
         'collapsible-up': 'collapsible-up 0.2s ease-out',
-        shake: 'shake 0.3s ease-in-out',
+        shake: 'shake 0.5s ease-in-out 1',
       },
     },
   },
