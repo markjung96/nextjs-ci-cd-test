@@ -24,6 +24,7 @@ import solidityVersion from '@/src/shared/const/solidity-version.json';
 import NFTModal from './nft-modal';
 import { Checkbox } from '@/components/ui/checkbox';
 import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type ChainInfo = {
   chainName: string;
@@ -378,56 +379,109 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
         </div>
       )}
 
-      {contractInfo.compilerType === 'stylus' && (
-        <div className="space-y-2">
-          <Label htmlFor="building-env" className="block text-sm font-medium ">
-            Please Select Building Environment
-          </Label>
-          <RadioGroup
-            defaultValue="x86"
-            className="flex row mt-2"
-            id="building-env"
-            onValueChange={(value) => {
-              if (isOsType(value))
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
+          {contractInfo.compilerType === 'stylus' && (
+            <div className="space-y-2">
+              <Label htmlFor="building-env" className="block text-sm font-medium ">
+                Please Select Building Environment
+              </Label>
+              <RadioGroup
+                defaultValue="x86"
+                className="flex row mt-2"
+                id="building-env"
+                onValueChange={(value) => {
+                  if (isOsType(value))
+                    setContractInfo((prevValue) => ({
+                      ...prevValue,
+                      os: value,
+                    }));
+                }}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="x86" id="r1" />
+                  <Label htmlFor="r1">x86</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="arm" id="r2" />
+                  <Label htmlFor="r2">arm</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          )}
+          <div className="space-y-2">
+            <div className="flex items-center gap-1">
+              <Label htmlFor="user-account" className="block text-sm font-medium ">
+                Enter your Ethereum Account to get NFT
+              </Label>
+              <NFTModal chain={contractInfo.chain} />
+            </div>
+            <Input
+              id="user-account"
+              type="text"
+              className="block mt-1 rounded-md shadow-sm sm:text-sm"
+              placeholder="0x"
+              value={'0x'} //contractInfo.userAccount}
+              onChange={(e) =>
                 setContractInfo((prevValue) => ({
                   ...prevValue,
-                  os: value,
-                }));
-            }}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="x86" id="r1" />
-              <Label htmlFor="r1">x86</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="arm" id="r2" />
-              <Label htmlFor="r2">arm</Label>
-            </div>
-          </RadioGroup>
+                  userAccount: e.target.value,
+                }))
+              }
+            />
+          </div>
         </div>
-      )}
-
-      <div className="space-y-2">
-        <div className="flex items-center gap-1">
-          <Label htmlFor="user-account" className="block text-sm font-medium ">
-            Enter your Ethereum Account to get NFT
-          </Label>
-          <NFTModal chain={contractInfo.chain} />
-        </div>
-        <Input
-          id="user-account"
-          type="text"
-          className="w-1/2 block mt-1 rounded-md shadow-sm sm:text-sm"
-          placeholder="0x"
-          value={'0x'} //contractInfo.userAccount}
-          onChange={(e) =>
-            setContractInfo((prevValue) => ({
-              ...prevValue,
-              userAccount: e.target.value,
-            }))
-          }
-        />
+        {contractInfo.chain === 'arbitrum' && (
+          <ol className="ml-4 list-disc">
+            <li>
+              <p className="text-sm">
+                Please select the compiler language and version used for the deployed Arbitrum contract.
+              </p>
+            </li>
+            <li>
+              <p className="text-sm">In particular, with Stylus, you can choose the OS.</p>
+            </li>
+            <li>
+              <p className="text-sm">
+                If the Arbitrum contract was deployed without the{' '}
+                <span className="font-semibold bg-indigo-100 dark:bg-indigo-900 px-1 rounded">--no-verify</span> option,
+                choose <span className="font-semibold bg-indigo-100 dark:bg-indigo-900 px-1 rounded">x86</span> and
+                proceed with verification.
+              </p>
+            </li>
+            <li>
+              <TooltipProvider delayDuration={100}>
+                <p className="text-sm">
+                  If the{' '}
+                  <span className="font-semibold bg-indigo-100 dark:bg-indigo-900 px-1 rounded">--no-verify</span>{' '}
+                  option was used, select either{' '}
+                  <span className="font-semibold bg-indigo-100 dark:bg-indigo-900 px-1 rounded">arm</span> or{' '}
+                  <span className="font-semibold bg-indigo-100 dark:bg-indigo-900 px-1 rounded">x86</span> for
+                  verification.
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex items-center text-[#A2A3BD] ml-2 text-[0.9em] cursor-pointer">
+                        &#9432;
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">
+                        Since Docker is a Linux-based container, <br />
+                        deploying and verifying through Docker on a Mac <br />
+                        tends tobe slow and inefficient. <br />
+                        Previously, Arbitrum verifiers were unable to <br />
+                        verify contracts deployed natively on Mac. <br />
+                        However, with VeriWell, verification is now possible.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </p>
+              </TooltipProvider>
+            </li>
+          </ol>
+        )}
       </div>
+
       <div className="flex items-center">
         <Checkbox
           id="terms"
