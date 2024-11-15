@@ -421,11 +421,11 @@ export const ContractInfoForm: FC<ContractInfoProps> = ({ contractInfo, setContr
               type="text"
               className="block mt-1 rounded-md shadow-sm sm:text-sm"
               placeholder="0x"
-              value={'0x'} //contractInfo.userAccount}
+              value={contractInfo.verifyRequestAddress}
               onChange={(e) =>
                 setContractInfo((prevValue) => ({
                   ...prevValue,
-                  userAccount: e.target.value,
+                  verifyRequestAddress: e.target.value,
                 }))
               }
             />

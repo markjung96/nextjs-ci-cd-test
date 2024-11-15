@@ -46,6 +46,7 @@ interface EvmVerificationReqDto {
   chainId: string;
   srcFileId: string;
   contractName: string;
+  verifyRequestAddress?: string;
 }
 
 export interface EvmVerificationResultDto {

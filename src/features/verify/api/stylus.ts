@@ -47,6 +47,7 @@ export interface StylusVerificationReqDto {
   srcFileId?: string;
   cliVersion: string;
   os: 'x86' | 'arm';
+  verifyRequestAddress?: string;
 }
 
 export interface StylusVerificationResultDto {

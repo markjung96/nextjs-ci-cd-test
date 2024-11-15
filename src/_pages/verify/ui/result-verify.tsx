@@ -110,6 +110,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
             chainId: contractInfo.network.toLowerCase() === 'mainnet' ? '0x1' : '0xaa36a7',
             srcFileId: srcFileId!,
             contractName: contractInfo.sourceFile!.name.split('.')[0],
+            verifyRequestAddress: contractInfo.verifyRequestAddress,
           });
         } else if (contractInfo.chain === 'arbitrum') {
           result = await verifyStylus({
@@ -118,6 +119,7 @@ export const ResultVerify: FC<ResultVerifyProps> = ({ contractInfo, isRemixSrcUp
             srcFileId,
             cliVersion: contractInfo.compilerVersion,
             os: contractInfo.os,
+            verifyRequestAddress: contractInfo.verifyRequestAddress,
           });
         } else if (contractInfo.chain === 'starknet') {
           result = await verifyCairo({

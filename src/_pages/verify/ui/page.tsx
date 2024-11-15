@@ -20,6 +20,7 @@ type BaseContractType = {
   compilerVersion: string;
   sourceFile: File | null;
   agreeTerm: boolean;
+  verifyRequestAddress?: string;
 };
 
 export type EthereumContractInfo = BaseContractType & {
