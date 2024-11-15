@@ -17,7 +17,7 @@ import { http, WagmiProvider, createConfig as createConfigGeneral } from 'wagmi'
 import { arbitrum, arbitrumSepolia, mainnet, sepolia } from 'viem/chains';
 import _ from 'lodash';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
+import { isEthAddress, isStarknetAddressOrHash } from '@/src/shared/lib/network';
 
 export const configGeneral = createConfigGeneral({
   chains: [mainnet, sepolia, arbitrum, arbitrumSepolia],
@@ -180,7 +180,7 @@ export function SearchContract() {
     const address = event.currentTarget.value;
     if (
       (address.length !== 42 && address.length !== 66) ||
-      (address.length === 66 && !isStarknetAddress(address)) ||
+      (address.length === 66 && !isStarknetAddressOrHash(address)) ||
       (address.length === 42 && !isEthAddress(address))
     ) {
       setValid(false);

@@ -23,7 +23,7 @@ import {
 import solidityVersion from '@/src/shared/const/solidity-version.json';
 import NFTModal from './nft-modal';
 import { Checkbox } from '@/components/ui/checkbox';
-import { isEthAddress, isStarknetAddress } from '@/src/shared/lib/network';
+import { isEthAddress, isStarknetAddressOrHash } from '@/src/shared/lib/network';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type ChainInfo = {
@@ -543,9 +543,9 @@ const ContinueButton = ({ nextStep, contractInfo, setErrorMessage }: ContinueBut
     event.preventDefault();
 
     const isInvalidEthOrStarknetAddress =
-      !isEthAddress(contractInfo.contractAddress) && !isStarknetAddress(contractInfo.contractAddress);
+      !isEthAddress(contractInfo.contractAddress) && !isStarknetAddressOrHash(contractInfo.contractAddress);
     const isInvalidStarknetDeclareTxHash =
-      isStarknetContractInfo(contractInfo) && !isStarknetAddress(contractInfo.declareTxHash);
+      isStarknetContractInfo(contractInfo) && !isStarknetAddressOrHash(contractInfo.declareTxHash);
 
     if (isInvalidEthOrStarknetAddress || isInvalidStarknetDeclareTxHash) {
       if (isInvalidEthOrStarknetAddress) setErrorMessage((prev) => ({ ...prev, contractAddress: 'Invalid Address' }));

@@ -14,8 +14,11 @@ export const isEthAddress = (address: string): boolean => isValidHexAddress(addr
  * @param address - An address.
  * @returns True if the address is a Starknet one, false otherwise.
  */
-export const isStarknetAddress = (address: string): boolean => {
-  // Starknet addresses are 42 characters long.
+export const isStarknetAddressOrHash = (address: string): boolean => {
+  // Starknet addresses are 64 characters long.
   const starknetAddressRegex = /^0x[a-fA-F0-9]{64}$/;
-  return starknetAddressRegex.test(address);
+  // Starknet hashes are 62 characters long.
+  const starknetHashRegex = /^0x[a-fA-F0-9]{62}$/;
+
+  return starknetAddressRegex.test(address) || starknetHashRegex.test(address);
 };
