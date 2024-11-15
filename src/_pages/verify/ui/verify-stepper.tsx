@@ -49,7 +49,6 @@ export const VerifyStepper: FC<VerifyStepperProps> = ({
     sourceFile: null,
     optimize: '0',
     agreeTerm: true,
-    verifyRequestAddress: '',
   };
   switch (chain) {
     case undefined:
