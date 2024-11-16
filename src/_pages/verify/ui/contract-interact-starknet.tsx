@@ -217,7 +217,11 @@ const AccordionCard = ({
     try {
       const result = await contract[abiFragment.name](...parms);
       let _value = '';
-      if (abiFragment.outputs[0].type.includes('integer')) {
+      if (
+        abiFragment.outputs[0].type.includes('integer') ||
+        abiFragment.outputs[0].type.includes('felt') ||
+        abiFragment.outputs[0].type.includes('uint')
+      ) {
         _value = result.toString();
       }
       setValue(_value);
