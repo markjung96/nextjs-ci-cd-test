@@ -18,7 +18,7 @@ import { FileStructure } from './code-explorer';
 import FunctionExplainModal from './function-explain-modal';
 import { Loader } from '@/src/widgets/Loader';
 
-const configViem = createConfig({
+export const configViem = createConfig({
   chains: [mainnet, sepolia, arbitrumSepolia, arbitrum],
   ssr: true,
   transports: {
@@ -29,7 +29,7 @@ const configViem = createConfig({
   },
 });
 
-const getConfig = (chain: string, network: string) => {
+export const getConfig = (chain: string, network: string) => {
   let chains: any = [];
   let transports = {};
   switch (`${chain}/${network}`) {

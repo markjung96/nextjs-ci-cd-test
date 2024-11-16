@@ -18,6 +18,15 @@ export function Header(props: Props) {
             Verify
           </Button>
         </Link>
+        <Link href="/nft" className="font-bold">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full border-2 border-black dark:border-white font-extrabold"
+          >
+            Nfts
+          </Button>
+        </Link>
       </div>
       <div className="flex items-center space-x-4">
         <ThemeToggle />

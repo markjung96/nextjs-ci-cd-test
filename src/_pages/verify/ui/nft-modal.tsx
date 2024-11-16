@@ -28,6 +28,35 @@ interface NFTModalProps {
 
 export default function NFTModal({ chain }: NFTModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsFlipped(false);
+    }
+  }, [isOpen]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Info className="w-4 h-4 text-gray-400" />
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>NFT</DialogTitle>
+          <DialogDescription>You can get NFT if you verify contract.</DialogDescription>
+        </DialogHeader>
+        <Card>
+          <CardContent className="pt-6">
+            <NftCard chain={chain} isOpen={isOpen} />
+          </CardContent>
+        </Card>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export const NftCard = ({ chain, isOpen }: { chain: 'ethereum' | 'arbitrum' | 'starknet'; isOpen: boolean }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const overRayRef = React.useRef<HTMLDivElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -91,84 +120,67 @@ export default function NFTModal({ chain }: NFTModalProps) {
     }
     setIsFlipped((prev) => !prev);
   };
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Info className="w-4 h-4 text-gray-400" />
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>NFT</DialogTitle>
-          <DialogDescription>You can get NFT if you verify contract.</DialogDescription>
-        </DialogHeader>
-        <Card>
-          <CardContent className="pt-6">
-            {/* click cursor */}
-            <div className="flex flex-col items-center space-y-4 cursor-pointer">
-              <div
-                ref={containerRef}
-                onMouseMove={handleMouseMove}
-                onMouseOut={handleMouseOut}
-                onClick={handleClickNft}
-                style={{
-                  transition: 'all 0.1s',
-                  position: 'relative',
-                  width: '320px',
-                  height: '457px',
-                  transformStyle: 'preserve-3d',
-                  opacity: 0,
-                }}
-              >
-                <div
-                  ref={overRayRef}
-                  style={{
-                    position: 'absolute',
-                    width: '320px',
-                    height: '457px',
-                    background:
-                      'linear-gradient(105deg, transparent 40%, rgba(255, 219, 112, 0.8) 45%, rgba(132, 50, 255, 0.7) 50%, transparent 58%)',
-                    filter: 'brightness(1.1) opacity(0.8)',
-                    mixBlendMode: 'overlay',
-                    backgroundSize: '150% 150%',
-                    backgroundPosition: '100%',
-                    transition: 'all 0.1s',
-                    zIndex: 1,
-                  }}
-                />
-                <Image
-                  src={frontImage}
-                  alt="NFT 이미지"
-                  width={320}
-                  height={457}
-                  className="rounded-lg"
-                  style={{
-                    position: 'absolute',
-                    backfaceVisibility: 'hidden',
-                  }}
-                  onLoadingComplete={() => {
-                    if (containerRef.current) {
-                      containerRef.current.style.opacity = '1';
-                    }
-                  }}
-                />
-                <Image
-                  src={backImage}
-                  alt="NFT 이미지"
-                  width={320}
-                  height={457}
-                  className="rounded-lg"
-                  style={{
-                    position: 'absolute',
-                    transform: 'rotateY(180deg)',
-                    backfaceVisibility: 'hidden',
-                  }}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </DialogContent>
-    </Dialog>
+    <div className="flex flex-col items-center space-y-4 cursor-pointer">
+      <div
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseOut={handleMouseOut}
+        onClick={handleClickNft}
+        style={{
+          transition: 'all 0.1s',
+          position: 'relative',
+          width: '320px',
+          height: '457px',
+          transformStyle: 'preserve-3d',
+          opacity: 0,
+        }}
+      >
+        <div
+          ref={overRayRef}
+          style={{
+            position: 'absolute',
+            width: '320px',
+            height: '457px',
+            background:
+              'linear-gradient(105deg, transparent 40%, rgba(255, 219, 112, 0.8) 45%, rgba(132, 50, 255, 0.7) 50%, transparent 58%)',
+            filter: 'brightness(1.1) opacity(0.8)',
+            mixBlendMode: 'overlay',
+            backgroundSize: '150% 150%',
+            backgroundPosition: '100%',
+            transition: 'all 0.1s',
+            zIndex: 1,
+          }}
+        />
+        <Image
+          src={frontImage}
+          alt="NFT 이미지"
+          width={320}
+          height={457}
+          className="rounded-lg"
+          style={{
+            position: 'absolute',
+            backfaceVisibility: 'hidden',
+          }}
+          onLoadingComplete={() => {
+            if (containerRef.current) {
+              containerRef.current.style.opacity = '1';
+            }
+          }}
+        />
+        <Image
+          src={backImage}
+          alt="NFT 이미지"
+          width={320}
+          height={457}
+          className="rounded-lg"
+          style={{
+            position: 'absolute',
+            transform: 'rotateY(180deg)',
+            backfaceVisibility: 'hidden',
+          }}
+        />
+      </div>
+    </div>
   );
-}
+};
