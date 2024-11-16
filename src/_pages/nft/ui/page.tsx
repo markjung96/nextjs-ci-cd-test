@@ -81,7 +81,7 @@ const NftView = () => {
   const getBalance = async (_address: string) => {
     const res = await readContract(configViem, {
       abi,
-      address: '0x14757FB567b06c44F929b4406Eb1f3F5C8Bf8477',
+      address: '0xdBE8030a1FE4d80BF5262ABe9952CBB500723f7c',
       functionName: 'balanceOf',
       args: [_address],
       chainId: arbitrumSepolia.id,
