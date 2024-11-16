@@ -36,7 +36,7 @@ export const CodeExplain: FC<CodeExplainProps> = ({ content }) => {
     <div className="border rounded-lg shadow-sm h-[600px] flex mt-4">
       <div className="flex-1 flex flex-col">
         <div className="p-4 border-b">
-          <h3 className="font-semibold">Code Explain By AI (Gemini 1.5 Flash)</h3>
+          <h3 className="font-semibold">Code Explain By AI (Gemini 1.5 Pro)</h3>
         </div>
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center">
