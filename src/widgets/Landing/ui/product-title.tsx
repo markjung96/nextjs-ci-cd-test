@@ -8,6 +8,8 @@ import ArbitrumLogo from '@/public/images/chainLogos/arbitrum.png';
 import ArbitrumLogoLight from '@/public/images/chainLogos/arbitrum-light.svg';
 import StarknetLogo from '@/public/images/chainLogos/starknet.svg';
 import StarknetLogoLight from '@/public/images/chainLogos/starknet-light.svg';
+import InjectiveLogo from '@/public/images/chainLogos/injective.svg';
+import InjectiveLogoLight from '@/public/images/chainLogos/injective-light.svg';
 import Image, { StaticImageData } from 'next/image';
 import { useTheme } from 'next-themes';
 
@@ -15,6 +17,7 @@ const chains = [
   { dark: EthereumLogoLight, light: EthereumLogo },
   { dark: ArbitrumLogoLight, light: ArbitrumLogo },
   { dark: StarknetLogoLight, light: StarknetLogo },
+  { dark: InjectiveLogoLight, light: InjectiveLogo },
 ];
 // TODO: add ["SUI", "Aptos", "Neutron"];
 
